@@ -4,14 +4,10 @@
   </h1>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      text: 'world'
-    }
-  }
-}
+<script setup lang="ts">
+import { ref } from 'vue';
+
+const text = ref('world');
 </script>
 
 <style>
