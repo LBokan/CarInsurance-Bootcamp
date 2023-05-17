@@ -29,6 +29,7 @@
 **/*.njsproj
 **/*.sln
 **/*.sw?
+**/target/
 
 # Compiled class file
 **/*.class
