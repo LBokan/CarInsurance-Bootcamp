@@ -74,7 +74,7 @@
     email: (value) => /.+@.+\..+/.test(value) ? 
       true : 
       'Value is not a valid email address',
-    password: (value) => (value && value.length > 8) ? 
+    password: (value) => (value && value.length >= 8) ? 
       true : 
       'This field should be at least 8 characters long'
   });
