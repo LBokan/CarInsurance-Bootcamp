@@ -29,10 +29,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.liquibase</groupId>
-			<artifactId>liquibase-core</artifactId>
-		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -62,6 +58,24 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-maven-plugin</artifactId>
+				<version>4.4.3</version>
+				<configuration>
+					<changeLogFile>db/changelog/db.changelog-master.yaml</changeLogFile>
+					<url> jdbc:postgresql://localhost:5432/car_insurance</url>
+					<username>postgres</username>
+					<password>Mar$Mysql08</password>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.postgresql</groupId>
+						<artifactId>postgresql</artifactId>
+						<version>42.3.8</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>
