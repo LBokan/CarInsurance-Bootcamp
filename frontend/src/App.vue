@@ -7,15 +7,9 @@
 </template>
 
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
   .app {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100dvh;
   }
 </style>

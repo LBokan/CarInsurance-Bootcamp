@@ -42,7 +42,7 @@
       type="submit"
       variant="elevated"
     >
-      LOG IN
+      log in
     </v-btn>
   </v-form>
 </template>
