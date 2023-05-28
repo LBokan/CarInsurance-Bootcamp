@@ -1,7 +1,8 @@
-package com.exadel.carinsurance.service;
+package com.exadel.carinsurance.service.implementation;
 
-import com.exadel.carinsurance.entity.UserEntity;
+import com.exadel.carinsurance.model.UserEntity;
 import com.exadel.carinsurance.repository.IUserRepository;
+import com.exadel.carinsurance.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
