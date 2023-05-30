@@ -3,8 +3,14 @@
     <v-main class="app">
       <router-view />
     </v-main>
+
+    <NotificationBar />
   </v-layout>
 </template>
+
+<script setup lang="ts">
+  import NotificationBar from "@/components/NotificationBar.vue";
+</script>
 
 <style>
   .app {
