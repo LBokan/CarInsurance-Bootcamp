@@ -32,17 +32,11 @@ export const useSnackbarStore = defineStore('snackbar', () => {
     showSnackbar();
   }
 
-  function resetSnackbarData() {
+  function hideAndResetSnackbar() {
     snackbarState.isShown = false;
     snackbarState.message = '';
     snackbarState.type = 'info';
     snackbarState.timeout = 5000;
-  }
-
-  function hideAndResetSnackbar() {
-    snackbarState.isShown = false;
-
-    resetSnackbarData();
   }
 
   return { snackbarState, setSnackbarDataAndShow, hideAndResetSnackbar }

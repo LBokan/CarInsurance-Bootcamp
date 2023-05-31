@@ -1,6 +1,5 @@
 import { 
-  BASE_API_URL,
-  LOCAL_STORAGE_API_KEY
+  BASE_API_URL
 } from '@/helpers/constants';
 
 interface IHeaders {
@@ -17,16 +16,17 @@ export const createRequest = async (
     'Content-Type': 'application/json'
   };
   
-  const token = localStorage.getItem(LOCAL_STORAGE_API_KEY);
+  const token = document.cookie;
 
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers['Authorization'] = `Bearer ${token.substring(6)}`;
   }
 
   const options = {
     method,
     headers,
-    body: data ? JSON.stringify(data) : null
+    body: data ? JSON.stringify(data) : null,
+    credentials: 'include' as RequestCredentials
   };
 
   const response = await fetch(url, options);

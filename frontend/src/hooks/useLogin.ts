@@ -1,8 +1,7 @@
 import { ref, reactive } from 'vue';
-import { loginAction } from '@/api/Authorization';
+import { authenticateUser } from '@/api/Authorization';
 import { useSnackbarStore } from '@/stores/snackbar';
 import { useUserStore } from '@/stores/user';
-import { LOCAL_STORAGE_API_KEY } from '@/helpers/constants';
 import { type ICredentials, type IUserState } from '@/utils/interfaces';
 
 interface IResponse {
@@ -28,7 +27,7 @@ export function useLogin() {
     isLoading.value = true;
 
     try {
-      const response: IResponse = await loginAction({
+      const response: IResponse = await authenticateUser({
         email: credentials.email,
         password: credentials.password,
       });
@@ -37,7 +36,6 @@ export function useLogin() {
       errorData.value = '';
       isSuccess.value = true;
 
-      localStorage.setItem(LOCAL_STORAGE_API_KEY, response.token);
       setUserData(response.user);
     } catch (error) {
       let errorMessage = 'Unknown Error';

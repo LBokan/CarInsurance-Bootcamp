@@ -18,7 +18,7 @@ export interface IUserState {
   firstName: string,
   lastName: string,
   role: IRoleObj,
-  roleId?: number,
+  roleId: number | null,
   userId: number | null,
   username?: string
 };

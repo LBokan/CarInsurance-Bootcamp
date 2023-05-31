@@ -2,7 +2,7 @@
   <v-form 
     class="d-flex flex-column justify-center align-center"
     v-model="isFormFilled"
-    @submit.prevent="onSubmit"
+    @submit.prevent="submit"
   >
     <p class="mb-10 text-subtitle-1">Log in to proceed</p>
 
@@ -106,7 +106,7 @@
     false;
   });
 
-  const onSubmit = async () => {
+  const submit = async () => {
     await loginFetch();
 
     if (isSuccess.value && !isError.value) {
