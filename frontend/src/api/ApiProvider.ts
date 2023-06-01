@@ -16,10 +16,12 @@ export const createRequest = async (
     'Content-Type': 'application/json'
   };
   
-  const token = document.cookie;
+  const cookies = document.cookie;
+  const cookiesArr = cookies.split(";");
+  const token = cookiesArr.find(cookie => cookie.includes("token"));
 
   if (token) {
-    headers['Authorization'] = `Bearer ${token.substring(6)}`;
+    headers['Authorization'] = `Bearer ${token.replace("token=", "")}`;
   }
 
   const options = {

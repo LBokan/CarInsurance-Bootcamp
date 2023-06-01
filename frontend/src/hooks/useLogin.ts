@@ -23,7 +23,7 @@ export function useLogin() {
   const errorData = ref<string>('');
   const isSuccess = ref<boolean>(false);
 
-  const loginFetch = async () => {
+  const login = async () => {
     isLoading.value = true;
 
     try {
@@ -56,7 +56,7 @@ export function useLogin() {
 
   return {
     credentials,
-    loginFetch,
+    login,
     isLoading,
     isError,
     errorData,

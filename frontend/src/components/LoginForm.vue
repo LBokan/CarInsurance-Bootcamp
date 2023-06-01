@@ -55,14 +55,13 @@
 <script setup lang="ts">
   import { reactive, ref, computed } from 'vue';
   import { useRouter } from 'vue-router';
-
   import { useLogin } from '@/hooks/useLogin';
 
   const router = useRouter();
 
   const { 
     credentials,
-    loginFetch,
+    login,
     isLoading,
     isError,
     errorData,
@@ -107,7 +106,7 @@
   });
 
   const submit = async () => {
-    await loginFetch();
+    await login();
 
     if (isSuccess.value && !isError.value) {
       router.push("/");
