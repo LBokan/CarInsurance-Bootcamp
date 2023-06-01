@@ -1,6 +1,7 @@
 package com.exadel.carinsurance.config;
 
 import com.exadel.carinsurance.repository.IUserRepository;
+import com.exadel.carinsurance.utils.NoOpPasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +32,7 @@ public class ApplicationConfig {
     DaoAuthenticationProvider daoAuthProvider = new DaoAuthenticationProvider();
 
     daoAuthProvider.setUserDetailsService( userDetailsService() );
-    daoAuthProvider.setPasswordEncoder( passwordEncoder() );
+    daoAuthProvider.setPasswordEncoder( noOpPasswordEncoder() );
 
     return daoAuthProvider;
   }
@@ -39,6 +40,11 @@ public class ApplicationConfig {
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
+  }
+
+  @Bean
+  public PasswordEncoder noOpPasswordEncoder() {
+    return new NoOpPasswordEncoder();
   }
 
   @Bean
