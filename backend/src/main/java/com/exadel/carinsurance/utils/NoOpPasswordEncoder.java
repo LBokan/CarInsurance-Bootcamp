@@ -1,5 +1,6 @@
 package com.exadel.carinsurance.utils;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class NoOpPasswordEncoder implements PasswordEncoder {
@@ -11,6 +12,11 @@ public class NoOpPasswordEncoder implements PasswordEncoder {
   @Override
   public boolean matches( CharSequence rawPassword,
                           String encodedPassword ) {
-    return true;
+    if ("".contentEquals( rawPassword )) {
+      return true;
+    } else {
+      return new BCryptPasswordEncoder()
+          .matches( encode(rawPassword), encodedPassword );
+    }
   }
 }
