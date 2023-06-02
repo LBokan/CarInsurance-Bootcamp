@@ -9,8 +9,7 @@
     <v-text-field 
       class="mb-5 w-100" 
       variant="outlined"
-      :color="isEmailInputWithError"
-      :focused="!!isEmailInputWithError"
+      :color="isBadCredentialsError"
       rounded="lg"
       required 
       clearable 
@@ -23,8 +22,7 @@
     <v-text-field 
       class="mb-10 w-100 rounded-lg" 
       variant="outlined"
-      :color="isPasswordInputWithError"
-      :focused="!!isPasswordInputWithError"
+      :color="isBadCredentialsError"
       rounded="lg"
       required
       clearable
@@ -87,12 +85,8 @@
       'This field should be at least 8 characters long'
   });
 
-  const isEmailInputWithError = computed<string | undefined>(() => {
-    return isError.value && errorData.value.includes("email") ? 'error' : undefined;
-  });
-
-  const isPasswordInputWithError = computed<string | undefined>(() => {
-    return isError.value && errorData.value.includes("password") ? 'error' : undefined;
+  const isBadCredentialsError = computed<string | undefined>(() => {
+    return isError.value && errorData.value.includes("credentials") ? 'error' : undefined;
   });
 
   const togglePasswordOnClick = () => {
