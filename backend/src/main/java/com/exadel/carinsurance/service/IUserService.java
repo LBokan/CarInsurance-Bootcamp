@@ -1,6 +1,6 @@
 package com.exadel.carinsurance.service;
 
-import com.exadel.carinsurance.entity.UserEntity;
+import com.exadel.carinsurance.model.UserEntity;
 
 import java.util.List;
 
