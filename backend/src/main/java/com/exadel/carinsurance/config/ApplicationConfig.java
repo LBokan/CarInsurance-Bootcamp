@@ -1,7 +1,7 @@
 package com.exadel.carinsurance.config;
 
 import com.exadel.carinsurance.repository.IUserRepository;
-import com.exadel.carinsurance.utils.NoOpPasswordEncoder;
+import com.exadel.carinsurance.utils.TokenFilteringPasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +12,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
@@ -32,19 +31,14 @@ public class ApplicationConfig {
     DaoAuthenticationProvider daoAuthProvider = new DaoAuthenticationProvider();
 
     daoAuthProvider.setUserDetailsService( userDetailsService() );
-    daoAuthProvider.setPasswordEncoder( noOpPasswordEncoder() );
+    daoAuthProvider.setPasswordEncoder( tokenFilteringPasswordEncoder() );
 
     return daoAuthProvider;
   }
 
   @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
-
-  @Bean
-  public PasswordEncoder noOpPasswordEncoder() {
-    return new NoOpPasswordEncoder();
+  public PasswordEncoder tokenFilteringPasswordEncoder() {
+    return new TokenFilteringPasswordEncoder();
   }
 
   @Bean

@@ -38,7 +38,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   public ResponseEntity badCredentialsException( BadCredentialsException ex ) {
     return ResponseEntity
         .status( HttpStatus.NOT_FOUND )
-        .body( "The entered password is incorrect" );
+        .body( ex.getMessage() );
   }
 
   @ExceptionHandler( AuthenticationException.class )

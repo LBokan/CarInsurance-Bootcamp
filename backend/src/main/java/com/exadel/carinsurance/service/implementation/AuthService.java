@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -78,20 +78,15 @@ public class AuthService implements IAuthService {
   public ResponseEntity login( @RequestBody AuthRequestEntity request ) {
     String userEmail = request.getEmail();
 
-    UserEntity user = userRepository.findByEmail( userEmail )
-        .orElseThrow( () ->
-            new UsernameNotFoundException(
-                "A user with the email address does not exist"
-            ) );
-
-    authManager.authenticate(
+    Authentication authentication = authManager.authenticate(
         new UsernamePasswordAuthenticationToken(
             userEmail,
             request.getPassword()
         )
     );
 
-    String jwtToken = jwtService.generateToken( user );
+    UserEntity user = ( UserEntity ) authentication.getPrincipal();
+    String jwtToken = jwtService.generateToken( userEmail );
 
     AuthResponseEntity response = AuthResponseEntity
         .builder()

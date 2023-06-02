@@ -3,20 +3,22 @@ package com.exadel.carinsurance.utils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-public class NoOpPasswordEncoder implements PasswordEncoder {
+public class TokenFilteringPasswordEncoder implements PasswordEncoder {
+  private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
   @Override
   public String encode( CharSequence rawPassword ) {
-    return rawPassword.toString();
+    return passwordEncoder.encode( rawPassword );
   }
 
   @Override
   public boolean matches( CharSequence rawPassword,
                           String encodedPassword ) {
-    if ("".contentEquals( rawPassword )) {
+    if ( "".contentEquals( rawPassword ) ) {
       return true;
     } else {
-      return new BCryptPasswordEncoder()
-          .matches( encode(rawPassword), encodedPassword );
+      return passwordEncoder
+          .matches( rawPassword, encodedPassword );
     }
   }
 }
