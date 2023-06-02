@@ -1,10 +1,12 @@
 package com.exadel.carinsurance.config;
 
 import com.exadel.carinsurance.repository.IUserRepository;
+import com.exadel.carinsurance.utils.TokenFilteringPasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -27,18 +29,26 @@ public class ApplicationConfig {
   }
 
   @Bean
-  public AuthenticationProvider authProvider() {
+  public AuthenticationProvider authProvider(
+      PasswordEncoder passwordEncoder
+  ) {
     DaoAuthenticationProvider daoAuthProvider = new DaoAuthenticationProvider();
 
     daoAuthProvider.setUserDetailsService( userDetailsService() );
-    daoAuthProvider.setPasswordEncoder( passwordEncoder() );
+    daoAuthProvider.setPasswordEncoder( passwordEncoder );
 
     return daoAuthProvider;
   }
 
   @Bean
-  public PasswordEncoder passwordEncoder() {
+  public PasswordEncoder bCryptPasswordEncoder() {
     return new BCryptPasswordEncoder();
+  }
+
+  @Bean
+  @Primary
+  public PasswordEncoder customTokenFilteringPasswordEncoder() {
+    return new TokenFilteringPasswordEncoder( bCryptPasswordEncoder() );
   }
 
   @Bean

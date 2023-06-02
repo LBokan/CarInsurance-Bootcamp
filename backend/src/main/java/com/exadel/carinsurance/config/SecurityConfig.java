@@ -1,6 +1,6 @@
 package com.exadel.carinsurance.config;
 
-import com.exadel.carinsurance.config.jwt.JwtAuthFilter;
+import com.exadel.carinsurance.jwt.JwtAuthFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,18 +14,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-  private final JwtAuthFilter jwtAuthFilter;
   private final AuthenticationProvider authProvider;
 
   @Autowired
-  public SecurityConfig( JwtAuthFilter jwtAuthFilter,
-                         AuthenticationProvider authProvider ) {
-    this.jwtAuthFilter = jwtAuthFilter;
+  public SecurityConfig( AuthenticationProvider authProvider ) {
     this.authProvider = authProvider;
   }
 
   @Bean
-  public SecurityFilterChain securityFilterChain( HttpSecurity http ) throws Exception {
+  public SecurityFilterChain securityFilterChain(
+      HttpSecurity http,
+      JwtAuthFilter jwtAuthFilter
+  ) throws Exception {
     http
         .csrf()
         .disable()
