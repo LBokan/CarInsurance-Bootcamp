@@ -1,6 +1,5 @@
 package com.exadel.carinsurance.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,7 +34,6 @@ public class UserEntity implements UserDetails {
   private String email;
 
   @Column( name = "password" )
-  @JsonIgnore
   private String password;
 
   @Column( name = "role_id",

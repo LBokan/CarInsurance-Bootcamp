@@ -8,12 +8,14 @@ import com.exadel.carinsurance.model.UserEntity;
 import com.exadel.carinsurance.model.auth.AuthRequestEntity;
 import com.exadel.carinsurance.model.auth.AuthResponseEntity;
 import com.exadel.carinsurance.model.auth.RegisterRequestEntity;
+import com.exadel.carinsurance.model.auth.UserResponseEntity;
 import com.exadel.carinsurance.repository.IRoleRepository;
 import com.exadel.carinsurance.repository.IUserRepository;
 import com.exadel.carinsurance.service.IAuthService;
 import com.exadel.carinsurance.service.IJwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,10 +23,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @Service
 public class AuthService implements IAuthService {
@@ -80,20 +78,8 @@ public class AuthService implements IAuthService {
   }
 
   @Override
-  public ResponseEntity login( @RequestBody AuthRequestEntity request,
-                               HttpServletRequest httpServletRequest,
-                               HttpServletResponse httpServletResponse ) {
+  public ResponseEntity login( @RequestBody AuthRequestEntity request ) {
     String userEmail = request.getEmail();
-
-    Cookie[] cookies = httpServletRequest.getCookies();
-    if ( cookies != null ) {
-      for ( Cookie cookie : cookies ) {
-        cookie.setMaxAge( 0 );
-        cookie.setPath( "/" );
-
-        httpServletResponse.addCookie( cookie );
-      }
-    }
 
     Authentication authentication = authManager.authenticate(
         new UsernamePasswordAuthenticationToken(
@@ -102,23 +88,28 @@ public class AuthService implements IAuthService {
         )
     );
 
-    UserEntity user = ( UserEntity ) authentication.getPrincipal();
+    UserEntity userEntity = ( UserEntity ) authentication.getPrincipal();
+    UserResponseEntity userResponse = UserResponseEntity.fromUserEntity( userEntity );
     String jwtToken = jwtService.generateToken( userEmail );
 
-    Cookie cookie = new Cookie( "token", jwtToken );
-    cookie.setMaxAge( 86400 );
-    cookie.setPath( "/" );
+    ResponseCookie cookie = ResponseCookie.from( "token", jwtToken )
+        .path( "/" )
+        .maxAge( 86400 )
+        .build();
 
-    httpServletResponse.addCookie( cookie );
-    httpServletResponse.setHeader( HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Set-Cookie" );
+    HttpHeaders headers = new HttpHeaders();
+    headers.add( HttpHeaders.SET_COOKIE, cookie.toString() );
+    headers.add( HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Set-Cookie" );
 
     AuthResponseEntity response = AuthResponseEntity
         .builder()
-        .user( user )
-        .token( jwtToken )
+        .user( userResponse )
         .build();
 
-    return ResponseEntity.ok( response );
+    return ResponseEntity
+        .ok()
+        .headers( headers )
+        .body( response );
   }
 }
 

@@ -11,9 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 @RestController
 @RequestMapping( "/api/auth" )
 @RequiredArgsConstructor
@@ -30,10 +27,8 @@ public class AuthController {
 
   @PostMapping( "/login" )
   public ResponseEntity login(
-      @RequestBody AuthRequestEntity request,
-      HttpServletRequest httpServletRequest,
-      HttpServletResponse httpServletResponse
+      @RequestBody AuthRequestEntity request
   ) {
-    return authService.login( request, httpServletRequest, httpServletResponse );
+    return authService.login( request );
   }
 }
