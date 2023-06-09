@@ -2,13 +2,14 @@ package com.exadel.carinsurance.service.implementation;
 
 import com.exadel.carinsurance.exceptions.AlreadyExistsException;
 import com.exadel.carinsurance.exceptions.NotFoundException;
+import com.exadel.carinsurance.mapper.UserResponseMapper;
 import com.exadel.carinsurance.model.ERoleEntity;
 import com.exadel.carinsurance.model.RoleEntity;
 import com.exadel.carinsurance.model.UserEntity;
-import com.exadel.carinsurance.model.auth.AuthRequestEntity;
-import com.exadel.carinsurance.model.auth.AuthResponseEntity;
-import com.exadel.carinsurance.model.auth.RegisterRequestEntity;
-import com.exadel.carinsurance.model.auth.UserResponseEntity;
+import com.exadel.carinsurance.model.response.AuthRequestEntity;
+import com.exadel.carinsurance.model.response.AuthResponseEntity;
+import com.exadel.carinsurance.model.response.RegisterRequestEntity;
+import com.exadel.carinsurance.model.response.UserResponseEntity;
 import com.exadel.carinsurance.repository.IRoleRepository;
 import com.exadel.carinsurance.repository.IUserRepository;
 import com.exadel.carinsurance.service.IAuthService;
@@ -89,7 +90,7 @@ public class AuthService implements IAuthService {
     );
 
     UserEntity userEntity = ( UserEntity ) authentication.getPrincipal();
-    UserResponseEntity userResponse = UserResponseEntity.fromUserEntity( userEntity );
+    UserResponseEntity userResponse = UserResponseMapper.mapToUserResponse( userEntity );
     String jwtToken = jwtService.generateToken( userEmail );
 
     ResponseCookie cookie = ResponseCookie.from( "token", jwtToken )
@@ -99,7 +100,6 @@ public class AuthService implements IAuthService {
 
     HttpHeaders headers = new HttpHeaders();
     headers.add( HttpHeaders.SET_COOKIE, cookie.toString() );
-    headers.add( HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Set-Cookie" );
 
     AuthResponseEntity response = AuthResponseEntity
         .builder()

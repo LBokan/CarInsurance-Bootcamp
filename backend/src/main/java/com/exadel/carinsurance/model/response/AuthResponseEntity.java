@@ -1,4 +1,4 @@
-package com.exadel.carinsurance.model.auth;
+package com.exadel.carinsurance.model.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
