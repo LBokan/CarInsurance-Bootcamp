@@ -1,7 +1,7 @@
 package com.exadel.carinsurance.controller;
 
-import com.exadel.carinsurance.model.response.AuthRequestEntity;
-import com.exadel.carinsurance.model.response.RegisterRequestEntity;
+import com.exadel.carinsurance.model.request.AuthRequestEntity;
+import com.exadel.carinsurance.model.request.RegisterRequestEntity;
 import com.exadel.carinsurance.service.implementation.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

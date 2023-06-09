@@ -1,7 +1,7 @@
 package com.exadel.carinsurance.service;
 
-import com.exadel.carinsurance.model.response.AuthRequestEntity;
-import com.exadel.carinsurance.model.response.RegisterRequestEntity;
+import com.exadel.carinsurance.model.request.AuthRequestEntity;
+import com.exadel.carinsurance.model.request.RegisterRequestEntity;
 import org.springframework.http.ResponseEntity;
 
 public interface IAuthService {
