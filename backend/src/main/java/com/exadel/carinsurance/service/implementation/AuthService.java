@@ -2,17 +2,21 @@ package com.exadel.carinsurance.service.implementation;
 
 import com.exadel.carinsurance.exceptions.AlreadyExistsException;
 import com.exadel.carinsurance.exceptions.NotFoundException;
+import com.exadel.carinsurance.mapper.UserResponseMapper;
 import com.exadel.carinsurance.model.ERoleEntity;
 import com.exadel.carinsurance.model.RoleEntity;
 import com.exadel.carinsurance.model.UserEntity;
-import com.exadel.carinsurance.model.auth.AuthRequestEntity;
-import com.exadel.carinsurance.model.auth.AuthResponseEntity;
-import com.exadel.carinsurance.model.auth.RegisterRequestEntity;
+import com.exadel.carinsurance.model.request.AuthRequestEntity;
+import com.exadel.carinsurance.model.request.RegisterRequestEntity;
+import com.exadel.carinsurance.model.response.AuthResponseEntity;
+import com.exadel.carinsurance.model.response.UserResponseEntity;
 import com.exadel.carinsurance.repository.IRoleRepository;
 import com.exadel.carinsurance.repository.IUserRepository;
 import com.exadel.carinsurance.service.IAuthService;
 import com.exadel.carinsurance.service.IJwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -85,16 +89,27 @@ public class AuthService implements IAuthService {
         )
     );
 
-    UserEntity user = ( UserEntity ) authentication.getPrincipal();
+    UserEntity userEntity = ( UserEntity ) authentication.getPrincipal();
+    UserResponseEntity userResponse = UserResponseMapper.mapToUserResponse( userEntity );
     String jwtToken = jwtService.generateToken( userEmail );
+
+    ResponseCookie cookie = ResponseCookie.from( "token", jwtToken )
+        .path( "/" )
+        .maxAge( 86400 )
+        .build();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add( HttpHeaders.SET_COOKIE, cookie.toString() );
 
     AuthResponseEntity response = AuthResponseEntity
         .builder()
-        .user( user )
-        .token( jwtToken )
+        .user( userResponse )
         .build();
 
-    return ResponseEntity.ok( response );
+    return ResponseEntity
+        .ok()
+        .headers( headers )
+        .body( response );
   }
 }
 
