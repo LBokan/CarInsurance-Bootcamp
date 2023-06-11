@@ -1,6 +1,6 @@
 import { 
   BASE_API_URL
-} from '@/helpers/constants';
+} from '@/helpers/authConstants';
 
 interface IHeaders {
   [n: string]: string
