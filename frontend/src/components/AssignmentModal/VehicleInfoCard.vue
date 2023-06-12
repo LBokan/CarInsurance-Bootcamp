@@ -59,7 +59,7 @@
           />
         </v-col>
 
-        <v-col cols="12" sm="4">
+        <v-col cols="12" sm="5">
           <CustomInput
             v-model="assignment.vehicleInfo.licensePlateNumber"
             :rules="[rules.required, rules.licensePlate]"
@@ -82,7 +82,7 @@
         <v-col
           class="label-wrapper"
           cols="12"
-          sm="5"
+          sm="4"
         >
           <v-label class="text-caption label" text="License expiration date*"/>
           <VueDatePicker 

@@ -73,7 +73,7 @@ interface IVehicleInfo {
 }
 
 interface IVehicleConditionInfo {
-  directionsOfImpact: string[],
+  directionOfImpact: string,
   photosOfImpact: File[]
 }
 
@@ -81,6 +81,7 @@ export interface IAssignment {
   isOpen: boolean,
   formModel: boolean | null,
   page: number,
+  dateOfIncident: Date,
   contacts: IContacts[],
   vehicleInfo: IVehicleInfo,
   vehicleConditionInfo: IVehicleConditionInfo

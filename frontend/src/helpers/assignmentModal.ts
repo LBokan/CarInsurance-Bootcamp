@@ -47,6 +47,7 @@ export const assignmentTemplate: IAssignment = {
   isOpen: false,
   formModel: null,
   page: 1,
+  dateOfIncident: new Date(),
   contacts: [
     {
       id: '0',
@@ -80,7 +81,7 @@ export const assignmentTemplate: IAssignment = {
     licenseExpirationDate: new Date()
   },
   vehicleConditionInfo: {
-    directionsOfImpact: [],
+    directionOfImpact: '',
     photosOfImpact: []
   }
 };
