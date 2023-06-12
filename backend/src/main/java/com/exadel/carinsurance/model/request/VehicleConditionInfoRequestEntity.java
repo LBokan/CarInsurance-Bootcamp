@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VehicleConditionInfoRequestEntity {
-  private String[] directionsOfImpact;
+  private String directionOfImpact;
 }

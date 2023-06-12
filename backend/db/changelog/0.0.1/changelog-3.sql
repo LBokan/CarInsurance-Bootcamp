@@ -4,6 +4,7 @@
 CREATE TABLE assignments (
     assignment_id SERIAL NOT NULL PRIMARY KEY,
     date_of_creation TIMESTAMP NOT NULL,
+    date_of_incident VARCHAR(50) NOT NULL,
     user_id INTEGER NOT NULL REFERENCES users (user_id)
 );
 
@@ -77,33 +78,24 @@ CREATE TABLE directions_of_impact (
 
 CREATE TABLE vehicle_condition_info (
     id SERIAL NOT NULL PRIMARY KEY,
+    names_of_photos_of_impact VARCHAR(255) NOT NULL,
+    direction_of_impact_id INTEGER NOT NULL REFERENCES directions_of_impact (id),
     assignment_id INTEGER NOT NULL REFERENCES assignments (assignment_id)
 );
+
+ALTER TABLE vehicle_condition_info
+ADD CONSTRAINT fk_impact
+FOREIGN KEY (direction_of_impact_id)
+REFERENCES directions_of_impact (id);
 
 ALTER TABLE vehicle_condition_info
 ADD CONSTRAINT fk_assignment
 FOREIGN KEY (assignment_id)
 REFERENCES assignments (assignment_id);
 
-CREATE TABLE directions_of_impact_vehicle_condition_info (
-    id SERIAL NOT NULL PRIMARY KEY,
-    direction_of_impact_id INTEGER NOT NULL REFERENCES directions_of_impact (id),
-    vehicle_condition_info_id INTEGER NOT NULL REFERENCES vehicle_condition_info (id)
-);
-
-ALTER TABLE directions_of_impact_vehicle_condition_info
-ADD CONSTRAINT fk_impacts
-FOREIGN KEY (direction_of_impact_id)
-REFERENCES directions_of_impact (id);
-
-ALTER TABLE directions_of_impact_vehicle_condition_info
-ADD CONSTRAINT fk_condition
-FOREIGN KEY (vehicle_condition_info_id)
-REFERENCES vehicle_condition_info (id);
-
-INSERT INTO assignments (user_id, date_of_creation)
+INSERT INTO assignments (user_id, date_of_creation, date_of_incident)
 VALUES
-(1, '2023-06-10T10:30:45.123456789');
+(1, '2023-06-10T10:30:45.123456789', '2023-05-13');
 
 INSERT INTO contacts_info (date_of_creation, type, first_name, last_name, email, assignment_id)
 VALUES
@@ -142,15 +134,6 @@ VALUES
 ('Front'), ('Front Right'), ('Right Side'), ('Right Quarter Panel'), ('Right Rear'),
 ('Rear'), ('Front Left'), ('Left Side'), ('Left Quarter Panel'), ('Left Rear');
 
-INSERT INTO vehicle_condition_info (assignment_id)
+INSERT INTO vehicle_condition_info (names_of_photos_of_impact, direction_of_impact_id, assignment_id)
 VALUES
-(1);
-
-INSERT INTO directions_of_impact_vehicle_condition_info (direction_of_impact_id, vehicle_condition_info_id)
-VALUES
-(1, 1),
-(3, 1),
-(4, 1),
-(5, 1),
-(8, 1),
-(9, 1);
+('photo1.png;photo2.jpg', 2 , 1);

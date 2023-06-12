@@ -42,6 +42,9 @@ public class AssignmentEntity {
   @Column( name = "date_of_creation" )
   private LocalDateTime dateOfCreation;
 
+  @Column( name = "date_of_incident" )
+  private String dateOfIncident;
+
   @OneToMany( fetch = FetchType.EAGER,
       mappedBy = "assignment",
       cascade = { CascadeType.PERSIST, CascadeType.MERGE,
@@ -62,10 +65,12 @@ public class AssignmentEntity {
   private VehicleConditionInfoEntity vehicleConditionInfo;
 
   public AssignmentEntity(
+      String dateOfIncident,
       List<ContactInfoEntity> contactsInfo,
       VehicleInfoEntity vehicleInfo,
       VehicleConditionInfoEntity vehicleConditionInfo
   ) {
+    this.dateOfIncident = dateOfIncident;
     this.contactsInfo = contactsInfo;
     this.vehicleInfo = vehicleInfo;
     this.vehicleConditionInfo = vehicleConditionInfo;
@@ -75,6 +80,7 @@ public class AssignmentEntity {
   public String toString() {
     return "AssignmentEntity{" +
         "assignmentId=" + assignmentId +
+        ", dateOfIncident=" + dateOfIncident +
         ", contactsInfo=" + contactsInfo +
         ", vehicleInfo=" + vehicleInfo +
         ", vehicleConditionInfo=" + vehicleConditionInfo +

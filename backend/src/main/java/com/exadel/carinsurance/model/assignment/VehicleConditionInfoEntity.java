@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Data
 @Builder
@@ -21,6 +20,22 @@ public class VehicleConditionInfoEntity {
   @Column( name = "id" )
   private Long id;
 
+  @Column( name = "names_of_photos_of_impact" )
+  private String namesOfPhotosOfImpact;
+
+  @Column( name = "direction_of_impact_id",
+      nullable = false,
+      insertable = false,
+      updatable = false )
+  private String directionOfImpactId;
+
+  @ManyToOne( fetch = FetchType.EAGER,
+      cascade = { CascadeType.PERSIST, CascadeType.MERGE,
+          CascadeType.DETACH, CascadeType.REFRESH },
+      optional = false )
+  @JoinColumn( name = "direction_of_impact_id" )
+  private DirectionOfImpactEntity directionOfImpact;
+
   @JsonIgnore
   @OneToOne( fetch = FetchType.EAGER,
       cascade = { CascadeType.PERSIST, CascadeType.MERGE,
@@ -29,20 +44,12 @@ public class VehicleConditionInfoEntity {
   @JoinColumn( name = "assignment_id" )
   private AssignmentEntity assignment;
 
-  @ManyToMany( fetch = FetchType.LAZY,
-      cascade = { CascadeType.PERSIST, CascadeType.MERGE,
-          CascadeType.DETACH, CascadeType.REFRESH } )
-  @JoinTable(
-      name = "directions_of_impact_vehicle_condition_info",
-      joinColumns = @JoinColumn( name = "vehicle_condition_info_id" ),
-      inverseJoinColumns = @JoinColumn( name = "direction_of_impact_id" )
-  )
-  private List<DirectionOfImpactEntity> directionsOfImpact;
-
   @Override
   public String toString() {
     return "VehicleConditionInfoEntity{" +
         "id=" + id +
+        ", namesOfPhotosOfImpact='" + namesOfPhotosOfImpact + '\'' +
+        ", directionOfImpact=" + directionOfImpact +
         '}';
   }
 }

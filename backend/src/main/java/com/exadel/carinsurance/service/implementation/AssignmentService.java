@@ -1,6 +1,8 @@
 package com.exadel.carinsurance.service.implementation;
 
 import com.exadel.carinsurance.exceptions.NotFoundException;
+import com.exadel.carinsurance.mapper.AddressMapper;
+import com.exadel.carinsurance.mapper.VehicleInfoMapper;
 import com.exadel.carinsurance.model.UserEntity;
 import com.exadel.carinsurance.model.assignment.*;
 import com.exadel.carinsurance.model.request.AddressRequestEntity;
@@ -18,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @Transactional
@@ -64,6 +64,7 @@ public class AssignmentService implements IAssignmentService {
         .builder()
         .user( user )
         .dateOfCreation( currentDateTimeAssignment )
+        .dateOfIncident( request.getDateOfIncident() )
         .build();
     AssignmentEntity mergedAssignment = entityManager.merge( assignmentEntity );
 
@@ -77,21 +78,17 @@ public class AssignmentService implements IAssignmentService {
             );
 
     //  Vehicle condition info creation
-    List<DirectionOfImpactEntity> directionsOfImpactFromDB = new ArrayList<>();
-
-    for ( String directionsOfImpact : request.getVehicleConditionInfo().getDirectionsOfImpact() ) {
-      DirectionOfImpactEntity directionOfImpactFromDB = directionsOfImpactRepository
-          .findByName( directionsOfImpact )
-          .orElseThrow( () ->
-              new NotFoundException( "The direction of impact is not found" )
-          );
-      directionsOfImpactFromDB.add( directionOfImpactFromDB );
-    }
+    DirectionOfImpactEntity directionOfImpactFromDB = directionsOfImpactRepository
+        .findByName( request.getVehicleConditionInfo().getDirectionOfImpact() )
+        .orElseThrow( () ->
+            new NotFoundException( "The direction of impact is not found" )
+        );
 
     VehicleConditionInfoEntity vehicleConditionInfoEntity =
         VehicleConditionInfoEntity
             .builder()
-            .directionsOfImpact( directionsOfImpactFromDB )
+            .directionOfImpact( directionOfImpactFromDB )
+            .namesOfPhotosOfImpact( "testPhotoName" )
             .assignment( assignmentEntityFromDB )
             .build();
     VehicleConditionInfoEntity mergedVehicleConditionInfo = entityManager.merge( vehicleConditionInfoEntity );
@@ -100,18 +97,8 @@ public class AssignmentService implements IAssignmentService {
 
     //  Vehicle condition info creation
     VehicleInfoEntity vehicleInfoEntity =
-        VehicleInfoEntity
-            .builder()
-            .vinNumber( request.getVehicleInfo().getVinNumber() )
-            .carMake( request.getVehicleInfo().getCarMake() )
-            .carModel( request.getVehicleInfo().getCarModel() )
-            .yearOfManufacture( request.getVehicleInfo().getYearOfManufacture() )
-            .odometerValue( request.getVehicleInfo().getOdometerValue() )
-            .licensePlateNumber( request.getVehicleInfo().getLicensePlateNumber() )
-            .licenseState( request.getVehicleInfo().getLicenseState() )
-            .licenseExpirationDate( request.getVehicleInfo().getLicenseExpirationDate() )
-            .assignment( assignmentEntityFromDB )
-            .build();
+        VehicleInfoMapper.mapToVehicleInfo( request );
+    vehicleInfoEntity.setAssignment( assignmentEntityFromDB );
     VehicleInfoEntity mergedVehicleInfo = entityManager.merge( vehicleInfoEntity );
 
     vehicleInfoRepository.save( mergedVehicleInfo );
@@ -153,15 +140,8 @@ public class AssignmentService implements IAssignmentService {
       }
 
       for ( AddressRequestEntity addressRequest : contactInfoRequest.getAddresses() ) {
-        AddressEntity addressEntity = AddressEntity
-            .builder()
-            .type( addressRequest.getType() )
-            .city( addressRequest.getCity() )
-            .state( addressRequest.getState() )
-            .zip( addressRequest.getZip() )
-            .addressLine( addressRequest.getAddressLine() )
-            .contactInfo( contactInfoEntityFromDB )
-            .build();
+        AddressEntity addressEntity = AddressMapper.mapToAddress( addressRequest );
+        addressEntity.setContactInfo( contactInfoEntityFromDB );
         AddressEntity mergedAddress = entityManager.merge( addressEntity );
 
         addressRepository.save( mergedAddress );

@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AssignmentRequestEntity {
+  private String dateOfIncident;
   private List<ContactInfoRequestEntity> contactsInfo;
   private VehicleInfoRequestEntity vehicleInfo;
   private VehicleConditionInfoRequestEntity vehicleConditionInfo;
