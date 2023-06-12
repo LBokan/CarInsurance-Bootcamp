@@ -36,6 +36,12 @@ public class VehicleConditionInfoEntity {
   @JoinColumn( name = "direction_of_impact_id" )
   private DirectionOfImpactEntity directionOfImpact;
 
+  @Column( name = "assignment_id",
+      nullable = false,
+      insertable = false,
+      updatable = false )
+  private String assignmentId;
+
   @JsonIgnore
   @OneToOne( fetch = FetchType.EAGER,
       cascade = { CascadeType.PERSIST, CascadeType.MERGE,

@@ -2,6 +2,7 @@ package com.exadel.carinsurance.service.implementation;
 
 import com.exadel.carinsurance.exceptions.NotFoundException;
 import com.exadel.carinsurance.mapper.AddressMapper;
+import com.exadel.carinsurance.mapper.ContactInfoMapper;
 import com.exadel.carinsurance.mapper.VehicleInfoMapper;
 import com.exadel.carinsurance.model.UserEntity;
 import com.exadel.carinsurance.model.assignment.*;
@@ -107,15 +108,9 @@ public class AssignmentService implements IAssignmentService {
     for ( ContactInfoRequestEntity contactInfoRequest : request.getContactsInfo() ) {
       LocalDateTime currentDateTimeContactInfo = LocalDateTime.now();
 
-      ContactInfoEntity contactInfoEntity = ContactInfoEntity
-          .builder()
-          .dateOfCreation( currentDateTimeContactInfo )
-          .type( contactInfoRequest.getType() )
-          .firstName( contactInfoRequest.getFirstName() )
-          .lastName( contactInfoRequest.getLastName() )
-          .email( contactInfoRequest.getEmail() )
-          .assignment( assignmentEntityFromDB )
-          .build();
+      ContactInfoEntity contactInfoEntity = ContactInfoMapper.mapToContactInfo( contactInfoRequest );
+      contactInfoEntity.setDateOfCreation( currentDateTimeContactInfo );
+      contactInfoEntity.setAssignment( assignmentEntityFromDB );
       ContactInfoEntity mergedContactInfo = entityManager.merge( contactInfoEntity );
 
       contactInfoRepository.save( mergedContactInfo );
