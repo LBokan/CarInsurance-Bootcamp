@@ -1,87 +1,96 @@
 import { reactive } from 'vue';
 import { defineStore } from 'pinia';
 
-import { assignmentTemplateState } from '@/helpers/assignmentModal';
-import { 
-  type IAssignmentState, 
-  type IContactsInfo,
+import { assignmentTemplate } from '@/helpers/assignmentModal';
+import {
+  type IAssignment,
+  type IContacts,
   type IPhoneNumbers,
   type IAddresses
 } from '@/utils/interfaces';
 
-type TypeAssignmentStateKeys = keyof IAssignmentState;
+type TypeAssignmentKeys = keyof IAssignment;
 
 export const useAssignmentStore = defineStore('assignment', () => {
-  const assignmentState: IAssignmentState = reactive(JSON.parse(JSON.stringify(assignmentTemplateState)));
+  const assignment: IAssignment = reactive(
+    JSON.parse(JSON.stringify(assignmentTemplate))
+  );
 
   function showAssignmentModal() {
-    assignmentState.isOpen = true;
+    assignment.isOpen = true;
   }
-  
-  function setAssignmentStateData<K extends TypeAssignmentStateKeys>(data: IAssignmentState) {
-    Object.keys(data).forEach( ( key ) => {
+
+  function setAssignmentData<K extends TypeAssignmentKeys>(data: IAssignment) {
+    Object.keys(data).forEach((key) => {
       const typedKey = key as K;
 
-      assignmentState[typedKey] = data[typedKey];
-    });
+      assignment[typedKey] = data[typedKey];
+    })
   }
 
   function setNextPage() {
-    if (assignmentState.page < 3) {
-      assignmentState.page = assignmentState.page + 1;
+    if (assignment.page < 3) {
+      assignment.page = assignment.page + 1;
     }
   }
 
   function setPrevPage() {
-    if (assignmentState.page > 1) {
-      assignmentState.page = assignmentState.page - 1;
+    if (assignment.page > 1) {
+      assignment.page = assignment.page - 1;
     }
   }
 
-  function addContactData(contactData: IContactsInfo) {
-    assignmentState.contactsInfo.push(contactData);
+  function addContactData(contactData: IContacts) {
+    assignment.contacts.push(contactData);
   }
 
   function addContactInfoData<T extends IPhoneNumbers | IAddresses>(
-    contactIndex: number, 
-    assignmentDataPropName: keyof IContactsInfo, 
+    contactIndex: number,
+    assignmentDataPropName: keyof IContacts,
     infoData: T
   ) {
-    const propValue = assignmentState.contactsInfo[contactIndex][assignmentDataPropName] as Array<T>;
-    
+    const propValue = assignment
+      .contacts[contactIndex][assignmentDataPropName] as Array<T>;
+
     propValue.push(infoData);
   }
 
   function removeContactData(contactIndex: number) {
-    assignmentState.contactsInfo.splice(contactIndex, 1);
+    assignment.contacts.splice(contactIndex, 1);
   }
 
-  function removePhoneNumberData(contactIndex: number, phoneNumberId: number) {
-    const phoneNumbersArray = assignmentState.contactsInfo[contactIndex].phoneNumbers;
-    const filteredPhoneNumbersData = phoneNumbersArray.filter(phoneNumber => phoneNumber.id !== phoneNumberId);
-      
-    assignmentState.contactsInfo[contactIndex].phoneNumbers = filteredPhoneNumbersData;
+  function removePhoneNumberData(contactIndex: number, phoneNumberId: string) {
+    const phoneNumbersArray = assignment.contacts[contactIndex].phoneNumbers;
+    const filteredPhoneNumbersData = phoneNumbersArray.filter(
+      (phoneNumber) => phoneNumber.id !== phoneNumberId
+    );
+
+    assignment.contacts[contactIndex].phoneNumbers = filteredPhoneNumbersData;
   }
 
-  function removeAddressData(contactIndex: number, addressId: number) {
-    const addressesArray = assignmentState.contactsInfo[contactIndex].addresses;
-    const filteredAddressesData = addressesArray.filter(address => address.id !== addressId);
-      
-    assignmentState.contactsInfo[contactIndex].addresses = filteredAddressesData;
+  function removeAddressData(contactIndex: number, addressId: string) {
+    const addressesArray = assignment.contacts[contactIndex].addresses;
+    const filteredAddressesData = addressesArray.filter(
+      (address) => address.id !== addressId
+    );
+
+    assignment.contacts[contactIndex].addresses = filteredAddressesData;
   }
 
-  function closeAndResetAssignmentModal<K extends TypeAssignmentStateKeys>() {
-    Object.keys(assignmentTemplateState).forEach( ( key ) => {
+  function closeAndResetAssignmentModal<K extends TypeAssignmentKeys>() {
+    Object.keys(assignmentTemplate).forEach((key) => {
       const typedKey = key as K;
 
-      assignmentState[typedKey] = JSON.parse(JSON.stringify(assignmentTemplateState[typedKey]));
+      assignment[typedKey] = JSON.parse(
+        JSON.stringify(assignmentTemplate[typedKey])
+      );
     });
   }
 
-  return { 
-    assignmentState,
+  return {
+    assignment,
     showAssignmentModal,
-    setAssignmentStateData,
+    setAssignmentData,
     setNextPage,
     setPrevPage,
     addContactData,

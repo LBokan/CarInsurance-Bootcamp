@@ -1,63 +1,53 @@
 <template>
   <v-card-text>
     <v-container 
-      v-for="contactData in assignmentState.contactsInfo"
+      v-for="contactData in assignment.contacts"
       :key="contactData.id"
     >
-      <v-row v-if="!contactData.id">
-        <v-col
-          cols="12"
-        >
+      <v-row v-if="contactData.id == '0'">
+        <v-col cols="12">
           <p class="text-subtitle-1">{{ contactData.type }}</p>
         </v-col>
       </v-row>
       <v-row v-else>
-        <v-col
-          cols="12"
-          sm="11"
-        >
+        <v-col cols="12" sm="11">
           <CustomSelect 
             v-model="contactData.type"
-            :items="getContactTypesLabels"
-            :label="'Contact type*'"
+            :is-required="true"
+            :items="getAvailableContactTypes"
+            :label="'Contact type'"
           />
         </v-col>
         <v-col
-          v-if="contactData.id"
+          v-if="contactData.id !== '0'"
           cols="12"
           sm="1"
         >
           <v-btn
-            style="transform: translateY(50%);"
+            class="close-btn"
             color="error"
             density="compact"
             icon="mdi-close"
-            @click="() => openConfirmationModal(contactData.id, 'contact')"
+            @click="openConfirmationModal(contactData.id, 'contact')"
           />
         </v-col>
       </v-row>
 
       <v-row>
-        <v-col
-          cols="12"
-          sm="6"
-        >
+        <v-col cols="12" sm="6">
           <CustomInput
             v-model="contactData.firstName"
             :rules="[rules.required]"
             :is-required="true"
-            :label="'First name*'"
+            :label="'First name'"
           />
         </v-col>
-        <v-col
-          cols="12"
-          sm="6"
-        >
+        <v-col cols="12" sm="6">
           <CustomInput
             v-model="contactData.lastName"
             :rules="[rules.required]"
             :is-required="true"
-            :label="'Last name*'"
+            :label="'Last name'"
           />
         </v-col>
       </v-row>
@@ -68,7 +58,7 @@
             v-model="contactData.email"
             :rules="[rules.required, rules.email]"
             :is-required="true"
-            :label="'Email*'"
+            :label="'Email'"
           />
         </v-col>
       </v-row>
@@ -77,41 +67,38 @@
       <v-row
         v-for="phoneData in contactData.phoneNumbers"
         :key="phoneData.id"
-        :class="phoneData.id ? '' : 'pt-7'"
+        :class="phoneData.id !== '0' ? '' : 'pt-7'"
       >
-        <v-col 
-          cols="12"
-          sm="4"
-        >
+        <v-col cols="12" sm="4">
           <CustomSelect
             v-model="phoneData.type"
+            :is-required="true"
             :items="phoneNumberTypesLabels"
-            :label="'Phone number type*'"
+            :label="'Phone number type'"
           />
         </v-col>
-        <v-col 
-          cols="12"
-          :sm="phoneData.id ? 7 : 8"
-        >
+        <v-col cols="12" :sm="phoneData.id !== '0' ? 7 : 8">
           <CustomInput
             v-model="phoneData.number"
             :rules="[rules.required, rules.phoneNumber]"
             :is-required="true"
-            :label="'Phone number*'"
+            :label="'Phone number'"
             :placeholder="'+X XXX-XXX-XXX'"
           />
         </v-col>
         <v-col
-          v-if="phoneData.id"
+          v-if="phoneData.id !== '0'"
           cols="12"
           sm="1"
         >
           <v-btn
-            style="transform: translateY(50%);"
+            class="close-btn"
             color="error"
             density="compact"
             icon="mdi-close"
-            @click="() => openConfirmationModal(contactData.id, 'phoneNumber', phoneData.id)"
+            @click="openConfirmationModal(
+                contactData.id, 'phoneNumber', phoneData.id
+              )"
           />
         </v-col>
       </v-row>
@@ -120,7 +107,7 @@
           <v-btn
             color="info"
             variant="elevated"
-            @click="() => addInfo(contactData.id, 'phoneNumber')"
+            @click="addInfo(contactData.id, 'phoneNumber')"
           >
             + Add phone number
           </v-btn>
@@ -131,79 +118,64 @@
       <v-row
         v-for="addressData in contactData.addresses"
         :key="addressData.id"
-        :class="addressData.id ? '' : 'pt-7'"
+        :class="addressData.id !== '0' ? '' : 'pt-7'"
       >
-        <v-col 
-          cols="12"
-          sm="3"
-        >
+        <v-col cols="12" sm="3">
           <CustomSelect 
             v-model="addressData.type"
+            :is-required="true"
             :items="addressesTypesLabels"
-            :label="'Address type*'"
+            :label="'Address type'"
           />
         </v-col>
-        <v-col 
-          cols="12"
-          :sm="addressData.id ? 5 : 6"
-        >
+        <v-col cols="12" :sm="addressData.id !== '0' ? 5 : 6">
           <CustomInput
             v-model="addressData.city"
             :rules="[rules.required]"
             :is-required="true"
-            :label="'City*'"
+            :label="'City'"
           />
         </v-col>
-        <v-col 
-          cols="12"
-          sm="3"
-        >
+        <v-col cols="12" sm="3">
           <CustomAutocomplete 
             v-model="addressData.state"
+            :is-required="true"
             :items="statesCodesLabels"
-            :label="'State*'"
-            :error="
-              !assignmentState.contactsInfo[contactData.id]
-              .addresses[addressData.id]?.state"
-            :error-messages="
-              !assignmentState.contactsInfo[contactData.id]
-              .addresses[addressData.id]?.state ? ['Value is required'] : []
-            "
+            :label="'State'"
+            :error="!isStateValue(contactData.id, addressData.id)"
+            :error-messages="!isStateValue(contactData.id, addressData.id) ? 
+            ['Value is required'] : []"
           />
         </v-col>
         <v-col
-          v-if="addressData.id"
+          v-if="addressData.id !== '0'"
           cols="12"
           sm="1"
         >
           <v-btn
-            style="transform: translateY(50%);"
+            class="close-btn"
             color="error"
             density="compact"
             icon="mdi-close"
-            @click="() => openConfirmationModal(contactData.id, 'address', addressData.id)"
+            @click="openConfirmationModal(
+                contactData.id, 'address', addressData.id
+              )"
           />
         </v-col>
-        <v-col 
-          cols="12"
-          sm="8"
-        >
+        <v-col cols="12" sm="8">
           <CustomInput
             v-model="addressData.addressLine"
             :rules="[rules.required]"
             :is-required="true"
-            :label="'Address line*'"
+            :label="'Address line'"
           />
         </v-col>
-        <v-col 
-          cols="12"
-          sm="4"
-        >
+        <v-col cols="12" sm="4">
           <CustomInput
             v-model="addressData.zip"
             :rules="[rules.required, rules.zipCode]"
             :is-required="true"
-            :label="'Zip code*'"
+            :label="'Zip code'"
             :placeholder="'XXXXX-XXXX'"
           />
         </v-col>
@@ -213,7 +185,7 @@
           <v-btn
             color="info"
             variant="elevated"
-            @click="() => addInfo(contactData.id, 'address')"
+            @click="addInfo(contactData.id, 'address')"
           >
             + Add address
           </v-btn>
@@ -260,7 +232,7 @@
     statesCodesLabels 
   } from '@/helpers/assignmentModal';
 
-  const { assignmentState } = storeToRefs(useAssignmentStore());
+  const { assignment } = storeToRefs(useAssignmentStore());
   const { 
     addContactData, 
     addContactInfoData,
@@ -276,14 +248,15 @@
     emits('validate-form');
   })
 
-  const getContactTypesLabels = computed(
-    () => contactTypesLabels.filter(contactType => !assignmentState.value.contactsInfo.some(
+  const getAvailableContactTypes = computed(
+    () => contactTypesLabels
+      .filter(contactType => !assignment.value.contacts.some(
         contact => contact.type?.includes(contactType) && 
         (contact.type.toLowerCase().includes('owner') ||
         contact.type.toLowerCase().includes('driver') ||
         contact.type.toLowerCase().includes('estimator'))
       ))
-  );
+  )
 
   const setAssignmentDataPropName = (infoType: string) => {
     const infoTypeInLowerCase = infoType.toLowerCase();
@@ -297,26 +270,39 @@
     return '';
   }
 
+  const getContactIndex = (contactId: string) => {
+    return assignment
+      .value
+      .contacts
+      .findIndex(contact => contact.id == contactId);
+  }
+
+  const isStateValue = (contactId: string, addressId: string) => {
+    const contactIndex = getContactIndex(contactId);
+    const addressIndex = assignment
+      .value
+      .contacts[contactIndex]
+      .addresses
+      .findIndex(address => address.id == addressId);
+
+    return !!assignment.value.contacts[contactIndex]
+              .addresses[addressIndex]?.state;
+  }
+
   const addContact = () => {
-    const sortedContactsArr = 
-    assignmentState.value.contactsInfo.sort((a,b) => a.id - b.id);
-
-    const qtyOfContacts = sortedContactsArr.length;
-    const lastContactIdValue = sortedContactsArr[qtyOfContacts - 1].id;
-
     addContactData({
-      id: lastContactIdValue + 1,
-      type: getContactTypesLabels.value[0],
+      id: crypto.randomUUID(),
+      type: getAvailableContactTypes.value[0],
       firstName: '',
       lastName: '',
       email: '',
       phoneNumbers: [{
-        id: 0,
+        id: '0',
         type: 'Mobile',
         number: ''
       }],
       addresses: [{
-        id: 0,
+        id: '0',
         type: 'Home',
         city: '',
         state: null,
@@ -328,24 +314,18 @@
     emits('validate-form');
   }
 
-  const addInfo = (contactId: number, infoType: string) => {
-    const contactIndex = assignmentState.value.contactsInfo.findIndex(contact => contact.id == contactId);
+  const addInfo = (contactId: string, infoType: string) => {
+    const contactIndex = getContactIndex(contactId);
     const assignmentDataPropName = setAssignmentDataPropName(infoType);
 
-    if (contactIndex > -1 && assignmentDataPropName) {
-      const sortedInfoArr = 
-        assignmentState.value.contactsInfo[contactIndex][assignmentDataPropName].sort((a,b) => a.id - b.id);
-
-      const qtyOfInfoElements = sortedInfoArr.length;
-      const lastInfoIdValue = sortedInfoArr[qtyOfInfoElements - 1].id;
-
+    if (contactIndex !== -1 && assignmentDataPropName) {
       switch(assignmentDataPropName) {
         case 'phoneNumbers':
           addContactInfoData(
             contactIndex,
             assignmentDataPropName,
             {
-              id: lastInfoIdValue + 1,
+              id: crypto.randomUUID(),
               type: 'Mobile',
               number: ''
             }
@@ -358,7 +338,7 @@
             contactIndex,
             assignmentDataPropName,
             {
-              id: lastInfoIdValue + 1,
+              id: crypto.randomUUID(),
               type: 'Home',
               city: '',
               state: null,
@@ -372,14 +352,20 @@
     }
   }
 
-  const openConfirmationModal = (contactId: number, infoType: string, infoId: number | null = null) => {
+  const openConfirmationModal = (
+    contactId: string, 
+    infoType: string, 
+    infoId: string | null = null
+  ) => {
+    const contactIndex = getContactIndex(contactId);
+
     switch(infoType) {
       case 'phoneNumber':
         setConfirmationDataAndShow(
           "Phone number deletion", 
           "Do you really want to remove this phone number?", 
           removePhoneNumberData,
-          [contactId, infoId]
+          [contactIndex, infoId]
         );
         break;
 
@@ -388,7 +374,7 @@
           "Address deletion", 
           "Do you really want to remove this address?", 
           removeAddressData,
-          [contactId, infoId]
+          [contactIndex, infoId]
         );
         break;
       
@@ -397,7 +383,7 @@
           "Contact deletion", 
           "Do you really want to remove this contact?", 
           removeContactData,
-          [contactId]
+          [contactIndex]
         );
         break;
     }
@@ -408,7 +394,8 @@
     email: (value) => /.+@.+\..+/.test(value) ? 
       true : 
       'Value is not a valid email address',
-    phoneNumber: (value) => /^[+(]?\d{0,2}[)-\s.]?\d{3}[-\s.]?\d{3}[-\s.]?\d{3,4}$/.test(value) ? 
+    phoneNumber: (value) => 
+      /^[+(]?\d{0,2}[)-\s.]?\d{3}[-\s.]?\d{3}[-\s.]?\d{3,4}$/.test(value) ? 
       true : 
       'Value is not a valid phone number',
     zipCode: (value) => /^\d{5}[-\s.]?(\d{4})?$/.test(value) ? 
@@ -416,3 +403,9 @@
       'Value is not a valid zip code',
   });
 </script>
+
+<style scoped>
+  .close-btn {
+    transform: translateY(50%);
+  }
+</style>

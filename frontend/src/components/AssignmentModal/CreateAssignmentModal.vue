@@ -5,29 +5,23 @@
     scrollable
   >
     <v-card>
-      <v-form 
-        v-model="assignmentState.formModel" 
-        ref="formRef"
-      >
+      <v-form v-model="assignment.formModel" ref="formRef">
         <v-card-title class="position-relative">
           <p class="text-h5">Assignment creation</p>
           
           <div class="page-info-chip">
             <v-btn
-              v-if="assignmentState.page > 1"
+              v-if="assignment.page > 1"
               color="blue"
               density="compact"
               icon="mdi-arrow-left"
               @click="setPrevPage"
             />
-            <v-chip
-              class="mx-2"
-              color="blue"
-            >
-              Page: {{ assignmentState.page }} / 3
+            <v-chip class="mx-2" color="blue">
+              Page: {{ assignment.page }} / 3
             </v-chip>
             <v-btn
-              v-if="assignmentState.page < 3 && assignmentState.formModel"
+              v-if="assignment.page < 3 && assignment.formModel"
               color="blue"
               density="compact"
               icon="mdi-arrow-right"
@@ -39,15 +33,15 @@
         <v-divider/>
 
         <ContactInfoCard 
-          v-if="assignmentState.page == 1"
+          v-if="assignment.page == 1"
           @validate-form="validateAssignment" 
         />
         <VehicleInfoCard 
-          v-else-if="assignmentState.page == 2" 
+          v-else-if="assignment.page == 2" 
           @validate-form="validateAssignment" 
         />
         <VehicleConditionInfoCard 
-          v-else-if="assignmentState.page == 3" 
+          v-else-if="assignment.page == 3" 
           @validate-form="validateAssignment" 
         />
 
@@ -56,7 +50,7 @@
         <v-card-actions>
           <v-spacer/>
           <v-btn
-            v-if="assignmentState.page < 3"
+            v-if="assignment.page < 3"
             class="mr-5"
             color="primary"
             rounded="lg"
@@ -66,12 +60,12 @@
             Save progress
           </v-btn>
           <v-btn
-            v-if="assignmentState.page < 3"
+            v-if="assignment.page < 3"
             class="mr-5"
             color="success"
             rounded="lg"
             variant="elevated"
-            :disabled="!assignmentState.formModel"
+            :disabled="!assignment.formModel"
             @click="continueCreateAssignment"
           >
             Continue
@@ -82,7 +76,7 @@
             color="success"
             rounded="lg"
             variant="elevated"
-            :disabled="!assignmentState.formModel"
+            :disabled="!assignment.formModel"
             @click="createAssignment"
           >
             Create
@@ -110,12 +104,19 @@
   import { useConfirmationStore } from '@/stores/confirmation';
   import { useSnackbarStore } from '@/stores/snackbar';
 
-  import ContactInfoCard from '@/components/AssignmentModal/ContactInfoCard.vue';
-  import VehicleInfoCard from '@/components/AssignmentModal/VehicleInfoCard.vue';
-  import VehicleConditionInfoCard from '@/components/AssignmentModal/VehicleConditionInfoCard.vue';
+  import ContactInfoCard 
+    from '@/components/AssignmentModal/ContactInfoCard.vue';
+  import VehicleInfoCard 
+    from '@/components/AssignmentModal/VehicleInfoCard.vue';
+  import VehicleConditionInfoCard 
+    from '@/components/AssignmentModal/VehicleConditionInfoCard.vue';
 
-  const { assignmentState } = storeToRefs(useAssignmentStore());
-  const { setNextPage, setPrevPage, closeAndResetAssignmentModal } = useAssignmentStore();
+  const { assignment } = storeToRefs(useAssignmentStore());
+  const { 
+    setNextPage, 
+    setPrevPage, 
+    closeAndResetAssignmentModal 
+  } = useAssignmentStore();
   const { setConfirmationDataAndShow } = useConfirmationStore();
   const { setSnackbarDataAndShow } = useSnackbarStore();
 
@@ -128,7 +129,7 @@
   }
 
   const saveProgress = () => {
-    localStorage.setItem('assignmentData', JSON.stringify(assignmentState.value));
+    localStorage.setItem('assignmentData', JSON.stringify(assignment.value));
     setSnackbarDataAndShow('Your data is successfully saved', 'success');
   };
 
@@ -152,7 +153,8 @@
   const closeAssignment = () => {
     setConfirmationDataAndShow(
       "Assignment creation cancellation", 
-      "Do you really want to cancel the creation of the assignment? All your entered data will be lost", 
+      "Do you really want to cancel the creation of the assignment? " +
+      "All your entered data will be lost", 
       resetAssignment
     );
   };

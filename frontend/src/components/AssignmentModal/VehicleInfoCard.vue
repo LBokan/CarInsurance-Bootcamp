@@ -2,44 +2,34 @@
   <v-card-text>
     <v-container>
       <v-row>
-        <v-col
-          cols="12"
-        >
+        <v-col cols="12">
           <p class="text-subtitle-1">Vehicle information</p>
         </v-col>
 
-        <v-col
-          cols="12"
-        >
+        <v-col cols="12">
           <CustomInput
-            v-model="assignmentState.vehicleInfo.vinNumber"
+            v-model="assignment.vehicleInfo.vinNumber"
             :rules="[rules.required, rules.vinNumber]"
             :is-required="true"
-            :label="'VIN number*'"
+            :label="'VIN number'"
             :counter="17"
           />
         </v-col>
 
-        <v-col
-          cols="12"
-          sm="6"
-        >
+        <v-col cols="12" sm="6">
           <CustomInput
-            v-model="assignmentState.vehicleInfo.carMake"
+            v-model="assignment.vehicleInfo.carMake"
             :rules="[rules.required]"
             :is-required="true"
-            :label="'Car make*'"
+            :label="'Car make'"
           />
         </v-col>
-        <v-col
-          cols="12"
-          sm="6"
-        >
+        <v-col cols="12" sm="6">
           <CustomInput
-            v-model="assignmentState.vehicleInfo.carModel"
+            v-model="assignment.vehicleInfo.carModel"
             :rules="[rules.required]"
             :is-required="true"
-            :label="'Car model*'"
+            :label="'Car model'"
           />
         </v-col>
 
@@ -50,7 +40,7 @@
         >
           <v-label class="text-caption label" text="Year of manufacture*"/>
           <VueDatePicker 
-            v-model="assignmentState.vehicleInfo.yearOfManufacture"
+            v-model="assignment.vehicleInfo.yearOfManufacture"
             :style="{ '--dp-input-padding': '15px 30px 15px 12px' }"
             :clearable="false"
             year-picker
@@ -59,41 +49,34 @@
             placeholder="Year of manufacture*"
           />
         </v-col>
-        <v-col
-          cols="12"
-          sm="8"
-        >
+        <v-col cols="12" sm="8">
           <CustomInput
-            v-model="assignmentState.vehicleInfo.odometerValue"
+            v-model="assignment.vehicleInfo.odometerValue"
             :rules="[rules.required, rules.odometerValue]"
             :is-required="true"
             :suffix="'km'"
-            :label="'Odometer value*'"
+            :label="'Odometer value'"
           />
         </v-col>
 
-        <v-col
-          cols="12"
-          sm="4"
-        >
+        <v-col cols="12" sm="4">
           <CustomInput
-            v-model="assignmentState.vehicleInfo.licensePlateNumber"
+            v-model="assignment.vehicleInfo.licensePlateNumber"
             :rules="[rules.required, rules.licensePlate]"
             :is-required="true"
-            :label="'License plate number*'"
+            :label="'License plate number'"
           />
         </v-col>
-        <v-col
-          cols="12"
-          sm="3"
-        >
+        <v-col cols="12" sm="3">
           <CustomAutocomplete 
-            v-model="assignmentState.vehicleInfo.licenseState"
+            v-model="assignment.vehicleInfo.licenseState"
             :rules="[rules.required]"
+            :is-required="true"
             :items="statesCodesLabels"
-            :label="'License state*'"
-            :error="!assignmentState.vehicleInfo.licenseState"
-            :error-messages="!assignmentState.vehicleInfo.licenseState ? ['Value is required'] : []"
+            :label="'License state'"
+            :error="!assignment.vehicleInfo.licenseState"
+            :error-messages="!assignment.vehicleInfo.licenseState ? 
+              ['Value is required'] : []"
           />
         </v-col>
         <v-col
@@ -103,7 +86,7 @@
         >
           <v-label class="text-caption label" text="License expiration date*"/>
           <VueDatePicker 
-            v-model="assignmentState.vehicleInfo.licenseExpirationDate"
+            v-model="assignment.vehicleInfo.licenseExpirationDate"
             :style="{ '--dp-input-padding': '15px 30px 15px 12px' }"
             :clearable="false"
             :min-date="new Date()"
@@ -133,7 +116,7 @@
   } from '@/helpers/assignmentModal';
 
 
-  const { assignmentState } = storeToRefs(useAssignmentStore());
+  const { assignment } = storeToRefs(useAssignmentStore());
 
   const emits = defineEmits(['validate-form']);
 

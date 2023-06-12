@@ -9,7 +9,7 @@
     </v-btn>
 
     <CreateAssignmentModal 
-      v-model="assignmentState.isOpen"
+      v-model="assignment.isOpen"
     />
 
     <router-link to="/login">Login page</router-link>
@@ -20,19 +20,20 @@
   import { storeToRefs } from 'pinia';
 
   import { useAssignmentStore } from '@/stores/assignment';
-  import CreateAssignmentModal from '@/components/AssignmentModal/CreateAssignmentModal.vue';
+  import CreateAssignmentModal 
+    from '@/components/AssignmentModal/CreateAssignmentModal.vue';
 
-  const { assignmentState } = storeToRefs(useAssignmentStore());
+  const { assignment } = storeToRefs(useAssignmentStore());
   const { 
     showAssignmentModal, 
-    setAssignmentStateData
+    setAssignmentData
   } = useAssignmentStore();
   
   const openModal = () => {
     const assignmentDataFromLS = localStorage.getItem('assignmentData');
 
     if (assignmentDataFromLS) {
-      setAssignmentStateData(JSON.parse(assignmentDataFromLS));
+      setAssignmentData(JSON.parse(assignmentDataFromLS));
     }
 
     showAssignmentModal();

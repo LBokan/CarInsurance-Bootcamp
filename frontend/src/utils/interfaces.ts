@@ -37,13 +37,13 @@ export interface ICredentials {
 
 // Assignment interface
 export interface IPhoneNumbers {
-  id: number,
+  id: string,
   type: string,
   number: string
 }
 
 export interface IAddresses {
-  id: number,
+  id: string,
   type: string,
   city: string,
   state: string | null,
@@ -51,8 +51,8 @@ export interface IAddresses {
   addressLine: string
 }
 
-export interface IContactsInfo {
-  id: number,
+export interface IContacts {
+  id: string,
   type: string,
   firstName: string,
   lastName: string,
@@ -77,11 +77,11 @@ interface IVehicleConditionInfo {
   photosOfImpact: File[]
 }
 
-export interface IAssignmentState {
+export interface IAssignment {
   isOpen: boolean,
   formModel: boolean | null,
   page: number,
-  contactsInfo: IContactsInfo[],
+  contacts: IContacts[],
   vehicleInfo: IVehicleInfo,
   vehicleConditionInfo: IVehicleConditionInfo
 }

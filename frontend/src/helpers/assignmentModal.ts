@@ -1,4 +1,4 @@
-import { type IAssignmentState } from '@/utils/interfaces';
+import { type IAssignment } from '@/utils/interfaces';
 
 type typeGetYearToday = () => number;
 
@@ -43,30 +43,30 @@ export const getYearToday: typeGetYearToday = () => {
   return new Date().getFullYear();
 }
 
-export const assignmentTemplateState: IAssignmentState = {
+export const assignmentTemplate: IAssignment = {
   isOpen: false,
   formModel: null,
   page: 1,
-  contactsInfo: [
+  contacts: [
     {
-      id: 0,
+      id: '0',
       type: 'Vehicle owner information',
       firstName: '',
       lastName: '',
       email: '',
       phoneNumbers: [{
-        id: 0,
+        id: '0',
         type: 'Mobile',
         number: ''
       }],
       addresses: [{
-        id: 0,
+        id: '0',
         type: 'Home',
         city: '',
         state: '',
         zip: '',
         addressLine: ''
-      }],
+      }]
     }
   ],
   vehicleInfo: {

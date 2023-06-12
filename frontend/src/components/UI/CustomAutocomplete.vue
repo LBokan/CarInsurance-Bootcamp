@@ -9,7 +9,7 @@
     :items="items"
     :chips="isChips"
     closable-chips
-    :label="label"
+    :label="newLabelName"
     :hint="hint"
     :error="error"
     :error-messages="errorMessages"
@@ -17,11 +17,12 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps } from 'vue';
+  import { defineProps, ref } from 'vue';
 
-  defineProps({
+  const props = defineProps({
     classes: String,
     color: String,
+    isRequired: Boolean,
     isMultiple: Boolean,
     isClearable: Boolean,
     items: {
@@ -43,4 +44,6 @@
       default: ''
     }
   });
+
+  const newLabelName = ref(props.isRequired ? `${props.label}*` : props.label);
 </script>

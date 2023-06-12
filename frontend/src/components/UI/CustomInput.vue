@@ -8,7 +8,7 @@
     :required="isRequired"
     :clearable="isClearable"
     :counter="counter"
-    :label="label"
+    :label="newLabelName"
     :suffix="suffix"
     :placeholder="placeholder"
     :hint="hint"
@@ -17,9 +17,9 @@
 
 
 <script setup lang="ts">
-  import { defineProps } from 'vue';
+  import { defineProps, ref } from 'vue';
 
-  defineProps({
+  const props = defineProps({
     classes: String,
     color: String,
     isRequired: Boolean,
@@ -38,4 +38,6 @@
       type: [ String, Number ]
     }
   });
+
+  const newLabelName = ref(props.isRequired ? `${props.label}*` : props.label);
 </script>
