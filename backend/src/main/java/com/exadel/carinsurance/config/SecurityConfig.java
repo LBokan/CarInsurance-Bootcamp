@@ -40,6 +40,7 @@ public class SecurityConfig {
         .authorizeRequests( request ->
             request
                 .antMatchers( "/api/auth/**" ).permitAll()
+                .antMatchers( "/api/user/**" ).hasRole( "CLIENT" )
                 .anyRequest().authenticated()
         )
         .sessionManagement()
