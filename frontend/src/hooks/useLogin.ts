@@ -3,6 +3,7 @@ import { authenticateUser } from '@/api/Authorization';
 import { useSnackbarStore } from '@/stores/snackbar';
 import { useUserStore } from '@/stores/user';
 import { type ICredentials, type IUserState } from '@/utils/interfaces';
+import { clearAllCookies } from '@/helpers/authorization';
 
 interface IResponse {
   user: IUserState,
@@ -24,6 +25,8 @@ export function useLogin() {
   const isSuccess = ref<boolean>(false);
 
   const login = async () => {
+    clearAllCookies();
+
     isLoading.value = true;
 
     try {

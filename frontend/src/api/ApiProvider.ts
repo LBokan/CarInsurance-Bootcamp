@@ -1,3 +1,4 @@
+import { getToken } from '@/helpers/authorization';
 import { 
   BASE_API_URL
 } from '@/helpers/authConstants';
@@ -16,12 +17,10 @@ export const createRequest = async (
     'Content-Type': 'application/json'
   };
   
-  const cookies = document.cookie;
-  const cookiesArr = cookies.split(";");
-  const token = cookiesArr.find(cookie => cookie.includes("token"));
+  const token = getToken();
 
   if (token) {
-    headers['Authorization'] = `Bearer ${token.replace("token=", "")}`;
+    headers['Authorization'] = `Bearer ${token}`;
   }
 
   const options = {
