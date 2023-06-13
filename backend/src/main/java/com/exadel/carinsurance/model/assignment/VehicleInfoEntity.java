@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Data
 @Builder
@@ -30,7 +31,7 @@ public class VehicleInfoEntity {
   private String carModel;
 
   @Column( name = "year_of_manufacture" )
-  private String yearOfManufacture;
+  private int yearOfManufacture;
 
   @Column( name = "odometer_value" )
   private String odometerValue;
@@ -42,7 +43,7 @@ public class VehicleInfoEntity {
   private String licenseState;
 
   @Column( name = "license_expiration_date" )
-  private String licenseExpirationDate;
+  private Date licenseExpirationDate;
 
   @Column( name = "assignment_id",
       nullable = false,

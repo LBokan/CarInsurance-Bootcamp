@@ -13,14 +13,20 @@ import com.exadel.carinsurance.model.request.PhoneNumberRequestEntity;
 import com.exadel.carinsurance.repository.*;
 import com.exadel.carinsurance.service.IAssignmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -56,7 +62,10 @@ public class AssignmentService implements IAssignmentService {
   }
 
   @Override
-  public ResponseEntity createAssignment( @RequestBody AssignmentRequestEntity request ) {
+  public ResponseEntity createAssignment(
+      @RequestPart( "assignment" ) AssignmentRequestEntity request,
+      @RequestPart( "photosOfImpact" ) List<MultipartFile> photosOfImpact
+  ) {
     //  Assignment creation
     UserEntity user = ( UserEntity ) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     LocalDateTime currentDateTimeAssignment = LocalDateTime.now();
@@ -79,6 +88,39 @@ public class AssignmentService implements IAssignmentService {
             );
 
     //  Vehicle condition info creation
+    String namesOfPhotosOfImpact = "";
+
+    try {
+      String directoryPath = String
+          .format(
+              "photosofimpact/userId=%s/assignmentId=%s",
+              user.getUserId(), assignmentEntityFromDB.getAssignmentId()
+          );
+      Path directory = Paths.get( directoryPath );
+
+      if ( !Files.exists( directory ) ) {
+        Files.createDirectories( directory );
+      }
+
+      for ( MultipartFile photo : photosOfImpact ) {
+        String filename = photo.getOriginalFilename();
+
+        if ( "".equals( namesOfPhotosOfImpact ) ) {
+          namesOfPhotosOfImpact = filename;
+        } else {
+          namesOfPhotosOfImpact = String.format( "%s;%s", namesOfPhotosOfImpact, filename );
+        }
+
+        Path filePath = directory.resolve( filename );
+        photo.transferTo( filePath );
+      }
+
+    } catch ( Exception ex ) {
+      return ResponseEntity
+          .status( HttpStatus.INTERNAL_SERVER_ERROR )
+          .body( "An error during photos saving" );
+    }
+
     DirectionOfImpactEntity directionOfImpactFromDB = directionsOfImpactRepository
         .findByName( request.getVehicleConditionInfo().getDirectionOfImpact() )
         .orElseThrow( () ->
@@ -89,7 +131,7 @@ public class AssignmentService implements IAssignmentService {
         VehicleConditionInfoEntity
             .builder()
             .directionOfImpact( directionOfImpactFromDB )
-            .namesOfPhotosOfImpact( "testPhotoName" )
+            .namesOfPhotosOfImpact( namesOfPhotosOfImpact )
             .assignment( assignmentEntityFromDB )
             .build();
     VehicleConditionInfoEntity mergedVehicleConditionInfo = entityManager.merge( vehicleConditionInfoEntity );
