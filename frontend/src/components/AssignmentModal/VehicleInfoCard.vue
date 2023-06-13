@@ -7,7 +7,7 @@
         </v-col>
 
         <v-col cols="12">
-          <CustomInput
+          <CustomTextInput
             v-model="assignment.vehicleInfo.vinNumber"
             :rules="[rules.required, rules.vinNumber]"
             :is-required="true"
@@ -17,7 +17,7 @@
         </v-col>
 
         <v-col cols="12" sm="6">
-          <CustomInput
+          <CustomTextInput
             v-model="assignment.vehicleInfo.carMake"
             :rules="[rules.required]"
             :is-required="true"
@@ -25,7 +25,7 @@
           />
         </v-col>
         <v-col cols="12" sm="6">
-          <CustomInput
+          <CustomTextInput
             v-model="assignment.vehicleInfo.carModel"
             :rules="[rules.required]"
             :is-required="true"
@@ -50,7 +50,7 @@
           />
         </v-col>
         <v-col cols="12" sm="8">
-          <CustomInput
+          <CustomTextInput
             v-model="assignment.vehicleInfo.odometerValue"
             :rules="[rules.required, rules.odometerValue]"
             :is-required="true"
@@ -60,7 +60,7 @@
         </v-col>
 
         <v-col cols="12" sm="5">
-          <CustomInput
+          <CustomTextInput
             v-model="assignment.vehicleInfo.licensePlateNumber"
             :rules="[rules.required, rules.licensePlate]"
             :is-required="true"
@@ -108,7 +108,7 @@
   import { useAssignmentStore } from '@/stores/assignment';
 
   import VueDatePicker from '@vuepic/vue-datepicker';
-  import CustomInput from '@/components/UI/CustomInput.vue';
+  import CustomTextInput from '@/components/UI/CustomTextInput.vue';
   import CustomAutocomplete from '@/components/UI/CustomAutocomplete.vue';
   import { 
     statesCodesLabels,

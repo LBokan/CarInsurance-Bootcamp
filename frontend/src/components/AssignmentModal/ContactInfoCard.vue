@@ -35,7 +35,7 @@
 
       <v-row>
         <v-col cols="12" sm="6">
-          <CustomInput
+          <CustomTextInput
             v-model="contactData.firstName"
             :rules="[rules.required]"
             :is-required="true"
@@ -43,7 +43,7 @@
           />
         </v-col>
         <v-col cols="12" sm="6">
-          <CustomInput
+          <CustomTextInput
             v-model="contactData.lastName"
             :rules="[rules.required]"
             :is-required="true"
@@ -54,7 +54,7 @@
 
       <v-row class="pb-5">
         <v-col cols="12">
-          <CustomInput
+          <CustomTextInput
             v-model="contactData.email"
             :rules="[rules.required, rules.email]"
             :is-required="true"
@@ -78,7 +78,7 @@
           />
         </v-col>
         <v-col cols="12" :sm="phoneData.id !== '0' ? 7 : 8">
-          <CustomInput
+          <CustomTextInput
             v-model="phoneData.number"
             :rules="[rules.required, rules.phoneNumber]"
             :is-required="true"
@@ -129,7 +129,7 @@
           />
         </v-col>
         <v-col cols="12" :sm="addressData.id !== '0' ? 5 : 6">
-          <CustomInput
+          <CustomTextInput
             v-model="addressData.city"
             :rules="[rules.required]"
             :is-required="true"
@@ -163,7 +163,7 @@
           />
         </v-col>
         <v-col cols="12" sm="8">
-          <CustomInput
+          <CustomTextInput
             v-model="addressData.addressLine"
             :rules="[rules.required]"
             :is-required="true"
@@ -171,7 +171,7 @@
           />
         </v-col>
         <v-col cols="12" sm="4">
-          <CustomInput
+          <CustomTextInput
             v-model="addressData.zip"
             :rules="[rules.required, rules.zipCode]"
             :is-required="true"
@@ -221,7 +221,7 @@
   import { useAssignmentStore } from '@/stores/assignment';
   import { useConfirmationStore } from '@/stores/confirmation';
 
-  import CustomInput from '@/components/UI/CustomInput.vue';
+  import CustomTextInput from '@/components/UI/CustomTextInput.vue';
   import CustomSelect from '@/components/UI/CustomSelect.vue';
   import CustomAutocomplete from '@/components/UI/CustomAutocomplete.vue';
 
