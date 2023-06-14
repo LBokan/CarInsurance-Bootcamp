@@ -19,7 +19,7 @@ public class AssignmentController {
   private IAssignmentService assignmentService;
 
   @PostMapping( "/user/assignment" )
-  public ResponseEntity signup(
+  public ResponseEntity createAssignment(
       @RequestPart( "assignment" ) AssignmentRequestEntity request,
       @RequestPart( "photosOfImpact" ) List<MultipartFile> photosOfImpact
   ) {
