@@ -47,7 +47,7 @@ export const assignmentTemplate: IAssignment = {
   isOpen: false,
   formModel: null,
   page: 1,
-  dateOfIncident: new Date(),
+  incidentDate: new Date(),
   contacts: [
     {
       id: '0',

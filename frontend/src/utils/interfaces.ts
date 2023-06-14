@@ -81,7 +81,7 @@ export interface IAssignment {
   isOpen: boolean,
   formModel: boolean | null,
   page: number,
-  dateOfIncident: Date,
+  incidentDate: Date,
   contacts: IContacts[],
   vehicleInfo: IVehicleInfo,
   vehicleConditionInfo: IVehicleConditionInfo

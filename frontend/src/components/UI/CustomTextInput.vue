@@ -8,7 +8,7 @@
     :required="isRequired"
     :clearable="isClearable"
     :counter="counter"
-    :label="newLabelName"
+    :label="labelToDisplay"
     :suffix="suffix"
     :placeholder="placeholder"
     :hint="hint"
@@ -39,5 +39,5 @@
     }
   });
 
-  const newLabelName = ref(props.isRequired ? `${props.label}*` : props.label);
+  const labelToDisplay = ref(props.isRequired ? `${props.label}*` : props.label);
 </script>

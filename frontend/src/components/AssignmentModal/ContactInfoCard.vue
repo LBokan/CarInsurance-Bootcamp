@@ -6,7 +6,7 @@
     >
       <v-row v-if="contactData.id == '0'">
         <v-col cols="12">
-          <p class="text-subtitle-1">{{ contactData.type }}</p>
+          <h2 class="text-subtitle-1">{{ contactData.type }}</h2>
         </v-col>
       </v-row>
       <v-row v-else>
@@ -214,10 +214,10 @@
 </template>
 
 <script setup lang="ts">
-  import { defineEmits, reactive, computed, onMounted } from 'vue';
+  import { defineEmits, computed, onMounted } from 'vue';
   import { storeToRefs } from 'pinia';
 
-  import { type IFormRules } from '@/utils/interfaces';
+  import { rules } from '@/utils/rulesRegex';
   import { useAssignmentStore } from '@/stores/assignment';
   import { useConfirmationStore } from '@/stores/confirmation';
 
@@ -248,17 +248,23 @@
     emits('validate-form');
   })
 
-  const getAvailableContactTypes = computed(
-    () => contactTypesLabels
-      .filter(contactType => !assignment.value.contacts.some(
-        contact => contact.type?.includes(contactType) && 
-        (contact.type.toLowerCase().includes('owner') ||
-        contact.type.toLowerCase().includes('driver') ||
-        contact.type.toLowerCase().includes('estimator'))
-      ))
-  )
+  const getAvailableContactTypes = computed(() => {
+    const excludedTypes = ['owner', 'driver', 'estimator'];
+    
+    return contactTypesLabels.filter(contactType => {
+      const hasExcludedType = excludedTypes.some(excludedType =>
+        contactType.toLowerCase().includes(excludedType)
+      );
 
-  const setAssignmentDataPropName = (infoType: string) => {
+      const hasContactWithExcludedType = assignment.value.contacts.some(contact =>
+        contact.type?.includes(contactType) && hasExcludedType
+      );
+
+      return !hasContactWithExcludedType;
+    });
+  })
+
+  const getAssignmentDataPropName = (infoType: string) => {
     const infoTypeInLowerCase = infoType.toLowerCase();
 
     if (infoTypeInLowerCase.includes('phone')) {
@@ -271,19 +277,14 @@
   }
 
   const getContactIndex = (contactId: string) => {
-    return assignment
-      .value
-      .contacts
-      .findIndex(contact => contact.id == contactId);
+    return assignment.value.contacts.findIndex(contact => contact.id == contactId);
   }
 
   const isStateValue = (contactId: string, addressId: string) => {
     const contactIndex = getContactIndex(contactId);
-    const addressIndex = assignment
-      .value
-      .contacts[contactIndex]
-      .addresses
-      .findIndex(address => address.id == addressId);
+    const addressIndex = assignment.value.contacts[contactIndex].addresses.findIndex(address => 
+      address.id == addressId
+    );
 
     return !!assignment.value.contacts[contactIndex]
               .addresses[addressIndex]?.state;
@@ -316,7 +317,7 @@
 
   const addInfo = (contactId: string, infoType: string) => {
     const contactIndex = getContactIndex(contactId);
-    const assignmentDataPropName = setAssignmentDataPropName(infoType);
+    const assignmentDataPropName = getAssignmentDataPropName(infoType);
 
     if (contactIndex !== -1 && assignmentDataPropName) {
       switch(assignmentDataPropName) {
@@ -361,51 +362,31 @@
 
     switch(infoType) {
       case 'phoneNumber':
-        setConfirmationDataAndShow(
-          "Phone number deletion", 
-          "Do you really want to remove this phone number?", 
-          removePhoneNumberData,
-          [contactIndex, infoId]
-        );
+        setConfirmationDataAndShow({
+          title: "Phone number deletion",
+          content: "Do you really want to remove this phone number?",
+          onConfirmAction: removePhoneNumberData,
+          args: [contactIndex, infoId]
+        });
         break;
 
       case 'address':
-        setConfirmationDataAndShow(
-          "Address deletion", 
-          "Do you really want to remove this address?", 
-          removeAddressData,
-          [contactIndex, infoId]
-        );
+        setConfirmationDataAndShow({
+          title: "Address deletion",
+          content: "Do you really want to remove this address?",
+          onConfirmAction: removeAddressData,
+          args: [contactIndex, infoId]
+        });
         break;
       
       case 'contact':
-        setConfirmationDataAndShow(
-          "Contact deletion", 
-          "Do you really want to remove this contact?", 
-          removeContactData,
-          [contactIndex]
-        );
+        setConfirmationDataAndShow({
+          title: "Contact deletion",
+          content: "Do you really want to remove this contact?",
+          onConfirmAction: removeContactData,
+          args: [contactIndex]
+        });
         break;
     }
   }
-
-  const rules: IFormRules = reactive({
-    required: (value) => value ? true : 'Value is required',
-    email: (value) => /.+@.+\..+/.test(value) ? 
-      true : 
-      'Value is not a valid email address',
-    phoneNumber: (value) => 
-      /^[+(]?\d{0,2}[)-\s.]?\d{3}[-\s.]?\d{3}[-\s.]?\d{3,4}$/.test(value) ? 
-      true : 
-      'Value is not a valid phone number',
-    zipCode: (value) => /^\d{5}[-\s.]?(\d{4})?$/.test(value) ? 
-      true : 
-      'Value is not a valid zip code',
-  });
 </script>
-
-<style scoped>
-  .close-btn {
-    transform: translateY(50%);
-  }
-</style>

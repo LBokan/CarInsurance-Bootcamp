@@ -9,7 +9,7 @@
     :items="items"
     :chips="isChips"
     closable-chips
-    :label="newLabelName"
+    :label="labelToDisplay"
     :hint="hint"
     :error="error"
     :error-messages="errorMessages"
@@ -45,5 +45,5 @@
     }
   });
 
-  const newLabelName = ref(props.isRequired ? `${props.label}*` : props.label);
+  const labelToDisplay = ref(props.isRequired ? `${props.label}*` : props.label);
 </script>

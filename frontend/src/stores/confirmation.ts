@@ -2,41 +2,48 @@ import { reactive } from 'vue';
 import { defineStore } from 'pinia';
 
 type TypeArgsForFunc = any[];
-type TypeActionOnYesBtnChosenFunc = (...args: TypeArgsForFunc) => void;
+type TypeOnConfirmActionFunc = (...args: TypeArgsForFunc) => void;
 
 interface IConfirmationState {
   isOpen: boolean,
   title: string,
   content: string,
-  actionOnYesBtnChosen: TypeActionOnYesBtnChosenFunc,
-  argsForFunc: TypeArgsForFunc
+  onConfirmAction: TypeOnConfirmActionFunc,
+  args: TypeArgsForFunc
 };
+
+interface ISetConfirmationDataAndShowArgs {
+  title: string, 
+  content?: string,
+  onConfirmAction: TypeOnConfirmActionFunc,
+  args?: TypeArgsForFunc
+}
 
 export const useConfirmationStore = defineStore('confirmation', () => {
   const confirmationState: IConfirmationState = reactive({
     isOpen: false,
     title: '',
     content: '',
-    actionOnYesBtnChosen: () => {},
-    argsForFunc: []
+    onConfirmAction: () => {},
+    args: []
   });
 
-  function setConfirmationDataAndShow( 
-    title: string, 
-    content: string = '',
-    actionOnYesBtnChosen: TypeActionOnYesBtnChosenFunc,
-    argsForFunc: TypeArgsForFunc = []
-  ) {
+  function setConfirmationDataAndShow({
+    title, 
+    content = '',
+    onConfirmAction,
+    args = []
+  }: ISetConfirmationDataAndShowArgs) {
     confirmationState.title = title;
     confirmationState.content = content;
-    confirmationState.actionOnYesBtnChosen = actionOnYesBtnChosen;
-    confirmationState.argsForFunc = argsForFunc;
+    confirmationState.onConfirmAction = onConfirmAction;
+    confirmationState.args = args;
 
     confirmationState.isOpen = true;
   }
 
   function onYesBtnClick() {
-    confirmationState.actionOnYesBtnChosen(...confirmationState.argsForFunc);
+    confirmationState.onConfirmAction(...confirmationState.args);
 
     closeAndResetOnNoBtnClick();
   }
@@ -45,6 +52,8 @@ export const useConfirmationStore = defineStore('confirmation', () => {
     confirmationState.isOpen = false;
     confirmationState.title = '';
     confirmationState.content = '';
+    confirmationState.onConfirmAction = () => {};
+    confirmationState.args = [];
   }
 
   return { 

@@ -1,0 +1,39 @@
+/* vue-datepicker styles */
+.dp__theme_light {
+  --dp-border-color: #959595;
+  --dp-border-color-hover: #000;
+}
+
+/* General styles */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+}
+
+.page-info-chip {
+  position: absolute;
+  top: 50%;
+  right: 10%;
+  transform: translateY(-50%);
+}
+
+.label-wrapper {
+  position: relative;
+}
+
+.label-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 9;
+  padding: 0 5px;
+  color: #959595;
+  background-color: #fff;
+  opacity: 1;
+  transform: translate(18%, 10%);
+}
+
+.close-btn {
+  transform: translateY(50%);
+}

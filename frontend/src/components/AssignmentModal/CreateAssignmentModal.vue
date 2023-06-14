@@ -7,7 +7,7 @@
     <v-card>
       <v-form v-model="assignment.formModel" ref="formRef">
         <v-card-title class="position-relative">
-          <p class="text-h5">Assignment creation</p>
+          <h1 class="text-h5">Assignment creation</h1>
           
           <div class="page-info-chip">
             <v-btn
@@ -15,7 +15,7 @@
               color="blue"
               density="compact"
               icon="mdi-arrow-left"
-              @click="setPrevPage"
+              @click="goToPrevPage"
             />
             <v-chip class="mx-2" color="blue">
               Page: {{ assignment.page }} / 3
@@ -25,7 +25,7 @@
               color="blue"
               density="compact"
               icon="mdi-arrow-right"
-              @click="setNextPage"
+              @click="goToNextPage"
             />
           </div>
         </v-card-title>
@@ -37,11 +37,11 @@
           @validate-form="validateAssignment" 
         />
         <VehicleInfoCard 
-          v-else-if="assignment.page == 2" 
+          v-if="assignment.page == 2" 
           @validate-form="validateAssignment" 
         />
         <VehicleConditionInfoCard 
-          v-else-if="assignment.page == 3" 
+          v-if="assignment.page == 3" 
           @validate-form="validateAssignment" 
         />
 
@@ -77,7 +77,7 @@
             rounded="lg"
             variant="elevated"
             :disabled="!assignment.formModel"
-            @click="createAssignment"
+            @click="submit"
           >
             Create
           </v-btn>
@@ -104,17 +104,14 @@
   import { useConfirmationStore } from '@/stores/confirmation';
   import { useSnackbarStore } from '@/stores/snackbar';
 
-  import ContactInfoCard 
-    from '@/components/AssignmentModal/ContactInfoCard.vue';
-  import VehicleInfoCard 
-    from '@/components/AssignmentModal/VehicleInfoCard.vue';
-  import VehicleConditionInfoCard 
-    from '@/components/AssignmentModal/VehicleConditionInfoCard.vue';
+  import ContactInfoCard from '@/components/AssignmentModal/ContactInfoCard.vue';
+  import VehicleInfoCard from '@/components/AssignmentModal/VehicleInfoCard.vue';
+  import VehicleConditionInfoCard from '@/components/AssignmentModal/VehicleConditionInfoCard.vue';
 
   const { assignment } = storeToRefs(useAssignmentStore());
   const { 
-    setNextPage, 
-    setPrevPage, 
+    goToNextPage, 
+    goToPrevPage, 
     closeAndResetAssignmentModal 
   } = useAssignmentStore();
   const { setConfirmationDataAndShow } = useConfirmationStore();
@@ -134,11 +131,11 @@
   };
 
   const continueCreateAssignment = () => {
-    setNextPage();
+    goToNextPage();
   };
 
-  const createAssignment = () => {
-    alert('Assignment created');
+  const submit = () => {
+    // Logic for submit
   };
 
   const resetAssignment = () => {
@@ -151,20 +148,11 @@
   };
 
   const closeAssignment = () => {
-    setConfirmationDataAndShow(
-      "Assignment creation cancellation", 
-      "Do you really want to cancel the creation of the assignment? " +
-      "All your entered data will be lost", 
-      resetAssignment
-    );
+    setConfirmationDataAndShow({
+      title: "Assignment creation cancellation",
+      content: "Do you really want to cancel the creation of the assignment? " +
+        "All your entered data will be lost",
+      onConfirmAction: resetAssignment
+    });
   };
 </script>
-
-<style scoped>
-  .page-info-chip {
-    position: absolute;
-    top: 50%;
-    right: 10%;
-    transform: translateY(-50%);
-  }
-</style>

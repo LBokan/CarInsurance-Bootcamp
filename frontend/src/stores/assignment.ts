@@ -12,9 +12,7 @@ import {
 type TypeAssignmentKeys = keyof IAssignment;
 
 export const useAssignmentStore = defineStore('assignment', () => {
-  const assignment: IAssignment = reactive(
-    JSON.parse(JSON.stringify(assignmentTemplate))
-  );
+  const assignment: IAssignment = reactive(structuredClone(assignmentTemplate));
 
   function showAssignmentModal() {
     assignment.isOpen = true;
@@ -28,13 +26,13 @@ export const useAssignmentStore = defineStore('assignment', () => {
     })
   }
 
-  function setNextPage() {
+  function goToNextPage() {
     if (assignment.page < 3) {
       assignment.page = assignment.page + 1;
     }
   }
 
-  function setPrevPage() {
+  function goToPrevPage() {
     if (assignment.page > 1) {
       assignment.page = assignment.page - 1;
     }
@@ -81,9 +79,7 @@ export const useAssignmentStore = defineStore('assignment', () => {
     Object.keys(assignmentTemplate).forEach((key) => {
       const typedKey = key as K;
 
-      assignment[typedKey] = JSON.parse(
-        JSON.stringify(assignmentTemplate[typedKey])
-      );
+      assignment[typedKey] = structuredClone(assignmentTemplate[typedKey]);
     });
   }
 
@@ -91,8 +87,8 @@ export const useAssignmentStore = defineStore('assignment', () => {
     assignment,
     showAssignmentModal,
     setAssignmentData,
-    setNextPage,
-    setPrevPage,
+    goToNextPage,
+    goToPrevPage,
     addContactData,
     addContactInfoData,
     removeContactData,

@@ -13,11 +13,3 @@
   import NotificationBar from '@/components/NotificationBar.vue';
   import ConfirmationModal from '@/components/ConfirmationModal.vue';
 </script>
-
-<style>
-  .app {
-    display: flex;
-    flex-direction: column;
-    height: 100dvh;
-  }
-</style>

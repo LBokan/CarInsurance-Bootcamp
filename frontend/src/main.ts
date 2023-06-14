@@ -6,6 +6,7 @@ import router from '@/router/router';
 import vuetify from '@/plugins/vuetify';
 
 import '@vuepic/vue-datepicker/dist/main.css';
+import '@/mail.css';
 
 const pinia = createPinia();
 const app = createApp(App);

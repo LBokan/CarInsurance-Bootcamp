@@ -51,8 +51,10 @@
 </template>
 
 <script setup lang="ts">
-  import { reactive, ref, computed } from 'vue';
+  import { ref, computed } from 'vue';
   import { useRouter } from 'vue-router';
+
+  import { rules } from '@/utils/rulesRegex';
   import { useLogin } from '@/hooks/useLogin';
 
   const router = useRouter();
@@ -68,22 +70,6 @@
 
   const isFormFilled = ref<boolean>(true);
   const isPasswordShown = ref<boolean>(false);
-
-  type TypeValidateFunc = (value: string) => boolean | string;
-
-  interface ILoginRules {
-    [n: string]: TypeValidateFunc
-  };
-
-  const rules: ILoginRules = reactive({
-    required: (value) => value ? true : 'Value is required',
-    email: (value) => /.+@.+\..+/.test(value) ? 
-      true : 
-      'Value is not a valid email address',
-    password: (value) => (value && value.length >= 8) ? 
-      true : 
-      'This field should be at least 8 characters long'
-  });
 
   const isBadCredentialsError = computed<string | undefined>(() => {
     return isError.value && errorData.value.includes("credentials") ? 'error' : undefined;

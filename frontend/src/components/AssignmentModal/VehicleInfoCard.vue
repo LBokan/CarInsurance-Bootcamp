@@ -3,7 +3,7 @@
     <v-container>
       <v-row>
         <v-col cols="12">
-          <p class="text-subtitle-1">Vehicle information</p>
+          <h2 class="text-subtitle-1">Vehicle information</h2>
         </v-col>
 
         <v-col cols="12">
@@ -38,7 +38,7 @@
           cols="12"
           sm="4"
         >
-          <v-label class="text-caption label" text="Year of manufacture*"/>
+          <v-label class="text-caption label-item" text="Year of manufacture*"/>
           <VueDatePicker 
             v-model="assignment.vehicleInfo.yearOfManufacture"
             :style="{ '--dp-input-padding': '15px 30px 15px 12px' }"
@@ -84,7 +84,7 @@
           cols="12"
           sm="4"
         >
-          <v-label class="text-caption label" text="License expiration date*"/>
+          <v-label class="text-caption label-item" text="License expiration date*"/>
           <VueDatePicker 
             v-model="assignment.vehicleInfo.licenseExpirationDate"
             :style="{ '--dp-input-padding': '15px 30px 15px 12px' }"
@@ -101,10 +101,10 @@
 </template>
 
 <script setup lang="ts">
-  import { defineEmits, reactive, ref, onMounted } from 'vue';
+  import { defineEmits, ref, onMounted } from 'vue';
   import { storeToRefs } from 'pinia';
 
-  import { type IFormRules } from '@/utils/interfaces';
+  import { rules } from '@/utils/rulesRegex';
   import { useAssignmentStore } from '@/stores/assignment';
 
   import VueDatePicker from '@vuepic/vue-datepicker';
@@ -115,7 +115,6 @@
     getYearToday
   } from '@/helpers/assignmentModal';
 
-
   const { assignment } = storeToRefs(useAssignmentStore());
 
   const emits = defineEmits(['validate-form']);
@@ -125,39 +124,4 @@
   onMounted(() => {
     emits('validate-form');
   })
-
-  const rules: IFormRules = reactive({
-    required: (value) => value ? true : 'Value is required',
-    vinNumber: (value) => /^[\dA-Za-z]{17}$/.test(value) ? 
-      true : 
-      'Value is not a valid VIN number',
-    odometerValue: (value) => /^\d*$/.test(value) && +value > 0 ? 
-      true : 
-      'Value is not a valid odometer value',
-    licensePlate: (value) => /^[\dA-Za-z]{7,8}$/.test(value) ? 
-      true : 
-      'Value is not a valid license plate value',
-  });
 </script>
-
-<style scoped>
-  .dp__theme_light {
-    --dp-border-color: #959595;
-    --dp-border-color-hover: #000;
-  }
-
-  .label-wrapper {
-    position: relative;
-  }
-
-  .label {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 9;
-    padding: 0 5px;
-    background-color: #fff;
-    opacity: 1;
-    transform: translate(18%, 10%);
-  }
-</style>
