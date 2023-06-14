@@ -186,6 +186,7 @@ public class AssignmentService implements IAssignmentService {
     }
 
     return ResponseEntity
-        .ok( "An assignments is successfully created" );
+        .ok()
+        .body( assignmentEntityFromDB.getAssignmentId() );
   }
 }
