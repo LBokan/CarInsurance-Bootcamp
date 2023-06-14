@@ -249,7 +249,7 @@
   })
 
   const getAvailableContactTypes = computed(() => {
-    const excludedTypes = ['owner', 'driver', 'estimator'];
+    const excludedTypes = ['owner', 'driver'];
     
     return contactTypesLabels.filter(contactType => {
       const hasExcludedType = excludedTypes.some(excludedType =>

@@ -76,6 +76,7 @@
             color="success"
             rounded="lg"
             variant="elevated"
+            :loading="isLoading"
             :disabled="!assignment.formModel"
             @click="submit"
           >
@@ -103,6 +104,7 @@
   import { useAssignmentStore } from '@/stores/assignment';
   import { useConfirmationStore } from '@/stores/confirmation';
   import { useSnackbarStore } from '@/stores/snackbar';
+  import { useCreateAssignment } from '@/hooks/useCreateAssignment';
 
   import ContactInfoCard from '@/components/AssignmentModal/ContactInfoCard.vue';
   import VehicleInfoCard from '@/components/AssignmentModal/VehicleInfoCard.vue';
@@ -117,6 +119,12 @@
   const { setConfirmationDataAndShow } = useConfirmationStore();
   const { setSnackbarDataAndShow } = useSnackbarStore();
 
+  const { 
+    createAssignment,
+    isLoading,
+    isSuccess
+  } = useCreateAssignment();
+
   const formRef: VNodeRef = ref(null);
 
   const validateAssignment = () => {
@@ -126,7 +134,13 @@
   }
 
   const saveProgress = () => {
-    localStorage.setItem('assignmentData', JSON.stringify(assignment.value));
+    localStorage.setItem('assignmentData', JSON.stringify({
+      ...assignment.value,
+      vehicleConditionInfo: {
+        directionOfImpact: assignment.value.vehicleConditionInfo.directionOfImpact,
+        photosOfImpact: []
+      }
+    }));
     setSnackbarDataAndShow('Your data is successfully saved', 'success');
   };
 
@@ -134,8 +148,13 @@
     goToNextPage();
   };
 
-  const submit = () => {
-    // Logic for submit
+  const submit = async () => {
+    await createAssignment();
+
+    if (!isLoading.value && isSuccess.value) {
+      resetAssignment();
+      setSnackbarDataAndShow("An assignments is successfully created", 'success');
+    }
   };
 
   const resetAssignment = () => {

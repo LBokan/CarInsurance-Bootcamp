@@ -5,6 +5,12 @@ export interface IFormRules {
   [n: string]: TypeValidateFunc
 };
 
+type TypeValidateFilesFunc = (value: File[]) => boolean | string;
+
+export interface IFormFilesRules {
+  [n: string]: TypeValidateFilesFunc
+};
+
 // User interface
 interface IAuthoritiesObj {
   authority: string
@@ -69,7 +75,7 @@ interface IVehicleInfo {
   odometerValue: string,
   licensePlateNumber: string,
   licenseState: string,
-  licenseExpirationDate: Date
+  licenseExpirationDate: Date | string
 }
 
 interface IVehicleConditionInfo {
@@ -85,4 +91,16 @@ export interface IAssignment {
   contacts: IContacts[],
   vehicleInfo: IVehicleInfo,
   vehicleConditionInfo: IVehicleConditionInfo
+}
+
+// Assignment API interface
+export interface IAssignmentInfoDataAPI {
+  [key: string]: string | IAssignmentInfoDataAPI[]
+}
+
+export interface IAssignmentAPI {
+  dateOfIncident: string,
+  contactsInfo: IAssignmentInfoDataAPI[],
+  vehicleInfo: IVehicleInfo,
+  vehicleConditionInfo: IAssignmentInfoDataAPI
 }
