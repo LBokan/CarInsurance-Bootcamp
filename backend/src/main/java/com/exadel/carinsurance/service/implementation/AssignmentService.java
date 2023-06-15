@@ -10,17 +10,21 @@ import com.exadel.carinsurance.model.request.AddressRequestEntity;
 import com.exadel.carinsurance.model.request.AssignmentRequestEntity;
 import com.exadel.carinsurance.model.request.ContactInfoRequestEntity;
 import com.exadel.carinsurance.model.request.PhoneNumberRequestEntity;
+import com.exadel.carinsurance.model.response.PhotosResponseEntity;
 import com.exadel.carinsurance.repository.*;
 import com.exadel.carinsurance.service.IAssignmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -33,6 +37,7 @@ public class AssignmentService implements IAssignmentService {
   private final IContactInfoRepository contactInfoRepository;
   private final IPhoneNumberRepository phoneNumberRepository;
   private final IAddressRepository addressRepository;
+  private final PhotosService photosService;
 
   @Autowired
   public AssignmentService(
@@ -43,8 +48,7 @@ public class AssignmentService implements IAssignmentService {
       IVehicleInfoRepository vehicleInfoRepository,
       IContactInfoRepository contactInfoRepository,
       IPhoneNumberRepository phoneNumberRepository,
-      IAddressRepository addressRepository
-  ) {
+      IAddressRepository addressRepository, PhotosService photosService ) {
     this.entityManager = entityManager;
     this.assignmentRepository = assignmentRepository;
     this.directionsOfImpactRepository = directionsOfImpactRepository;
@@ -53,10 +57,14 @@ public class AssignmentService implements IAssignmentService {
     this.contactInfoRepository = contactInfoRepository;
     this.phoneNumberRepository = phoneNumberRepository;
     this.addressRepository = addressRepository;
+    this.photosService = photosService;
   }
 
   @Override
-  public ResponseEntity createAssignment( @RequestBody AssignmentRequestEntity request ) {
+  public ResponseEntity createAssignment(
+      @RequestPart( "assignment" ) AssignmentRequestEntity request,
+      @RequestPart( "photosOfImpact" ) List<MultipartFile> photosOfImpact
+  ) {
     //  Assignment creation
     UserEntity user = ( UserEntity ) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     LocalDateTime currentDateTimeAssignment = LocalDateTime.now();
@@ -79,6 +87,18 @@ public class AssignmentService implements IAssignmentService {
             );
 
     //  Vehicle condition info creation
+    PhotosResponseEntity photosResponseEntity = photosService.savePhotos(
+        user.getUserId(),
+        assignmentEntityFromDB.getAssignmentId(),
+        photosOfImpact
+    );
+
+    if ( photosResponseEntity.getIsError() ) {
+      return ResponseEntity
+          .status( HttpStatus.INTERNAL_SERVER_ERROR )
+          .body( photosResponseEntity.getErrorMessage() );
+    }
+
     DirectionOfImpactEntity directionOfImpactFromDB = directionsOfImpactRepository
         .findByName( request.getVehicleConditionInfo().getDirectionOfImpact() )
         .orElseThrow( () ->
@@ -89,7 +109,7 @@ public class AssignmentService implements IAssignmentService {
         VehicleConditionInfoEntity
             .builder()
             .directionOfImpact( directionOfImpactFromDB )
-            .namesOfPhotosOfImpact( "testPhotoName" )
+            .namesOfPhotosOfImpact( photosResponseEntity.getNamesOfPhotosOfImpact() )
             .assignment( assignmentEntityFromDB )
             .build();
     VehicleConditionInfoEntity mergedVehicleConditionInfo = entityManager.merge( vehicleConditionInfoEntity );
@@ -144,6 +164,7 @@ public class AssignmentService implements IAssignmentService {
     }
 
     return ResponseEntity
-        .ok( "An assignments is successfully created" );
+        .ok()
+        .body( assignmentEntityFromDB.getAssignmentId() );
   }
 }

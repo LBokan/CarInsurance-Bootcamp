@@ -11,6 +11,7 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -43,7 +44,7 @@ public class AssignmentEntity {
   private LocalDateTime dateOfCreation;
 
   @Column( name = "date_of_incident" )
-  private String dateOfIncident;
+  private Date dateOfIncident;
 
   @OneToMany( fetch = FetchType.EAGER,
       mappedBy = "assignment",
@@ -65,7 +66,7 @@ public class AssignmentEntity {
   private VehicleConditionInfoEntity vehicleConditionInfo;
 
   public AssignmentEntity(
-      String dateOfIncident,
+      Date dateOfIncident,
       List<ContactInfoEntity> contactsInfo,
       VehicleInfoEntity vehicleInfo,
       VehicleConditionInfoEntity vehicleConditionInfo

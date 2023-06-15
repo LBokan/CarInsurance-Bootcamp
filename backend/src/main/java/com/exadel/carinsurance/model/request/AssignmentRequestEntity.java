@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -12,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AssignmentRequestEntity {
-  private String dateOfIncident;
+  private Date dateOfIncident;
   private List<ContactInfoRequestEntity> contactsInfo;
   private VehicleInfoRequestEntity vehicleInfo;
   private VehicleConditionInfoRequestEntity vehicleConditionInfo;

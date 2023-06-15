@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -13,9 +15,9 @@ public class VehicleInfoRequestEntity {
   private String vinNumber;
   private String carMake;
   private String carModel;
-  private String yearOfManufacture;
+  private int yearOfManufacture;
   private String odometerValue;
   private String licensePlateNumber;
   private String licenseState;
-  private String licenseExpirationDate;
+  private Date licenseExpirationDate;
 }
