@@ -20,6 +20,6 @@
     "module": "ESNext",
     "strict": true,
     "moduleResolution": "node",
-    "types": ["vuetify", "node"]
+    "types": ["vuetify", "node", "jsdom", "vitest"]
   }
 }
