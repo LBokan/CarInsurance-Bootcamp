@@ -8,10 +8,11 @@ export default mergeConfig(
   defineConfig({
     test: {
       environment: 'jsdom',
+      globals: true,
       exclude: [...configDefaults.exclude, 'e2e/*'],
       root: fileURLToPath(new URL('./', import.meta.url)),
       transformMode: {
-        web: [/\.[jt]sx$/]
+        web: [/\.[jt]sx?$/]
       },
       deps: {
         inline: ["vuetify"]
