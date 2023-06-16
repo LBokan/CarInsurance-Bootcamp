@@ -87,39 +87,30 @@ export const useAssignmentStore = defineStore('assignment', () => {
   }
 
   function getAssignmentDataAPI(): IAssignmentAPI {
-    const formattedContacts: IAssignmentInfoDataAPI[] = [];
+    const formattedContacts: IAssignmentInfoDataAPI[] = assignment.contacts.map(contact => {
+      const formattedPhoneNumbers: IAssignmentInfoDataAPI[] = contact.phoneNumbers.map(phoneNumber => ({
+        type: phoneNumber.type,
+        number: phoneNumber.number
+      }));
 
-    assignment.contacts.forEach(contact => {
-      const formattedPhoneNumbers: IAssignmentInfoDataAPI[] = [];
-      const formattedAddresses: IAssignmentInfoDataAPI[] = [];
+      const formattedAddresses: IAssignmentInfoDataAPI[] = contact.addresses.map(address => ({
+        type: address.type,
+        city: address.city,
+        state: address.city,
+        zip: address.zip,
+        addressLine: address.addressLine
+      }));
 
-      contact.phoneNumbers.forEach(phoneNumber => {
-        formattedPhoneNumbers.push({
-          type: phoneNumber.type,
-          number: phoneNumber.number
-        })
-      })
-
-      contact.addresses.forEach(address => {
-        formattedAddresses.push({
-          type: address.type,
-          city: address.city,
-          state: address.city,
-          zip: address.zip,
-          addressLine: address.addressLine
-        })
-      })
-
-      formattedContacts.push({
+      return {
         type: contact.type,
         firstName: contact.firstName,
         lastName: contact.lastName,
         email: contact.email,
         phoneNumbers: formattedPhoneNumbers,
         addresses: formattedAddresses
-      });
-    })
-
+      };
+    });
+    
     return {
       dateOfIncident: format(new Date(assignment.incidentDate), 'yyyy-MM-dd'),
       contactsInfo: formattedContacts,
@@ -127,7 +118,7 @@ export const useAssignmentStore = defineStore('assignment', () => {
         vinNumber: assignment.vehicleInfo.vinNumber,
         carMake: assignment.vehicleInfo.carMake,
         carModel: assignment.vehicleInfo.carModel,
-        yearOfManufacture: +format(new Date(assignment.vehicleInfo.yearOfManufacture), 'yyyy'),
+        yearOfManufacture: assignment.vehicleInfo.yearOfManufacture,
         odometerValue: assignment.vehicleInfo.odometerValue,
         licensePlateNumber: assignment.vehicleInfo.licensePlateNumber,
         licenseState: assignment.vehicleInfo.licenseState,

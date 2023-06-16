@@ -6,6 +6,6 @@ export const createAssignmentApi = async (data: FormData) => {
     endpoint: 'api/user/assignment',
     method: HTTP_METHODS.post,
     isMultipartHeaders: true,
-    data: data
+    data
   });
 };

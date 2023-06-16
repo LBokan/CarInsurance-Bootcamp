@@ -24,11 +24,11 @@ export const rules: IFormRules = reactive({
     'Value is not a valid license plate value',
   vinNumber: (value) => /^[\dA-Za-z]{17}$/.test(value) ? 
     true : 
-    'Value is not a valid VIN number'
+    'Invalid VIN code'
 });
 
 export const rulesFiles: IFormFilesRules = reactive({
-  photoSizeMax: (value) => !value || !value.length || value[0]?.size < 10000000 ? 
+  photoSizeMax: (value) => !value || !value.length || value[0]?.size < 10485760 ? 
     true :
     'A photo should be less than 10 MB'
 });
