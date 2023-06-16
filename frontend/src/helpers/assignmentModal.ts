@@ -4,7 +4,6 @@ type typeGetYearToday = () => number;
 
 export const contactTypesLabels = [
   'Vehicle owner information',
-  'Estimator information',
   'Police information',
   'Vehicle driver information',
   'Attorney information',

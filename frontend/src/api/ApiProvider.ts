@@ -7,27 +7,44 @@ interface IHeaders {
   [n: string]: string
 };
 
-export const createRequest = async (
-    endpoint: string, 
-    method: string, 
-    data: object | null = null
-  ) => {
+interface ICreateRequestArgs {
+  endpoint: string,
+  method: string,
+  isMultipartHeaders?: boolean,
+  data: string | FormData | null
+};
+
+interface IOptions {
+  method: string,
+  headers: IHeaders,
+  body: string | FormData | null,
+  credentials: RequestCredentials
+};
+
+export const createRequest = async ({
+  endpoint, 
+  method,
+  isMultipartHeaders = false,
+  data = null
+}: ICreateRequestArgs) => {
   const url = `${BASE_API_URL}/${endpoint}`;
-  const headers: IHeaders = {
-    'Content-Type': 'application/json'
-  };
-  
+  const headers: IHeaders = {};
+
   const token = getToken();
 
+  if (!isMultipartHeaders) {
+    headers['Content-Type'] = 'application/json';
+  }
+  
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const options = {
+  const options: IOptions = {
     method,
     headers,
-    body: data ? JSON.stringify(data) : null,
-    credentials: 'include' as RequestCredentials
+    body: data,
+    credentials: 'include'
   };
 
   const response = await fetch(url, options);

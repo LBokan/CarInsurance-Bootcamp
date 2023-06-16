@@ -49,6 +49,7 @@
         <v-col cols="12">
           <v-file-input 
             v-model="assignment.vehicleConditionInfo.photosOfImpact"
+            :rules="[rulesFiles.photoSizeMax]"
             variant="outlined"
             multiple
             chips
@@ -76,7 +77,7 @@
   import { defineEmits, onMounted } from 'vue';
   import { storeToRefs } from 'pinia';
 
-  import { rules } from '@/utils/rulesRegex';
+  import { rules, rulesFiles } from '@/utils/rulesRegex';
   import { useAssignmentStore } from '@/stores/assignment';
 
   import VueDatePicker from '@vuepic/vue-datepicker';
