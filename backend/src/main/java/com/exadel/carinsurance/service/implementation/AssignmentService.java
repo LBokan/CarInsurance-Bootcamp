@@ -1,16 +1,14 @@
 package com.exadel.carinsurance.service.implementation;
 
 import com.exadel.carinsurance.exceptions.NotFoundException;
-import com.exadel.carinsurance.mapper.AddressMapper;
-import com.exadel.carinsurance.mapper.ContactInfoMapper;
-import com.exadel.carinsurance.mapper.VehicleInfoMapper;
+import com.exadel.carinsurance.mapper.*;
 import com.exadel.carinsurance.model.UserEntity;
 import com.exadel.carinsurance.model.assignment.*;
 import com.exadel.carinsurance.model.request.AddressRequestEntity;
 import com.exadel.carinsurance.model.request.AssignmentRequestEntity;
 import com.exadel.carinsurance.model.request.ContactInfoRequestEntity;
 import com.exadel.carinsurance.model.request.PhoneNumberRequestEntity;
-import com.exadel.carinsurance.model.response.PhotosResponseEntity;
+import com.exadel.carinsurance.model.response.*;
 import com.exadel.carinsurance.repository.*;
 import com.exadel.carinsurance.service.IAssignmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +22,15 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Transactional
 public class AssignmentService implements IAssignmentService {
   private final EntityManager entityManager;
+  private final IUserRepository userRepository;
+  private final IAssignmentStatusRepository assignmentStatusRepository;
   private final IAssignmentRepository assignmentRepository;
   private final IDirectionsOfImpactRepository directionsOfImpactRepository;
   private final IVehicleConditionInfoRepository vehicleConditionInfoRepository;
@@ -42,6 +43,7 @@ public class AssignmentService implements IAssignmentService {
   @Autowired
   public AssignmentService(
       EntityManager entityManager,
+      IUserRepository userRepository, IAssignmentStatusRepository assignmentStatusRepository,
       IAssignmentRepository assignmentRepository,
       IDirectionsOfImpactRepository directionsOfImpactRepository,
       IVehicleConditionInfoRepository vehicleConditionInfoRepository,
@@ -50,6 +52,8 @@ public class AssignmentService implements IAssignmentService {
       IPhoneNumberRepository phoneNumberRepository,
       IAddressRepository addressRepository, PhotosService photosService ) {
     this.entityManager = entityManager;
+    this.userRepository = userRepository;
+    this.assignmentStatusRepository = assignmentStatusRepository;
     this.assignmentRepository = assignmentRepository;
     this.directionsOfImpactRepository = directionsOfImpactRepository;
     this.vehicleConditionInfoRepository = vehicleConditionInfoRepository;
@@ -67,17 +71,22 @@ public class AssignmentService implements IAssignmentService {
   ) {
     //  Assignment creation
     UserEntity user = ( UserEntity ) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    UserEntity mergedUser = entityManager.merge( user );
+
     LocalDateTime currentDateTimeAssignment = LocalDateTime.now();
 
-    AssignmentEntity assignmentEntity = AssignmentEntity
-        .builder()
-        .user( user )
-        .dateOfCreation( currentDateTimeAssignment )
-        .dateOfIncident( request.getDateOfIncident() )
-        .build();
-    AssignmentEntity mergedAssignment = entityManager.merge( assignmentEntity );
+    AssignmentStatusEntity assignmentStatusFromDB = assignmentStatusRepository
+        .findByName( EAssignmentStatusEntity.NEW )
+        .orElseThrow( () ->
+            new NotFoundException( "The assignment status is not found" )
+        );
 
-    assignmentRepository.save( mergedAssignment );
+    AssignmentEntity assignmentEntity = AssignmentMapper.mapToAssignment( request );
+    assignmentEntity.setUser( mergedUser );
+    assignmentEntity.setDateOfCreation( currentDateTimeAssignment );
+    assignmentEntity.setStatus( assignmentStatusFromDB );
+
+    assignmentRepository.save( assignmentEntity );
 
     AssignmentEntity assignmentEntityFromDB =
         assignmentRepository
@@ -112,17 +121,15 @@ public class AssignmentService implements IAssignmentService {
             .namesOfPhotosOfImpact( photosResponseEntity.getNamesOfPhotosOfImpact() )
             .assignment( assignmentEntityFromDB )
             .build();
-    VehicleConditionInfoEntity mergedVehicleConditionInfo = entityManager.merge( vehicleConditionInfoEntity );
 
-    vehicleConditionInfoRepository.save( mergedVehicleConditionInfo );
+    vehicleConditionInfoRepository.save( vehicleConditionInfoEntity );
 
     //  Vehicle condition info creation
     VehicleInfoEntity vehicleInfoEntity =
         VehicleInfoMapper.mapToVehicleInfo( request );
     vehicleInfoEntity.setAssignment( assignmentEntityFromDB );
-    VehicleInfoEntity mergedVehicleInfo = entityManager.merge( vehicleInfoEntity );
 
-    vehicleInfoRepository.save( mergedVehicleInfo );
+    vehicleInfoRepository.save( vehicleInfoEntity );
 
     //  Contacts info creation
     for ( ContactInfoRequestEntity contactInfoRequest : request.getContactsInfo() ) {
@@ -131,9 +138,8 @@ public class AssignmentService implements IAssignmentService {
       ContactInfoEntity contactInfoEntity = ContactInfoMapper.mapToContactInfo( contactInfoRequest );
       contactInfoEntity.setDateOfCreation( currentDateTimeContactInfo );
       contactInfoEntity.setAssignment( assignmentEntityFromDB );
-      ContactInfoEntity mergedContactInfo = entityManager.merge( contactInfoEntity );
 
-      contactInfoRepository.save( mergedContactInfo );
+      contactInfoRepository.save( contactInfoEntity );
 
       ContactInfoEntity contactInfoEntityFromDB =
           contactInfoRepository
@@ -143,28 +149,85 @@ public class AssignmentService implements IAssignmentService {
               );
 
       for ( PhoneNumberRequestEntity phoneNumberRequest : contactInfoRequest.getPhoneNumbers() ) {
-        PhoneNumberEntity phoneNumberEntity = PhoneNumberEntity
-            .builder()
-            .type( phoneNumberRequest.getType() )
-            .number( phoneNumberRequest.getNumber() )
-            .contactInfo( contactInfoEntityFromDB )
-            .build();
-        PhoneNumberEntity mergedPhoneNumber = entityManager.merge( phoneNumberEntity );
+        PhoneNumberEntity phoneNumberEntity = PhoneNumberMapper.mapToPhoneNumber( phoneNumberRequest );
+        phoneNumberEntity.setContactInfo( contactInfoEntityFromDB );
 
-        phoneNumberRepository.save( mergedPhoneNumber );
+        phoneNumberRepository.save( phoneNumberEntity );
       }
 
       for ( AddressRequestEntity addressRequest : contactInfoRequest.getAddresses() ) {
         AddressEntity addressEntity = AddressMapper.mapToAddress( addressRequest );
         addressEntity.setContactInfo( contactInfoEntityFromDB );
-        AddressEntity mergedAddress = entityManager.merge( addressEntity );
 
-        addressRepository.save( mergedAddress );
+        addressRepository.save( addressEntity );
       }
     }
 
     return ResponseEntity
         .ok()
         .body( assignmentEntityFromDB.getAssignmentId() );
+  }
+
+  @Override
+  public ResponseEntity getAssignments() {
+    UserEntity user = ( UserEntity ) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    List<AssignmentResponseEntity> assignmentsResponse = new ArrayList<>();
+
+    for ( AssignmentEntity assignment : user.getAssignments() ) {
+      List<ContactInfoResponseEntity> contactsInfoResponse = new ArrayList<>();
+
+      for ( ContactInfoEntity contactInfo : assignment.getContactsInfo() ) {
+        List<PhoneNumberResponseEntity> phoneNumbersResponse = new ArrayList<>();
+        List<AddressResponseEntity> addressesResponse = new ArrayList<>();
+
+        for ( PhoneNumberEntity phoneNumber : contactInfo.getPhoneNumbers() ) {
+          PhoneNumberResponseEntity phoneNumberResponse = PhoneNumberMapper
+              .mapToPhoneNumberResponse( phoneNumber );
+
+          phoneNumbersResponse.add( phoneNumberResponse );
+        }
+
+        for ( AddressEntity address : contactInfo.getAddresses() ) {
+          AddressResponseEntity addressResponse = AddressMapper
+              .mapToAddressResponse( address );
+
+          addressesResponse.add( addressResponse );
+        }
+
+        ContactInfoResponseEntity contactInfoResponse = ContactInfoMapper
+            .mapToContactInfoResponse( contactInfo );
+        contactInfoResponse.setPhoneNumbers( phoneNumbersResponse );
+        contactInfoResponse.setAddresses( addressesResponse );
+
+        contactsInfoResponse.add( contactInfoResponse );
+      }
+
+      VehicleInfoResponseEntity vehicleInfoResponse = VehicleInfoMapper
+          .mapToVehicleInfoResponse( assignment.getVehicleInfo() );
+
+      DirectionOfImpactResponseEntity directionOfImpactResponse = DirectionOfImpactResponseEntity
+          .builder()
+          .id( assignment.getVehicleConditionInfo().getDirectionOfImpact().getId() )
+          .name( assignment.getVehicleConditionInfo().getDirectionOfImpact().getName() )
+          .build();
+
+      VehicleConditionInfoResponseEntity vehicleConditionInfoResponse = VehicleConditionInfoResponseEntity
+          .builder()
+          .id( assignment.getVehicleConditionInfo().getId() )
+          .directionOfImpact( directionOfImpactResponse.getName() )
+          .namesOfPhotosOfImpact( assignment.getVehicleConditionInfo().getNamesOfPhotosOfImpact() )
+          .build();
+
+      AssignmentResponseEntity assignmentResponse = AssignmentMapper.mapToAssignmentResponse( assignment );
+      assignmentResponse.setContactsInfo( contactsInfoResponse );
+      assignmentResponse.setVehicleInfo( vehicleInfoResponse );
+      assignmentResponse.setVehicleConditionInfo( vehicleConditionInfoResponse );
+
+      assignmentsResponse.add( assignmentResponse );
+    }
+
+    return ResponseEntity
+        .ok()
+        .body( assignmentsResponse );
   }
 }

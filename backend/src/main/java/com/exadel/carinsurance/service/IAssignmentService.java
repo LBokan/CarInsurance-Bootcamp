@@ -11,4 +11,6 @@ public interface IAssignmentService {
       AssignmentRequestEntity request,
       List<MultipartFile> photosOfImpact
   );
+
+  ResponseEntity getAssignments();
 }

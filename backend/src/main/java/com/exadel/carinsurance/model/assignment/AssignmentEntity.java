@@ -40,6 +40,19 @@ public class AssignmentEntity {
   @JoinColumn( name = "user_id" )
   private UserEntity user;
 
+  @Column( name = "status_id",
+      nullable = false,
+      insertable = false,
+      updatable = false )
+  private String statusId;
+  
+  @ManyToOne( fetch = FetchType.EAGER,
+      cascade = { CascadeType.PERSIST, CascadeType.MERGE,
+          CascadeType.DETACH, CascadeType.REFRESH },
+      optional = false )
+  @JoinColumn( name = "status_id" )
+  private AssignmentStatusEntity status;
+
   @Column( name = "date_of_creation" )
   private LocalDateTime dateOfCreation;
 
