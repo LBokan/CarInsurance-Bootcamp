@@ -13,4 +13,6 @@ public interface IAssignmentService {
   );
 
   ResponseEntity getAssignments();
+
+  ResponseEntity getAssignment( Long assignmentId );
 }

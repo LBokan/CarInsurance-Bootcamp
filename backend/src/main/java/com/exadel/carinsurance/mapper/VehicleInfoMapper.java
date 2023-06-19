@@ -22,7 +22,6 @@ public class VehicleInfoMapper {
   public static VehicleInfoResponseEntity mapToVehicleInfoResponse( VehicleInfoEntity vehicleInfo ) {
     return VehicleInfoResponseEntity
         .builder()
-        .id( vehicleInfo.getId() )
         .vinNumber( vehicleInfo.getVinNumber() )
         .carMake( vehicleInfo.getCarMake() )
         .carModel( vehicleInfo.getCarModel() )

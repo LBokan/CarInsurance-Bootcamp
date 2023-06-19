@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
 public class AssignmentResponseEntity {
   private Long assignmentId;
   private String status;
+  private LocalDateTime dateOfCreation;
   private Date dateOfIncident;
   private List<ContactInfoResponseEntity> contactsInfo;
   private VehicleInfoResponseEntity vehicleInfo;

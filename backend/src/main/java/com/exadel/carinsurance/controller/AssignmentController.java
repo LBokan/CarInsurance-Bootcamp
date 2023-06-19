@@ -27,4 +27,11 @@ public class AssignmentController {
   public ResponseEntity getAssignments() {
     return assignmentService.getAssignments();
   }
+
+  @GetMapping( "/user/assignment/{assignmentId}" )
+  public ResponseEntity getAssignment(
+      @PathVariable( "assignmentId" ) Long assignmentId
+  ) {
+    return assignmentService.getAssignment( assignmentId );
+  }
 }

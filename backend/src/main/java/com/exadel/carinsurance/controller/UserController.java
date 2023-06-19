@@ -1,6 +1,7 @@
 package com.exadel.carinsurance.controller;
 
 import com.exadel.carinsurance.model.UserEntity;
+import com.exadel.carinsurance.model.response.UserResponseEntity;
 import com.exadel.carinsurance.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,11 @@ import java.util.List;
 public class UserController {
   @Autowired
   private IUserService userService;
+
+  @GetMapping( "/user" )
+  public UserResponseEntity hetUser() {
+    return userService.getUser();
+  }
 
   @GetMapping( "/users" )
   public List<UserEntity> findAll() {

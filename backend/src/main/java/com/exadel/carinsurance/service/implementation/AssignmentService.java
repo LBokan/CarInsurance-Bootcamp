@@ -8,7 +8,8 @@ import com.exadel.carinsurance.model.request.AddressRequestEntity;
 import com.exadel.carinsurance.model.request.AssignmentRequestEntity;
 import com.exadel.carinsurance.model.request.ContactInfoRequestEntity;
 import com.exadel.carinsurance.model.request.PhoneNumberRequestEntity;
-import com.exadel.carinsurance.model.response.*;
+import com.exadel.carinsurance.model.response.AssignmentResponseEntity;
+import com.exadel.carinsurance.model.response.PhotosResponseEntity;
 import com.exadel.carinsurance.repository.*;
 import com.exadel.carinsurance.service.IAssignmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +25,8 @@ import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -174,60 +178,31 @@ public class AssignmentService implements IAssignmentService {
     List<AssignmentResponseEntity> assignmentsResponse = new ArrayList<>();
 
     for ( AssignmentEntity assignment : user.getAssignments() ) {
-      List<ContactInfoResponseEntity> contactsInfoResponse = new ArrayList<>();
-
-      for ( ContactInfoEntity contactInfo : assignment.getContactsInfo() ) {
-        List<PhoneNumberResponseEntity> phoneNumbersResponse = new ArrayList<>();
-        List<AddressResponseEntity> addressesResponse = new ArrayList<>();
-
-        for ( PhoneNumberEntity phoneNumber : contactInfo.getPhoneNumbers() ) {
-          PhoneNumberResponseEntity phoneNumberResponse = PhoneNumberMapper
-              .mapToPhoneNumberResponse( phoneNumber );
-
-          phoneNumbersResponse.add( phoneNumberResponse );
-        }
-
-        for ( AddressEntity address : contactInfo.getAddresses() ) {
-          AddressResponseEntity addressResponse = AddressMapper
-              .mapToAddressResponse( address );
-
-          addressesResponse.add( addressResponse );
-        }
-
-        ContactInfoResponseEntity contactInfoResponse = ContactInfoMapper
-            .mapToContactInfoResponse( contactInfo );
-        contactInfoResponse.setPhoneNumbers( phoneNumbersResponse );
-        contactInfoResponse.setAddresses( addressesResponse );
-
-        contactsInfoResponse.add( contactInfoResponse );
-      }
-
-      VehicleInfoResponseEntity vehicleInfoResponse = VehicleInfoMapper
-          .mapToVehicleInfoResponse( assignment.getVehicleInfo() );
-
-      DirectionOfImpactResponseEntity directionOfImpactResponse = DirectionOfImpactResponseEntity
-          .builder()
-          .id( assignment.getVehicleConditionInfo().getDirectionOfImpact().getId() )
-          .name( assignment.getVehicleConditionInfo().getDirectionOfImpact().getName() )
-          .build();
-
-      VehicleConditionInfoResponseEntity vehicleConditionInfoResponse = VehicleConditionInfoResponseEntity
-          .builder()
-          .id( assignment.getVehicleConditionInfo().getId() )
-          .directionOfImpact( directionOfImpactResponse.getName() )
-          .namesOfPhotosOfImpact( assignment.getVehicleConditionInfo().getNamesOfPhotosOfImpact() )
-          .build();
-
-      AssignmentResponseEntity assignmentResponse = AssignmentMapper.mapToAssignmentResponse( assignment );
-      assignmentResponse.setContactsInfo( contactsInfoResponse );
-      assignmentResponse.setVehicleInfo( vehicleInfoResponse );
-      assignmentResponse.setVehicleConditionInfo( vehicleConditionInfoResponse );
-
-      assignmentsResponse.add( assignmentResponse );
+      assignmentsResponse.add( AssignmentMapper.mapToAssignmentResponse( assignment ) );
     }
+
+    Comparator<AssignmentResponseEntity> comparator = Comparator
+        .comparing( AssignmentResponseEntity::getDateOfCreation )
+        .reversed();
+    Collections.sort( assignmentsResponse, comparator );
 
     return ResponseEntity
         .ok()
         .body( assignmentsResponse );
+  }
+
+  @Override
+  public ResponseEntity getAssignment(
+      @PathVariable( "assignmentId" ) Long assignmentId
+  ) {
+    AssignmentEntity assignmentFromDB = assignmentRepository
+        .findById( assignmentId )
+        .orElseThrow( () ->
+            new NotFoundException( "The assignment is not found" )
+        );
+
+    return ResponseEntity
+        .ok()
+        .body( AssignmentMapper.mapToAssignmentResponse( assignmentFromDB ) );
   }
 }

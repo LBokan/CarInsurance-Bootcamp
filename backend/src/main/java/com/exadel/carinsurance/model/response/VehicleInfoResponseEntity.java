@@ -12,7 +12,6 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VehicleInfoResponseEntity {
-  private Long id;
   private String vinNumber;
   private String carMake;
   private String carModel;

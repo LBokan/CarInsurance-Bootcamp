@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VehicleConditionInfoResponseEntity {
-  private Long id;
   private String directionOfImpact;
   private String namesOfPhotosOfImpact;
 }

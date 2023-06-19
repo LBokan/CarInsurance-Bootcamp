@@ -8,7 +8,6 @@ import com.exadel.carinsurance.model.RoleEntity;
 import com.exadel.carinsurance.model.UserEntity;
 import com.exadel.carinsurance.model.request.AuthRequestEntity;
 import com.exadel.carinsurance.model.request.RegisterRequestEntity;
-import com.exadel.carinsurance.model.response.AuthResponseEntity;
 import com.exadel.carinsurance.model.response.UserResponseEntity;
 import com.exadel.carinsurance.repository.IRoleRepository;
 import com.exadel.carinsurance.repository.IUserRepository;
@@ -101,15 +100,10 @@ public class AuthService implements IAuthService {
     HttpHeaders headers = new HttpHeaders();
     headers.add( HttpHeaders.SET_COOKIE, cookie.toString() );
 
-    AuthResponseEntity response = AuthResponseEntity
-        .builder()
-        .user( userResponse )
-        .build();
-
     return ResponseEntity
         .ok()
         .headers( headers )
-        .body( response );
+        .body( userResponse );
   }
 }
 
