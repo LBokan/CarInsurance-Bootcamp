@@ -1,36 +1,23 @@
-import { ref, reactive } from 'vue';
-import { authenticateUser } from '@/api/Authorization';
+import { ref } from 'vue';
+import { getUserApi } from '@/api/User';
 import { useSnackbarStore } from '@/stores/snackbar';
 import { useUserStore } from '@/stores/user';
-import { type ICredentials, type IUserState } from '@/utils/interfaces';
-import { clearAllCookies } from '@/helpers/authorization';
+import { type IUserState } from '@/utils/interfaces';
 
-export function useLogin() {
+export function useUser() {
   const { setUserData } = useUserStore();
   const { setSnackbarDataAndShow } = useSnackbarStore();
 
-  const credentials: ICredentials = reactive({
-    email: '',
-    password: ''
-  });
-
   const isLoading = ref<boolean>(false);
-  const isError = ref<boolean>(false);
   const errorData = ref<string>('');
   const isSuccess = ref<boolean>(false);
 
-  const login = async () => {
-    clearAllCookies();
-
+  const getUser = async () => {
     isLoading.value = true;
 
     try {
-      const response: IUserState = await authenticateUser({
-        email: credentials.email,
-        password: credentials.password,
-      });
+      const response: IUserState = await getUserApi();
 
-      isError.value = false;
       errorData.value = '';
       isSuccess.value = true;
 
@@ -42,7 +29,6 @@ export function useLogin() {
         errorMessage = error.message;
       }
 
-      isError.value = true;
       errorData.value = errorMessage;
       isSuccess.value = false;
 
@@ -53,11 +39,8 @@ export function useLogin() {
   };
 
   return {
-    credentials,
-    login,
+    getUser,
     isLoading,
-    isError,
-    errorData,
     isSuccess
   };
 }

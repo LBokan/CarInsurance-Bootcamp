@@ -101,7 +101,7 @@
 </template>
 
 <script setup lang="ts">
-  import { defineEmits, ref, onMounted } from 'vue';
+  import { ref, onMounted } from 'vue';
   import { storeToRefs } from 'pinia';
 
   import { rules } from '@/utils/rulesRegex';
@@ -113,7 +113,7 @@
   import { 
     statesCodesLabels,
     getYearToday
-  } from '@/helpers/assignmentModal';
+  } from '@/helpers/assignment';
 
   const { assignment } = storeToRefs(useAssignmentStore());
 

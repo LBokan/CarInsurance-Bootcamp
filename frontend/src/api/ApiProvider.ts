@@ -1,4 +1,4 @@
-import { getToken } from '@/helpers/authorization';
+import { getToken, isTokenValid, logout } from '@/helpers/authorization';
 import { 
   BASE_API_URL
 } from '@/helpers/authConstants';
@@ -11,7 +11,8 @@ interface ICreateRequestArgs {
   endpoint: string,
   method: string,
   isMultipartHeaders?: boolean,
-  data: string | FormData | null
+  isGetPhoto?: boolean,
+  data?: string | FormData | null
 };
 
 interface IOptions {
@@ -25,12 +26,17 @@ export const createRequest = async ({
   endpoint, 
   method,
   isMultipartHeaders = false,
+  isGetPhoto = false,
   data = null
 }: ICreateRequestArgs) => {
+  const token = getToken();
+
+  if (token && !isTokenValid()) {
+    logout();
+  }
+
   const url = `${BASE_API_URL}/${endpoint}`;
   const headers: IHeaders = {};
-
-  const token = getToken();
 
   if (!isMultipartHeaders) {
     headers['Content-Type'] = 'application/json';
@@ -53,6 +59,10 @@ export const createRequest = async ({
     const errorData = await response.text();
 
     throw new Error(errorData);
+  }
+
+  if (isGetPhoto) {
+    return response;
   }
 
   return response.json();
