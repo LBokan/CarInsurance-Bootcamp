@@ -14,7 +14,7 @@ public class PhotoController {
   @Autowired
   private IPhotosService photosService;
 
-  @GetMapping( "/user/photo/photosofimpact/userId={userId}/assignmentId={assignmentId}/{photoName}" )
+  @GetMapping( "/user/photo/photosofimpact/{userId}/{assignmentId}/{photoName}" )
   public ResponseEntity getPhoto(
       @PathVariable( "userId" ) Long userId,
       @PathVariable( "assignmentId" ) Long assignmentId,
