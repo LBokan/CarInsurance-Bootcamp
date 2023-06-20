@@ -43,7 +43,7 @@ public class ContactInfoEntity {
       nullable = false,
       insertable = false,
       updatable = false )
-  private String assignmentId;
+  private Long assignmentId;
 
   @JsonIgnore
   @ManyToOne( fetch = FetchType.EAGER,

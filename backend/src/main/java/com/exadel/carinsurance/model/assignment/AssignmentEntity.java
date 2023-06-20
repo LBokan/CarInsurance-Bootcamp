@@ -30,7 +30,7 @@ public class AssignmentEntity {
       nullable = false,
       insertable = false,
       updatable = false )
-  private String userId;
+  private Long userId;
 
   @JsonIgnore
   @ManyToOne( fetch = FetchType.EAGER,
@@ -45,7 +45,7 @@ public class AssignmentEntity {
       insertable = false,
       updatable = false )
   private String statusId;
-  
+
   @ManyToOne( fetch = FetchType.EAGER,
       cascade = { CascadeType.PERSIST, CascadeType.MERGE,
           CascadeType.DETACH, CascadeType.REFRESH },
@@ -94,6 +94,9 @@ public class AssignmentEntity {
   public String toString() {
     return "AssignmentEntity{" +
         "assignmentId=" + assignmentId +
+        ", userId=" + userId +
+        ", statusId='" + statusId + '\'' +
+        ", dateOfCreation=" + dateOfCreation +
         ", dateOfIncident=" + dateOfIncident +
         ", contactsInfo=" + contactsInfo +
         ", vehicleInfo=" + vehicleInfo +

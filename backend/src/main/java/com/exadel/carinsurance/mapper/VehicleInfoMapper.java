@@ -3,9 +3,12 @@ package com.exadel.carinsurance.mapper;
 import com.exadel.carinsurance.model.assignment.VehicleInfoEntity;
 import com.exadel.carinsurance.model.request.AssignmentRequestEntity;
 import com.exadel.carinsurance.model.response.VehicleInfoResponseEntity;
+import org.springframework.stereotype.Component;
 
-public class VehicleInfoMapper {
-  public static VehicleInfoEntity mapToVehicleInfo( AssignmentRequestEntity request ) {
+@Component
+public class VehicleInfoMapper implements IMapper<VehicleInfoEntity, AssignmentRequestEntity, VehicleInfoResponseEntity> {
+  @Override
+  public VehicleInfoEntity toEntity( AssignmentRequestEntity request ) {
     return VehicleInfoEntity
         .builder()
         .vinNumber( request.getVehicleInfo().getVinNumber() )
@@ -19,17 +22,18 @@ public class VehicleInfoMapper {
         .build();
   }
 
-  public static VehicleInfoResponseEntity mapToVehicleInfoResponse( VehicleInfoEntity vehicleInfo ) {
+  @Override
+  public VehicleInfoResponseEntity toResponse( VehicleInfoEntity entity ) {
     return VehicleInfoResponseEntity
         .builder()
-        .vinNumber( vehicleInfo.getVinNumber() )
-        .carMake( vehicleInfo.getCarMake() )
-        .carModel( vehicleInfo.getCarModel() )
-        .yearOfManufacture( vehicleInfo.getYearOfManufacture() )
-        .odometerValue( vehicleInfo.getOdometerValue() )
-        .licensePlateNumber( vehicleInfo.getLicensePlateNumber() )
-        .licenseState( vehicleInfo.getLicenseState() )
-        .licenseExpirationDate( vehicleInfo.getLicenseExpirationDate() )
+        .vinNumber( entity.getVinNumber() )
+        .carMake( entity.getCarMake() )
+        .carModel( entity.getCarModel() )
+        .yearOfManufacture( entity.getYearOfManufacture() )
+        .odometerValue( entity.getOdometerValue() )
+        .licensePlateNumber( entity.getLicensePlateNumber() )
+        .licenseState( entity.getLicenseState() )
+        .licenseExpirationDate( entity.getLicenseExpirationDate() )
         .build();
   }
 }

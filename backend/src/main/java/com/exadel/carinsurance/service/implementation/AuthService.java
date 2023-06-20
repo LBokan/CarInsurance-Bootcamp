@@ -2,7 +2,7 @@ package com.exadel.carinsurance.service.implementation;
 
 import com.exadel.carinsurance.exceptions.AlreadyExistsException;
 import com.exadel.carinsurance.exceptions.NotFoundException;
-import com.exadel.carinsurance.mapper.UserResponseMapper;
+import com.exadel.carinsurance.mapper.UserMapper;
 import com.exadel.carinsurance.model.ERoleEntity;
 import com.exadel.carinsurance.model.RoleEntity;
 import com.exadel.carinsurance.model.UserEntity;
@@ -22,7 +22,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 public class AuthService implements IAuthService {
@@ -31,22 +30,26 @@ public class AuthService implements IAuthService {
   private final PasswordEncoder passwordEncoder;
   private final IJwtService jwtService;
   private final AuthenticationManager authManager;
+  private final UserMapper userMapper;
 
   @Autowired
   public AuthService( IRoleRepository roleRepository,
                       IUserRepository userRepository,
                       PasswordEncoder passwordEncoder,
                       IJwtService jwtService,
-                      AuthenticationManager authManager ) {
+                      AuthenticationManager authManager,
+                      UserMapper userMapper
+  ) {
     this.roleRepository = roleRepository;
     this.userRepository = userRepository;
     this.passwordEncoder = passwordEncoder;
     this.jwtService = jwtService;
     this.authManager = authManager;
+    this.userMapper = userMapper;
   }
 
   @Override
-  public ResponseEntity signup( @RequestBody RegisterRequestEntity request ) {
+  public ResponseEntity signup( RegisterRequestEntity request ) {
     String userEmail = request.getEmail();
     ERoleEntity userRole = ERoleEntity.ROLE_CLIENT;
 
@@ -78,7 +81,7 @@ public class AuthService implements IAuthService {
   }
 
   @Override
-  public ResponseEntity login( @RequestBody AuthRequestEntity request ) {
+  public ResponseEntity login( AuthRequestEntity request ) {
     String userEmail = request.getEmail();
 
     Authentication authentication = authManager.authenticate(
@@ -89,7 +92,7 @@ public class AuthService implements IAuthService {
     );
 
     UserEntity userEntity = ( UserEntity ) authentication.getPrincipal();
-    UserResponseEntity userResponse = UserResponseMapper.mapToUserResponse( userEntity );
+    UserResponseEntity userResponse = userMapper.toResponse( userEntity );
     String jwtToken = jwtService.generateToken( userEmail );
 
     ResponseCookie cookie = ResponseCookie.from( "token", jwtToken )

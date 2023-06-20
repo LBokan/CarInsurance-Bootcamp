@@ -3,28 +3,32 @@ package com.exadel.carinsurance.mapper;
 import com.exadel.carinsurance.model.assignment.AddressEntity;
 import com.exadel.carinsurance.model.request.AddressRequestEntity;
 import com.exadel.carinsurance.model.response.AddressResponseEntity;
+import org.springframework.stereotype.Component;
 
-public class AddressMapper {
-  public static AddressEntity mapToAddress( AddressRequestEntity addressRequest ) {
+@Component
+public class AddressMapper implements IMapper<AddressEntity, AddressRequestEntity, AddressResponseEntity> {
+  @Override
+  public AddressEntity toEntity( AddressRequestEntity request ) {
     return AddressEntity
         .builder()
-        .type( addressRequest.getType() )
-        .city( addressRequest.getCity() )
-        .state( addressRequest.getState() )
-        .zip( addressRequest.getZip() )
-        .addressLine( addressRequest.getAddressLine() )
+        .type( request.getType() )
+        .city( request.getCity() )
+        .state( request.getState() )
+        .zip( request.getZip() )
+        .addressLine( request.getAddressLine() )
         .build();
   }
 
-  public static AddressResponseEntity mapToAddressResponse( AddressEntity address ) {
+  @Override
+  public AddressResponseEntity toResponse( AddressEntity entity ) {
     return AddressResponseEntity
         .builder()
-        .id( address.getId() )
-        .type( address.getType() )
-        .city( address.getCity() )
-        .state( address.getState() )
-        .zip( address.getZip() )
-        .addressLine( address.getAddressLine() )
+        .id( entity.getId() )
+        .type( entity.getType() )
+        .city( entity.getCity() )
+        .state( entity.getState() )
+        .zip( entity.getZip() )
+        .addressLine( entity.getAddressLine() )
         .build();
   }
 }

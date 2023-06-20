@@ -7,46 +7,61 @@ import com.exadel.carinsurance.model.request.ContactInfoRequestEntity;
 import com.exadel.carinsurance.model.response.AddressResponseEntity;
 import com.exadel.carinsurance.model.response.ContactInfoResponseEntity;
 import com.exadel.carinsurance.model.response.PhoneNumberResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContactInfoMapper {
-  public static ContactInfoEntity mapToContactInfo( ContactInfoRequestEntity contactInfoRequest ) {
+@Component
+public class ContactInfoMapper implements IMapper<ContactInfoEntity, ContactInfoRequestEntity, ContactInfoResponseEntity> {
+  private final PhoneNumberMapper phoneNumberMapper;
+  private final AddressMapper addressMapper;
+
+  @Autowired
+  public ContactInfoMapper(
+      PhoneNumberMapper phoneNumberMapper,
+      AddressMapper addressMapper
+  ) {
+    this.phoneNumberMapper = phoneNumberMapper;
+    this.addressMapper = addressMapper;
+  }
+
+  @Override
+  public ContactInfoEntity toEntity( ContactInfoRequestEntity request ) {
     return ContactInfoEntity
         .builder()
-        .type( contactInfoRequest.getType() )
-        .firstName( contactInfoRequest.getFirstName() )
-        .lastName( contactInfoRequest.getLastName() )
-        .email( contactInfoRequest.getEmail() )
+        .type( request.getType() )
+        .firstName( request.getFirstName() )
+        .lastName( request.getLastName() )
+        .email( request.getEmail() )
         .build();
   }
 
-  public static ContactInfoResponseEntity mapToContactInfoResponse( ContactInfoEntity contactInfo ) {
+  @Override
+  public ContactInfoResponseEntity toResponse( ContactInfoEntity entity ) {
     List<PhoneNumberResponseEntity> phoneNumbersResponse = new ArrayList<>();
     List<AddressResponseEntity> addressesResponse = new ArrayList<>();
 
-    for ( PhoneNumberEntity phoneNumber : contactInfo.getPhoneNumbers() ) {
-      PhoneNumberResponseEntity phoneNumberResponse = PhoneNumberMapper
-          .mapToPhoneNumberResponse( phoneNumber );
+    for ( PhoneNumberEntity phoneNumber : entity.getPhoneNumbers() ) {
+      PhoneNumberResponseEntity phoneNumberResponse = phoneNumberMapper.toResponse( phoneNumber );
 
       phoneNumbersResponse.add( phoneNumberResponse );
     }
 
-    for ( AddressEntity address : contactInfo.getAddresses() ) {
-      AddressResponseEntity addressResponse = AddressMapper
-          .mapToAddressResponse( address );
+    for ( AddressEntity address : entity.getAddresses() ) {
+      AddressResponseEntity addressResponse = addressMapper.toResponse( address );
 
       addressesResponse.add( addressResponse );
     }
 
     return ContactInfoResponseEntity
         .builder()
-        .id( contactInfo.getId() )
-        .type( contactInfo.getType() )
-        .firstName( contactInfo.getFirstName() )
-        .lastName( contactInfo.getLastName() )
-        .email( contactInfo.getEmail() )
+        .id( entity.getId() )
+        .type( entity.getType() )
+        .firstName( entity.getFirstName() )
+        .lastName( entity.getLastName() )
+        .email( entity.getEmail() )
         .phoneNumbers( phoneNumbersResponse )
         .addresses( addressesResponse )
         .build();

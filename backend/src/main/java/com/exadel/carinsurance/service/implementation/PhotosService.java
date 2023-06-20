@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
@@ -65,11 +64,7 @@ public class PhotosService implements IPhotosService {
   }
 
   @Override
-  public ResponseEntity getPhoto(
-      @PathVariable( "userId" ) Long userId,
-      @PathVariable( "assignmentId" ) Long assignmentId,
-      @PathVariable( "photoName" ) String photoName
-  ) {
+  public ResponseEntity getPhoto( Long userId, Long assignmentId, String photoName ) {
     UserEntity user = ( UserEntity ) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     if ( !user.getUserId().equals( userId ) ) {

@@ -17,8 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
@@ -43,6 +41,11 @@ public class AssignmentService implements IAssignmentService {
   private final IPhoneNumberRepository phoneNumberRepository;
   private final IAddressRepository addressRepository;
   private final PhotosService photosService;
+  private final AssignmentMapper assignmentMapper;
+  private final VehicleInfoMapper vehicleInfoMapper;
+  private final ContactInfoMapper contactInfoMapper;
+  private final PhoneNumberMapper phoneNumberMapper;
+  private final AddressMapper addressMapper;
 
   @Autowired
   public AssignmentService(
@@ -54,7 +57,14 @@ public class AssignmentService implements IAssignmentService {
       IVehicleInfoRepository vehicleInfoRepository,
       IContactInfoRepository contactInfoRepository,
       IPhoneNumberRepository phoneNumberRepository,
-      IAddressRepository addressRepository, PhotosService photosService ) {
+      IAddressRepository addressRepository,
+      PhotosService photosService,
+      AssignmentMapper assignmentMapper,
+      VehicleInfoMapper vehicleInfoMapper,
+      ContactInfoMapper contactInfoMapper,
+      PhoneNumberMapper phoneNumberMapper,
+      AddressMapper addressMapper
+  ) {
     this.entityManager = entityManager;
     this.userRepository = userRepository;
     this.assignmentStatusRepository = assignmentStatusRepository;
@@ -66,13 +76,15 @@ public class AssignmentService implements IAssignmentService {
     this.phoneNumberRepository = phoneNumberRepository;
     this.addressRepository = addressRepository;
     this.photosService = photosService;
+    this.assignmentMapper = assignmentMapper;
+    this.vehicleInfoMapper = vehicleInfoMapper;
+    this.contactInfoMapper = contactInfoMapper;
+    this.phoneNumberMapper = phoneNumberMapper;
+    this.addressMapper = addressMapper;
   }
 
   @Override
-  public ResponseEntity createAssignment(
-      @RequestPart( "assignment" ) AssignmentRequestEntity request,
-      @RequestPart( "photosOfImpact" ) List<MultipartFile> photosOfImpact
-  ) {
+  public ResponseEntity createAssignment( AssignmentRequestEntity request, List<MultipartFile> photosOfImpact ) {
     //  Assignment creation
     UserEntity user = ( UserEntity ) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     UserEntity mergedUser = entityManager.merge( user );
@@ -85,7 +97,7 @@ public class AssignmentService implements IAssignmentService {
             new NotFoundException( "The assignment status is not found" )
         );
 
-    AssignmentEntity assignmentEntity = AssignmentMapper.mapToAssignment( request );
+    AssignmentEntity assignmentEntity = assignmentMapper.toEntity( request );
     assignmentEntity.setUser( mergedUser );
     assignmentEntity.setDateOfCreation( currentDateTimeAssignment );
     assignmentEntity.setStatus( assignmentStatusFromDB );
@@ -129,8 +141,7 @@ public class AssignmentService implements IAssignmentService {
     vehicleConditionInfoRepository.save( vehicleConditionInfoEntity );
 
     //  Vehicle condition info creation
-    VehicleInfoEntity vehicleInfoEntity =
-        VehicleInfoMapper.mapToVehicleInfo( request );
+    VehicleInfoEntity vehicleInfoEntity = vehicleInfoMapper.toEntity( request );
     vehicleInfoEntity.setAssignment( assignmentEntityFromDB );
 
     vehicleInfoRepository.save( vehicleInfoEntity );
@@ -139,7 +150,7 @@ public class AssignmentService implements IAssignmentService {
     for ( ContactInfoRequestEntity contactInfoRequest : request.getContactsInfo() ) {
       LocalDateTime currentDateTimeContactInfo = LocalDateTime.now();
 
-      ContactInfoEntity contactInfoEntity = ContactInfoMapper.mapToContactInfo( contactInfoRequest );
+      ContactInfoEntity contactInfoEntity = contactInfoMapper.toEntity( contactInfoRequest );
       contactInfoEntity.setDateOfCreation( currentDateTimeContactInfo );
       contactInfoEntity.setAssignment( assignmentEntityFromDB );
 
@@ -153,14 +164,14 @@ public class AssignmentService implements IAssignmentService {
               );
 
       for ( PhoneNumberRequestEntity phoneNumberRequest : contactInfoRequest.getPhoneNumbers() ) {
-        PhoneNumberEntity phoneNumberEntity = PhoneNumberMapper.mapToPhoneNumber( phoneNumberRequest );
+        PhoneNumberEntity phoneNumberEntity = phoneNumberMapper.toEntity( phoneNumberRequest );
         phoneNumberEntity.setContactInfo( contactInfoEntityFromDB );
 
         phoneNumberRepository.save( phoneNumberEntity );
       }
 
       for ( AddressRequestEntity addressRequest : contactInfoRequest.getAddresses() ) {
-        AddressEntity addressEntity = AddressMapper.mapToAddress( addressRequest );
+        AddressEntity addressEntity = addressMapper.toEntity( addressRequest );
         addressEntity.setContactInfo( contactInfoEntityFromDB );
 
         addressRepository.save( addressEntity );
@@ -177,8 +188,14 @@ public class AssignmentService implements IAssignmentService {
     UserEntity user = ( UserEntity ) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     List<AssignmentResponseEntity> assignmentsResponse = new ArrayList<>();
 
-    for ( AssignmentEntity assignment : user.getAssignments() ) {
-      assignmentsResponse.add( AssignmentMapper.mapToAssignmentResponse( assignment ) );
+    List<AssignmentEntity> assignmentsFromDB = assignmentRepository
+        .findAllByUserId( user.getUserId() )
+        .orElseThrow( () ->
+            new NotFoundException( "Assignments are not found" )
+        );
+
+    for ( AssignmentEntity assignment : assignmentsFromDB ) {
+      assignmentsResponse.add( assignmentMapper.toResponse( assignment ) );
     }
 
     Comparator<AssignmentResponseEntity> comparator = Comparator
@@ -192,9 +209,7 @@ public class AssignmentService implements IAssignmentService {
   }
 
   @Override
-  public ResponseEntity getAssignment(
-      @PathVariable( "assignmentId" ) Long assignmentId
-  ) {
+  public ResponseEntity getAssignment( Long assignmentId ) {
     AssignmentEntity assignmentFromDB = assignmentRepository
         .findById( assignmentId )
         .orElseThrow( () ->
@@ -203,6 +218,6 @@ public class AssignmentService implements IAssignmentService {
 
     return ResponseEntity
         .ok()
-        .body( AssignmentMapper.mapToAssignmentResponse( assignmentFromDB ) );
+        .body( assignmentMapper.toResponse( assignmentFromDB ) );
   }
 }
