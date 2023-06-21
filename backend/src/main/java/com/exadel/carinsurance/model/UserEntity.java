@@ -1,12 +1,9 @@
 package com.exadel.carinsurance.model;
 
-import com.exadel.carinsurance.model.assignment.AssignmentEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,7 +40,7 @@ public class UserEntity implements UserDetails {
       nullable = false,
       insertable = false,
       updatable = false )
-  private String roleId;
+  private int roleId;
 
   @ManyToOne( fetch = FetchType.EAGER,
       cascade = { CascadeType.PERSIST, CascadeType.MERGE,
@@ -51,13 +48,6 @@ public class UserEntity implements UserDetails {
       optional = false )
   @JoinColumn( name = "role_id" )
   private RoleEntity role;
-
-  @OneToMany( fetch = FetchType.EAGER,
-      mappedBy = "user",
-      cascade = { CascadeType.PERSIST, CascadeType.MERGE,
-          CascadeType.DETACH, CascadeType.REFRESH } )
-  @Fetch( value = FetchMode.SUBSELECT )
-  private List<AssignmentEntity> assignments;
 
   public UserEntity( String firstName, String lastName,
                      String email, String password ) {

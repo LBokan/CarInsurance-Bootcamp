@@ -30,7 +30,7 @@ public class PhoneNumberEntity {
       nullable = false,
       insertable = false,
       updatable = false )
-  private String contactsInfoId;
+  private Long contactInfoId;
 
   @JsonIgnore
   @ManyToOne( fetch = FetchType.EAGER,
