@@ -4,10 +4,7 @@ import com.exadel.carinsurance.model.request.AssignmentRequestEntity;
 import com.exadel.carinsurance.service.IAssignmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -24,5 +21,17 @@ public class AssignmentController {
       @RequestPart( "photosOfImpact" ) List<MultipartFile> photosOfImpact
   ) {
     return assignmentService.createAssignment( request, photosOfImpact );
+  }
+
+  @GetMapping( "/user/assignment" )
+  public ResponseEntity getAssignments() {
+    return assignmentService.getAssignments();
+  }
+
+  @GetMapping( "/user/assignment/{assignmentId}" )
+  public ResponseEntity getAssignment(
+      @PathVariable( "assignmentId" ) Long assignmentId
+  ) {
+    return assignmentService.getAssignment( assignmentId );
   }
 }
