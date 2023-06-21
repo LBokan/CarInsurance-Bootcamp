@@ -48,7 +48,7 @@
 
         <v-col cols="12">
           <v-file-input 
-            v-model="assignment.vehicleConditionInfo.photosOfImpact"
+            v-model="assignment.vehicleConditionInfo.photosOfImpactFiles"
             :rules="[rulesFiles.photoSizeMax]"
             variant="outlined"
             multiple
@@ -59,10 +59,10 @@
             label="Photos of impact*"
             placeholder="Photos of a vehicle without and with impacts*"
             :error="
-              !assignment.vehicleConditionInfo.photosOfImpact.length
+              !assignment.vehicleConditionInfo.photosOfImpactFiles.length
             "
             :error-messages="
-              !assignment.vehicleConditionInfo.photosOfImpact.length ? 
+              !assignment.vehicleConditionInfo.photosOfImpactFiles.length ? 
               ['Photos are required'] : []
             "
             :show-size="1000"
@@ -74,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-  import { defineEmits, onMounted } from 'vue';
+  import { onMounted } from 'vue';
   import { storeToRefs } from 'pinia';
 
   import { rules, rulesFiles } from '@/utils/rulesRegex';
@@ -82,7 +82,7 @@
 
   import VueDatePicker from '@vuepic/vue-datepicker';
   import CustomAutocomplete from '@/components/UI/CustomAutocomplete.vue';
-  import { impactDirectionsLabels } from '@/helpers/assignmentModal';
+  import { impactDirectionsLabels } from '@/helpers/assignment';
 
   const { assignment } = storeToRefs(useAssignmentStore());
 

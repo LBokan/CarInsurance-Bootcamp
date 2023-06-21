@@ -13,6 +13,11 @@ const router = createRouter({
       component: () => import('@/views/LandingPage.vue'),
       meta: { requiresAuth: true }
     },
+    {
+      path: "/assignment/:id",
+      component: () => import('@/views/AssignmentPage.vue'),
+      meta: { requiresAuth: true }
+    },
     { 
       path: '/:pathMatch(.*)', 
       component: () => import('@/views/FallbackPage.vue'),

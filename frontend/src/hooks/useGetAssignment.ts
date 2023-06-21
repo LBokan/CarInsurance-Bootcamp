@@ -1,36 +1,28 @@
 import { ref } from 'vue';
-import { storeToRefs } from 'pinia';
 
-import { createAssignmentApi } from '@/api/Assignment';
+import { getAssignmentByIdApi } from '@/api/Assignment';
 import { useSnackbarStore } from '@/stores/snackbar';
 import { useAssignmentStore } from '@/stores/assignment';
+import { type IGetAssignmentAPI } from '@/utils/interfaces';
 
-export function useCreateAssignment() {
-  const { assignment } = storeToRefs(useAssignmentStore());
-  const { getAssignmentDataAPI } = useAssignmentStore();
+export function useGetAssignment() {
+  const { setAssignmentDataAPI } = useAssignmentStore();
   const { setSnackbarDataAndShow } = useSnackbarStore();
 
   const isLoading = ref<boolean>(false);
   const errorData = ref<string>('');
   const isSuccess = ref<boolean>(false);
 
-  const createAssignment = async () => {
-    const formData = new FormData();
-    const assignmentData = getAssignmentDataAPI();
-
+  const getAssignmentById = async (assignmentId: number) => {
     isLoading.value = true;
 
-    formData.append('assignment', new Blob( [JSON.stringify(assignmentData)], { type: 'application/json' } ));
-
-    assignment.value.vehicleConditionInfo.photosOfImpactFiles.forEach(photo => {
-      formData.append('photosOfImpact', photo);
-    });
-
     try {
-      await createAssignmentApi(formData);
+      const response: IGetAssignmentAPI = await getAssignmentByIdApi(assignmentId);
 
       errorData.value = '';
       isSuccess.value = true;
+
+      setAssignmentDataAPI(response);
     } catch (error) {
       let errorMessage = 'Unknown Error';
 
@@ -48,7 +40,7 @@ export function useCreateAssignment() {
   };
 
   return {
-    createAssignment,
+    getAssignmentById,
     isLoading,
     isSuccess
   };

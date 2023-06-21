@@ -9,3 +9,17 @@ export const createAssignmentApi = async (data: FormData) => {
     data
   });
 };
+
+export const getAssignmentsApi = async () => {
+  return createRequest({
+    endpoint: 'api/user/assignment',
+    method: HTTP_METHODS.get
+  });
+};
+
+export const getAssignmentByIdApi = async (id: number) => {
+  return createRequest({
+    endpoint: `api/user/assignment/${id}`,
+    method: HTTP_METHODS.get
+  });
+};
