@@ -1,8 +1,3 @@
-// General interface
-export type AppEvents = {
-  isAssignmentCreated: boolean;
-};
-
 // Rules interface
 type TypeValidateFunc = (value: string) => boolean | string;
 

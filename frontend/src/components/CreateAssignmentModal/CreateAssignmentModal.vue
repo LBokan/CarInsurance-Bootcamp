@@ -98,19 +98,20 @@
 </template>
 
 <script setup lang="ts">
-  import { inject, ref, type VNodeRef } from 'vue';
+  import { ref, type VNodeRef } from 'vue';
+  import { useEventBus } from '@vueuse/core';
   import { storeToRefs } from 'pinia';
-  import { type Emitter } from 'mitt';
 
   import { useAssignmentStore } from '@/stores/assignment';
   import { useConfirmationStore } from '@/stores/confirmation';
   import { useSnackbarStore } from '@/stores/snackbar';
   import { useCreateAssignment } from '@/hooks/useCreateAssignment';
-  import { type AppEvents } from '@/utils/interfaces';
 
   import CreateContactInfoCard from '@/components/CreateAssignmentModal/CreateContactInfoCard.vue';
   import CreateVehicleInfoCard from '@/components/CreateAssignmentModal/CreateVehicleInfoCard.vue';
   import CreateVehicleConditionInfoCard from '@/components/CreateAssignmentModal/CreateVehicleConditionInfoCard.vue';
+
+  const bus = useEventBus<string>('isAssignmentCreated');
 
   const { assignment } = storeToRefs(useAssignmentStore());
   const { 
@@ -128,7 +129,6 @@
   } = useCreateAssignment();
 
   const formRef: VNodeRef = ref(null);
-  const emitter: Emitter<AppEvents> | undefined = inject('emitter');
 
   const validateAssignment = () => {
     if (formRef.value) {
@@ -158,9 +158,7 @@
       resetAssignment();
       setSnackbarDataAndShow("An assignments is successfully created", 'success');
 
-      if (emitter) {
-        emitter.emit('isAssignmentCreated', true);
-      }
+      bus.emit('true');
     }
   };
 

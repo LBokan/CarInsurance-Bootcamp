@@ -15,13 +15,14 @@
 </template>
 
 <script setup lang="ts">
-  import { inject, onMounted, onUnmounted } from 'vue';
-  import { type Emitter } from 'mitt';
+  import { onMounted, onUnmounted } from 'vue';
+  import { useEventBus } from '@vueuse/core';
 
   import { useGetAssignments } from '@/hooks/useGetAssignments';
-  import { type AppEvents } from '@/utils/interfaces';
   import PreloaderCircle from '@/components/PreloaderCircle.vue';
   import AssignmentItem from '@/components/AssignmentItem.vue';
+
+  const bus = useEventBus<string>('isAssignmentCreated');
 
   const {
     getAssignments,
@@ -30,26 +31,20 @@
     isSuccess
   } = useGetAssignments();
 
-  const emitter: Emitter<AppEvents> | undefined = inject('emitter');
-
-  const handleAssignmentCreated = (isAssignmentCreated: boolean) => {
-    if (isAssignmentCreated) {
+  const handleAssignmentCreated = (isAssignmentCreated: string) => {
+    if (isAssignmentCreated == 'true') {
       getAssignments();
     }
   }
 
   onMounted(() => {
-    if (emitter) {
-      emitter.on('isAssignmentCreated', handleAssignmentCreated);
-    }
+    bus.on(handleAssignmentCreated);
 
     getAssignments();
   })
 
   onUnmounted(() => {
-    if (emitter) {
-      emitter.off('isAssignmentCreated', handleAssignmentCreated);
-    }
+    bus.off(handleAssignmentCreated);
   })
 </script>
 
