@@ -2,7 +2,7 @@ package com.exadel.carinsurance.service.implementation;
 
 import com.exadel.carinsurance.exceptions.AlreadyExistsException;
 import com.exadel.carinsurance.exceptions.NotFoundException;
-import com.exadel.carinsurance.mapper.UserMapper;
+import com.exadel.carinsurance.mapper.toResponse.UserResponseMapper;
 import com.exadel.carinsurance.model.ERoleEntity;
 import com.exadel.carinsurance.model.RoleEntity;
 import com.exadel.carinsurance.model.UserEntity;
@@ -30,7 +30,7 @@ public class AuthService implements IAuthService {
   private final PasswordEncoder passwordEncoder;
   private final IJwtService jwtService;
   private final AuthenticationManager authManager;
-  private final UserMapper userMapper;
+  private final UserResponseMapper userResponseMapper;
 
   @Autowired
   public AuthService( IRoleRepository roleRepository,
@@ -38,14 +38,14 @@ public class AuthService implements IAuthService {
                       PasswordEncoder passwordEncoder,
                       IJwtService jwtService,
                       AuthenticationManager authManager,
-                      UserMapper userMapper
+                      UserResponseMapper userResponseMapper
   ) {
     this.roleRepository = roleRepository;
     this.userRepository = userRepository;
     this.passwordEncoder = passwordEncoder;
     this.jwtService = jwtService;
     this.authManager = authManager;
-    this.userMapper = userMapper;
+    this.userResponseMapper = userResponseMapper;
   }
 
   @Override
@@ -92,7 +92,7 @@ public class AuthService implements IAuthService {
     );
 
     UserEntity userEntity = ( UserEntity ) authentication.getPrincipal();
-    UserResponseEntity userResponse = userMapper.toResponse( userEntity );
+    UserResponseEntity userResponse = userResponseMapper.toResponse( userEntity );
     String jwtToken = jwtService.generateToken( userEmail );
 
     ResponseCookie cookie = ResponseCookie.from( "token", jwtToken )

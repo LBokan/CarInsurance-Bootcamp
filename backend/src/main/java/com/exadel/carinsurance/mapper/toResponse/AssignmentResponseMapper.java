@@ -1,8 +1,7 @@
-package com.exadel.carinsurance.mapper;
+package com.exadel.carinsurance.mapper.toResponse;
 
 import com.exadel.carinsurance.model.assignment.AssignmentEntity;
 import com.exadel.carinsurance.model.assignment.ContactInfoEntity;
-import com.exadel.carinsurance.model.request.AssignmentRequestEntity;
 import com.exadel.carinsurance.model.response.AssignmentResponseEntity;
 import com.exadel.carinsurance.model.response.ContactInfoResponseEntity;
 import com.exadel.carinsurance.model.response.DirectionOfImpactResponseEntity;
@@ -14,25 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class AssignmentMapper implements IMapper<AssignmentEntity, AssignmentRequestEntity, AssignmentResponseEntity> {
-  private final ContactInfoMapper contactInfoMapper;
-  private final VehicleInfoMapper vehicleInfoMapper;
+public class AssignmentResponseMapper implements IResponseMapper<AssignmentEntity, AssignmentResponseEntity> {
+  private final ContactInfoResponseMapper contactInfoResponseMapper;
+  private final VehicleInfoResponseMapper vehicleInfoResponseMapper;
 
   @Autowired
-  public AssignmentMapper(
-      ContactInfoMapper contactInfoMapper,
-      VehicleInfoMapper vehicleInfoMapper
+  public AssignmentResponseMapper(
+      ContactInfoResponseMapper contactInfoResponseMapper,
+      VehicleInfoResponseMapper vehicleInfoResponseMapper
   ) {
-    this.contactInfoMapper = contactInfoMapper;
-    this.vehicleInfoMapper = vehicleInfoMapper;
-  }
-
-  @Override
-  public AssignmentEntity toEntity( AssignmentRequestEntity request ) {
-    return AssignmentEntity
-        .builder()
-        .dateOfIncident( request.getDateOfIncident() )
-        .build();
+    this.contactInfoResponseMapper = contactInfoResponseMapper;
+    this.vehicleInfoResponseMapper = vehicleInfoResponseMapper;
   }
 
   @Override
@@ -40,7 +31,7 @@ public class AssignmentMapper implements IMapper<AssignmentEntity, AssignmentReq
     List<ContactInfoResponseEntity> contactsInfoResponse = new ArrayList<>();
 
     for ( ContactInfoEntity contactInfo : entity.getContactsInfo() ) {
-      ContactInfoResponseEntity contactInfoResponse = contactInfoMapper.toResponse( contactInfo );
+      ContactInfoResponseEntity contactInfoResponse = contactInfoResponseMapper.toResponse( contactInfo );
 
       contactsInfoResponse.add( contactInfoResponse );
     }
@@ -64,7 +55,7 @@ public class AssignmentMapper implements IMapper<AssignmentEntity, AssignmentReq
         .dateOfCreation( entity.getDateOfCreation() )
         .dateOfIncident( entity.getDateOfIncident() )
         .contactsInfo( contactsInfoResponse )
-        .vehicleInfo( vehicleInfoMapper.toResponse( entity.getVehicleInfo() ) )
+        .vehicleInfo( vehicleInfoResponseMapper.toResponse( entity.getVehicleInfo() ) )
         .vehicleConditionInfo( vehicleConditionInfoResponse )
         .build();
   }

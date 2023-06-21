@@ -1,24 +1,11 @@
-package com.exadel.carinsurance.mapper;
+package com.exadel.carinsurance.mapper.toResponse;
 
 import com.exadel.carinsurance.model.assignment.AddressEntity;
-import com.exadel.carinsurance.model.request.AddressRequestEntity;
 import com.exadel.carinsurance.model.response.AddressResponseEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AddressMapper implements IMapper<AddressEntity, AddressRequestEntity, AddressResponseEntity> {
-  @Override
-  public AddressEntity toEntity( AddressRequestEntity request ) {
-    return AddressEntity
-        .builder()
-        .type( request.getType() )
-        .city( request.getCity() )
-        .state( request.getState() )
-        .zip( request.getZip() )
-        .addressLine( request.getAddressLine() )
-        .build();
-  }
-
+public class AddressResponseMapper implements IResponseMapper<AddressEntity, AddressResponseEntity> {
   @Override
   public AddressResponseEntity toResponse( AddressEntity entity ) {
     return AddressResponseEntity

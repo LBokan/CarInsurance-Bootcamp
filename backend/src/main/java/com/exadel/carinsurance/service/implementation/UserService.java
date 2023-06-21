@@ -1,6 +1,6 @@
 package com.exadel.carinsurance.service.implementation;
 
-import com.exadel.carinsurance.mapper.UserMapper;
+import com.exadel.carinsurance.mapper.toResponse.UserResponseMapper;
 import com.exadel.carinsurance.model.UserEntity;
 import com.exadel.carinsurance.model.response.UserResponseEntity;
 import com.exadel.carinsurance.repository.IUserRepository;
@@ -14,22 +14,22 @@ import java.util.List;
 @Service
 public class UserService implements IUserService {
   private final IUserRepository userRepository;
-  private final UserMapper userMapper;
+  private final UserResponseMapper userResponseMapper;
 
   @Autowired
   public UserService(
       IUserRepository userRepository,
-      UserMapper userMapper
+      UserResponseMapper userResponseMapper
   ) {
     this.userRepository = userRepository;
-    this.userMapper = userMapper;
+    this.userResponseMapper = userResponseMapper;
   }
 
   @Override
   public UserResponseEntity getUser() {
     UserEntity user = ( UserEntity ) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-    return userMapper.toResponse( user );
+    return userResponseMapper.toResponse( user );
   }
 
   @Override

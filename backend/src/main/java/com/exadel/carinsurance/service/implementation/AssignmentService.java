@@ -1,7 +1,8 @@
 package com.exadel.carinsurance.service.implementation;
 
 import com.exadel.carinsurance.exceptions.NotFoundException;
-import com.exadel.carinsurance.mapper.*;
+import com.exadel.carinsurance.mapper.toEntity.*;
+import com.exadel.carinsurance.mapper.toResponse.AssignmentResponseMapper;
 import com.exadel.carinsurance.model.UserEntity;
 import com.exadel.carinsurance.model.assignment.*;
 import com.exadel.carinsurance.model.request.AddressRequestEntity;
@@ -41,11 +42,12 @@ public class AssignmentService implements IAssignmentService {
   private final IPhoneNumberRepository phoneNumberRepository;
   private final IAddressRepository addressRepository;
   private final PhotosService photosService;
-  private final AssignmentMapper assignmentMapper;
-  private final VehicleInfoMapper vehicleInfoMapper;
-  private final ContactInfoMapper contactInfoMapper;
-  private final PhoneNumberMapper phoneNumberMapper;
-  private final AddressMapper addressMapper;
+  private final AssignmentResponseMapper assignmentResponseMapper;
+  private final AssignmentEntityMapper assignmentEntityMapper;
+  private final VehicleInfoEntityMapper vehicleInfoEntityMapper;
+  private final ContactInfoEntityMapper contactInfoEntityMapper;
+  private final PhoneNumberEntityMapper phoneNumberEntityMapper;
+  private final AddressEntityMapper addressEntityMapper;
 
   @Autowired
   public AssignmentService(
@@ -59,11 +61,12 @@ public class AssignmentService implements IAssignmentService {
       IPhoneNumberRepository phoneNumberRepository,
       IAddressRepository addressRepository,
       PhotosService photosService,
-      AssignmentMapper assignmentMapper,
-      VehicleInfoMapper vehicleInfoMapper,
-      ContactInfoMapper contactInfoMapper,
-      PhoneNumberMapper phoneNumberMapper,
-      AddressMapper addressMapper
+      AssignmentResponseMapper assignmentResponseMapper,
+      AssignmentEntityMapper assignmentEntityMapper,
+      VehicleInfoEntityMapper vehicleInfoEntityMapper,
+      ContactInfoEntityMapper contactInfoEntityMapper,
+      PhoneNumberEntityMapper phoneNumberEntityMapper,
+      AddressEntityMapper addressEntityMapper
   ) {
     this.entityManager = entityManager;
     this.userRepository = userRepository;
@@ -76,11 +79,12 @@ public class AssignmentService implements IAssignmentService {
     this.phoneNumberRepository = phoneNumberRepository;
     this.addressRepository = addressRepository;
     this.photosService = photosService;
-    this.assignmentMapper = assignmentMapper;
-    this.vehicleInfoMapper = vehicleInfoMapper;
-    this.contactInfoMapper = contactInfoMapper;
-    this.phoneNumberMapper = phoneNumberMapper;
-    this.addressMapper = addressMapper;
+    this.assignmentResponseMapper = assignmentResponseMapper;
+    this.assignmentEntityMapper = assignmentEntityMapper;
+    this.vehicleInfoEntityMapper = vehicleInfoEntityMapper;
+    this.contactInfoEntityMapper = contactInfoEntityMapper;
+    this.phoneNumberEntityMapper = phoneNumberEntityMapper;
+    this.addressEntityMapper = addressEntityMapper;
   }
 
   @Override
@@ -97,7 +101,7 @@ public class AssignmentService implements IAssignmentService {
             new NotFoundException( "The assignment status is not found" )
         );
 
-    AssignmentEntity assignmentEntity = assignmentMapper.toEntity( request );
+    AssignmentEntity assignmentEntity = assignmentEntityMapper.toEntity( request );
     assignmentEntity.setUser( mergedUser );
     assignmentEntity.setDateOfCreation( currentDateTimeAssignment );
     assignmentEntity.setStatus( assignmentStatusFromDB );
@@ -141,7 +145,7 @@ public class AssignmentService implements IAssignmentService {
     vehicleConditionInfoRepository.save( vehicleConditionInfoEntity );
 
     //  Vehicle condition info creation
-    VehicleInfoEntity vehicleInfoEntity = vehicleInfoMapper.toEntity( request );
+    VehicleInfoEntity vehicleInfoEntity = vehicleInfoEntityMapper.toEntity( request );
     vehicleInfoEntity.setAssignment( assignmentEntityFromDB );
 
     vehicleInfoRepository.save( vehicleInfoEntity );
@@ -150,7 +154,7 @@ public class AssignmentService implements IAssignmentService {
     for ( ContactInfoRequestEntity contactInfoRequest : request.getContactsInfo() ) {
       LocalDateTime currentDateTimeContactInfo = LocalDateTime.now();
 
-      ContactInfoEntity contactInfoEntity = contactInfoMapper.toEntity( contactInfoRequest );
+      ContactInfoEntity contactInfoEntity = contactInfoEntityMapper.toEntity( contactInfoRequest );
       contactInfoEntity.setDateOfCreation( currentDateTimeContactInfo );
       contactInfoEntity.setAssignment( assignmentEntityFromDB );
 
@@ -164,14 +168,14 @@ public class AssignmentService implements IAssignmentService {
               );
 
       for ( PhoneNumberRequestEntity phoneNumberRequest : contactInfoRequest.getPhoneNumbers() ) {
-        PhoneNumberEntity phoneNumberEntity = phoneNumberMapper.toEntity( phoneNumberRequest );
+        PhoneNumberEntity phoneNumberEntity = phoneNumberEntityMapper.toEntity( phoneNumberRequest );
         phoneNumberEntity.setContactInfo( contactInfoEntityFromDB );
 
         phoneNumberRepository.save( phoneNumberEntity );
       }
 
       for ( AddressRequestEntity addressRequest : contactInfoRequest.getAddresses() ) {
-        AddressEntity addressEntity = addressMapper.toEntity( addressRequest );
+        AddressEntity addressEntity = addressEntityMapper.toEntity( addressRequest );
         addressEntity.setContactInfo( contactInfoEntityFromDB );
 
         addressRepository.save( addressEntity );
@@ -195,7 +199,7 @@ public class AssignmentService implements IAssignmentService {
         );
 
     for ( AssignmentEntity assignment : assignmentsFromDB ) {
-      assignmentsResponse.add( assignmentMapper.toResponse( assignment ) );
+      assignmentsResponse.add( assignmentResponseMapper.toResponse( assignment ) );
     }
 
     Comparator<AssignmentResponseEntity> comparator = Comparator
@@ -218,6 +222,6 @@ public class AssignmentService implements IAssignmentService {
 
     return ResponseEntity
         .ok()
-        .body( assignmentMapper.toResponse( assignmentFromDB ) );
+        .body( assignmentResponseMapper.toResponse( assignmentFromDB ) );
   }
 }

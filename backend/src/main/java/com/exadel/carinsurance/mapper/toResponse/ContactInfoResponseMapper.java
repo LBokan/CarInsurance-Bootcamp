@@ -1,9 +1,8 @@
-package com.exadel.carinsurance.mapper;
+package com.exadel.carinsurance.mapper.toResponse;
 
 import com.exadel.carinsurance.model.assignment.AddressEntity;
 import com.exadel.carinsurance.model.assignment.ContactInfoEntity;
 import com.exadel.carinsurance.model.assignment.PhoneNumberEntity;
-import com.exadel.carinsurance.model.request.ContactInfoRequestEntity;
 import com.exadel.carinsurance.model.response.AddressResponseEntity;
 import com.exadel.carinsurance.model.response.ContactInfoResponseEntity;
 import com.exadel.carinsurance.model.response.PhoneNumberResponseEntity;
@@ -14,28 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class ContactInfoMapper implements IMapper<ContactInfoEntity, ContactInfoRequestEntity, ContactInfoResponseEntity> {
-  private final PhoneNumberMapper phoneNumberMapper;
-  private final AddressMapper addressMapper;
+public class ContactInfoResponseMapper implements IResponseMapper<ContactInfoEntity, ContactInfoResponseEntity> {
+  private final PhoneNumberResponseMapper phoneNumberResponseMapper;
+  private final AddressResponseMapper addressResponseMapper;
 
   @Autowired
-  public ContactInfoMapper(
-      PhoneNumberMapper phoneNumberMapper,
-      AddressMapper addressMapper
+  public ContactInfoResponseMapper(
+      PhoneNumberResponseMapper phoneNumberResponseMapper,
+      AddressResponseMapper addressResponseMapper
   ) {
-    this.phoneNumberMapper = phoneNumberMapper;
-    this.addressMapper = addressMapper;
-  }
-
-  @Override
-  public ContactInfoEntity toEntity( ContactInfoRequestEntity request ) {
-    return ContactInfoEntity
-        .builder()
-        .type( request.getType() )
-        .firstName( request.getFirstName() )
-        .lastName( request.getLastName() )
-        .email( request.getEmail() )
-        .build();
+    this.phoneNumberResponseMapper = phoneNumberResponseMapper;
+    this.addressResponseMapper = addressResponseMapper;
   }
 
   @Override
@@ -44,13 +32,13 @@ public class ContactInfoMapper implements IMapper<ContactInfoEntity, ContactInfo
     List<AddressResponseEntity> addressesResponse = new ArrayList<>();
 
     for ( PhoneNumberEntity phoneNumber : entity.getPhoneNumbers() ) {
-      PhoneNumberResponseEntity phoneNumberResponse = phoneNumberMapper.toResponse( phoneNumber );
+      PhoneNumberResponseEntity phoneNumberResponse = phoneNumberResponseMapper.toResponse( phoneNumber );
 
       phoneNumbersResponse.add( phoneNumberResponse );
     }
 
     for ( AddressEntity address : entity.getAddresses() ) {
-      AddressResponseEntity addressResponse = addressMapper.toResponse( address );
+      AddressResponseEntity addressResponse = addressResponseMapper.toResponse( address );
 
       addressesResponse.add( addressResponse );
     }
