@@ -1,7 +1,7 @@
 <template>
-  <v-dialog
-    persistent
-    width="800"
+  <v-dialog 
+    persistent 
+    width="800" 
     scrollable
   >
     <v-card>
@@ -32,15 +32,15 @@
         
         <v-divider/>
 
-        <ContactInfoCard 
+        <CreateContactInfoCard 
           v-if="assignment.page == 1"
           @validate-form="validateAssignment" 
         />
-        <VehicleInfoCard 
+        <CreateVehicleInfoCard 
           v-if="assignment.page == 2" 
           @validate-form="validateAssignment" 
         />
-        <VehicleConditionInfoCard 
+        <CreateVehicleConditionInfoCard 
           v-if="assignment.page == 3" 
           @validate-form="validateAssignment" 
         />
@@ -99,6 +99,7 @@
 
 <script setup lang="ts">
   import { ref, type VNodeRef } from 'vue';
+  import { useEventBus } from '@vueuse/core';
   import { storeToRefs } from 'pinia';
 
   import { useAssignmentStore } from '@/stores/assignment';
@@ -106,15 +107,17 @@
   import { useSnackbarStore } from '@/stores/snackbar';
   import { useCreateAssignment } from '@/hooks/useCreateAssignment';
 
-  import ContactInfoCard from '@/components/AssignmentModal/ContactInfoCard.vue';
-  import VehicleInfoCard from '@/components/AssignmentModal/VehicleInfoCard.vue';
-  import VehicleConditionInfoCard from '@/components/AssignmentModal/VehicleConditionInfoCard.vue';
+  import CreateContactInfoCard from '@/components/CreateAssignmentModal/CreateContactInfoCard.vue';
+  import CreateVehicleInfoCard from '@/components/CreateAssignmentModal/CreateVehicleInfoCard.vue';
+  import CreateVehicleConditionInfoCard from '@/components/CreateAssignmentModal/CreateVehicleConditionInfoCard.vue';
+
+  const bus = useEventBus<string>('isAssignmentCreated');
 
   const { assignment } = storeToRefs(useAssignmentStore());
   const { 
     goToNextPage, 
     goToPrevPage, 
-    closeAndResetAssignmentModal 
+    closeAndResetAssignmentModalOrDialog 
   } = useAssignmentStore();
   const { setConfirmationDataAndShow } = useConfirmationStore();
   const { setSnackbarDataAndShow } = useSnackbarStore();
@@ -131,14 +134,14 @@
     if (formRef.value) {
       formRef.value.validate();
     }
-  }
+  };
 
   const saveProgress = () => {
     localStorage.setItem('assignmentData', JSON.stringify({
       ...assignment.value,
       vehicleConditionInfo: {
         directionOfImpact: assignment.value.vehicleConditionInfo.directionOfImpact,
-        photosOfImpact: []
+        photosOfImpactFiles: []
       }
     }));
     setSnackbarDataAndShow('Your data is successfully saved', 'success');
@@ -154,6 +157,8 @@
     if (!isLoading.value && isSuccess.value) {
       resetAssignment();
       setSnackbarDataAndShow("An assignments is successfully created", 'success');
+
+      bus.emit('true');
     }
   };
 
@@ -163,7 +168,7 @@
     }
 
     localStorage.removeItem('assignmentData');
-    closeAndResetAssignmentModal();
+    closeAndResetAssignmentModalOrDialog();
   };
 
   const closeAssignment = () => {

@@ -1,10 +1,13 @@
-package com.exadel.carinsurance.mapper;
+package com.exadel.carinsurance.mapper.toEntity;
 
 import com.exadel.carinsurance.model.assignment.VehicleInfoEntity;
 import com.exadel.carinsurance.model.request.AssignmentRequestEntity;
+import org.springframework.stereotype.Component;
 
-public class VehicleInfoMapper {
-  public static VehicleInfoEntity mapToVehicleInfo( AssignmentRequestEntity request ) {
+@Component
+public class VehicleInfoEntityMapper implements IEntityMapper<VehicleInfoEntity, AssignmentRequestEntity> {
+  @Override
+  public VehicleInfoEntity toEntity( AssignmentRequestEntity request ) {
     return VehicleInfoEntity
         .builder()
         .vinNumber( request.getVehicleInfo().getVinNumber() )

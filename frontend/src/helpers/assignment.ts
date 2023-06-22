@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { type IAssignment } from '@/utils/interfaces';
 
 type typeGetYearToday = () => number;
@@ -42,11 +43,23 @@ export const getYearToday: typeGetYearToday = () => {
   return new Date().getFullYear();
 }
 
+export const formatDate = (date: string | Date) => {
+  if (date instanceof Date) {
+    return format(new Date(date), 'MM/dd/yyyy');
+  } else if (date.includes("T")) {
+    return format(new Date(date.split('T')[0]), 'MM/dd/yyyy');
+  }
+};
+
 export const assignmentTemplate: IAssignment = {
-  isOpen: false,
+  isModalOpen: false,
+  isDialogOpen: false,
   formModel: null,
   page: 1,
+  id: 0,
+  creationDate: '',
   incidentDate: new Date(),
+  status: '',
   contacts: [
     {
       id: '0',
@@ -81,6 +94,8 @@ export const assignmentTemplate: IAssignment = {
   },
   vehicleConditionInfo: {
     directionOfImpact: '',
-    photosOfImpact: []
+    namesOfPhotosOfImpact: '',
+    photosOfImpactFiles: [],
+    photosOfImpactStrings: []
   }
 };

@@ -5,11 +5,6 @@ import { useUserStore } from '@/stores/user';
 import { type ICredentials, type IUserState } from '@/utils/interfaces';
 import { clearAllCookies } from '@/helpers/authorization';
 
-interface IResponse {
-  user: IUserState,
-  token: string
-};
-
 export function useLogin() {
   const { setUserData } = useUserStore();
   const { setSnackbarDataAndShow } = useSnackbarStore();
@@ -30,7 +25,7 @@ export function useLogin() {
     isLoading.value = true;
 
     try {
-      const response: IResponse = await authenticateUser({
+      const response: IUserState = await authenticateUser({
         email: credentials.email,
         password: credentials.password,
       });
@@ -39,7 +34,7 @@ export function useLogin() {
       errorData.value = '';
       isSuccess.value = true;
 
-      setUserData(response.user);
+      setUserData(response);
     } catch (error) {
       let errorMessage = 'Unknown Error';
 

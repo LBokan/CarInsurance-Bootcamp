@@ -214,7 +214,7 @@
 </template>
 
 <script setup lang="ts">
-  import { defineEmits, computed, onMounted } from 'vue';
+  import { computed, onMounted } from 'vue';
   import { storeToRefs } from 'pinia';
 
   import { rules } from '@/utils/rulesRegex';
@@ -230,7 +230,7 @@
     phoneNumberTypesLabels, 
     addressesTypesLabels, 
     statesCodesLabels 
-  } from '@/helpers/assignmentModal';
+  } from '@/helpers/assignment';
 
   const { assignment } = storeToRefs(useAssignmentStore());
   const { 
@@ -262,7 +262,7 @@
 
       return !hasContactWithExcludedType;
     });
-  })
+  });
 
   const getAssignmentDataPropName = (infoType: string) => {
     const infoTypeInLowerCase = infoType.toLowerCase();
@@ -274,13 +274,13 @@
     }
 
     return '';
-  }
+  };
 
-  const getContactIndex = (contactId: string) => {
+  const getContactIndex = (contactId: string | number) => {
     return assignment.value.contacts.findIndex(contact => contact.id == contactId);
-  }
+  };
 
-  const isStateValue = (contactId: string, addressId: string) => {
+  const isStateValue = (contactId: string | number, addressId: string | number) => {
     const contactIndex = getContactIndex(contactId);
     const addressIndex = assignment.value.contacts[contactIndex].addresses.findIndex(address => 
       address.id == addressId
@@ -288,7 +288,7 @@
 
     return !!assignment.value.contacts[contactIndex]
               .addresses[addressIndex]?.state;
-  }
+  };
 
   const addContact = () => {
     addContactData({
@@ -313,9 +313,9 @@
     });
 
     emits('validate-form');
-  }
+  };
 
-  const addInfo = (contactId: string, infoType: string) => {
+  const addInfo = (contactId: string | number, infoType: string) => {
     const contactIndex = getContactIndex(contactId);
     const assignmentDataPropName = getAssignmentDataPropName(infoType);
 
@@ -351,12 +351,12 @@
           break;
       }
     }
-  }
+  };
 
   const openConfirmationModal = (
-    contactId: string, 
+    contactId: string | number, 
     infoType: string, 
-    infoId: string | null = null
+    infoId: string | number | null = null
   ) => {
     const contactIndex = getContactIndex(contactId);
 
@@ -388,5 +388,5 @@
         });
         break;
     }
-  }
+  };
 </script>

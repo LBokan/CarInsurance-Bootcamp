@@ -12,28 +12,18 @@ export interface IFormFilesRules {
 };
 
 // User interface
-interface IAuthoritiesObj {
-  authority: string
-};
-
 interface IRoleObj {
-  roleId?: number,
-  name?: string
+  roleId: number,
+  name: string
 };
 
 export interface IUserState {
-  accountNonExpired?: boolean,
-  accountNonLocked?: boolean,
-  authorities?: Array<IAuthoritiesObj>,
-  credentialsNonExpired?: boolean,
   email: string,
-  enabled?: boolean,
   firstName: string,
   lastName: string,
   role: IRoleObj,
   roleId: number | null,
   userId: number | null,
-  username?: string
 };
 
 export interface ICredentials {
@@ -43,13 +33,13 @@ export interface ICredentials {
 
 // Assignment interface
 export interface IPhoneNumbers {
-  id: string,
+  id: string | number,
   type: string,
   number: string
 }
 
 export interface IAddresses {
-  id: string,
+  id: string | number,
   type: string,
   city: string,
   state: string | null,
@@ -58,7 +48,7 @@ export interface IAddresses {
 }
 
 export interface IContacts {
-  id: string,
+  id: string | number,
   type: string,
   firstName: string,
   lastName: string,
@@ -80,14 +70,20 @@ interface IVehicleInfo {
 
 interface IVehicleConditionInfo {
   directionOfImpact: string,
-  photosOfImpact: File[]
+  namesOfPhotosOfImpact: string,
+  photosOfImpactFiles: File[]
+  photosOfImpactStrings: string[]
 }
 
 export interface IAssignment {
-  isOpen: boolean,
+  isModalOpen: boolean,
+  isDialogOpen: boolean,
   formModel: boolean | null,
   page: number,
+  id: number,
+  creationDate: string,
   incidentDate: Date,
+  status: string,
   contacts: IContacts[],
   vehicleInfo: IVehicleInfo,
   vehicleConditionInfo: IVehicleConditionInfo
@@ -98,9 +94,24 @@ export interface IAssignmentInfoDataAPI {
   [key: string]: string | IAssignmentInfoDataAPI[]
 }
 
-export interface IAssignmentAPI {
+export interface ICreateAssignmentAPI {
   dateOfIncident: string,
   contactsInfo: IAssignmentInfoDataAPI[],
   vehicleInfo: IVehicleInfo,
   vehicleConditionInfo: IAssignmentInfoDataAPI
+}
+
+interface IGetVehicleConditionInfo {
+  directionOfImpact: string,
+  namesOfPhotosOfImpact: string
+}
+
+export interface IGetAssignmentAPI {
+  assignmentId: number,
+  dateOfCreation: string,
+  dateOfIncident: string,
+  status: string,
+  contactsInfo: IContacts[],
+  vehicleInfo: IVehicleInfo,
+  vehicleConditionInfo: IGetVehicleConditionInfo
 }

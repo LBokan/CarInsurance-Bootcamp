@@ -22,7 +22,7 @@ export function useCreateAssignment() {
 
     formData.append('assignment', new Blob( [JSON.stringify(assignmentData)], { type: 'application/json' } ));
 
-    assignment.value.vehicleConditionInfo.photosOfImpact.forEach(photo => {
+    assignment.value.vehicleConditionInfo.photosOfImpactFiles.forEach(photo => {
       formData.append('photosOfImpact', photo);
     });
 

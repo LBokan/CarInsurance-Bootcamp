@@ -2,14 +2,15 @@ import { reactive } from 'vue';
 import { defineStore } from 'pinia';
 
 import { format } from 'date-fns';
-import { assignmentTemplate } from '@/helpers/assignmentModal';
+import { assignmentTemplate } from '@/helpers/assignment';
 import {
   type IAssignment,
   type IContacts,
   type IPhoneNumbers,
   type IAddresses,
   type IAssignmentInfoDataAPI,
-  type IAssignmentAPI
+  type ICreateAssignmentAPI,
+  type IGetAssignmentAPI
 } from '@/utils/interfaces';
 
 type TypeAssignmentKeys = keyof IAssignment;
@@ -18,7 +19,11 @@ export const useAssignmentStore = defineStore('assignment', () => {
   const assignment: IAssignment = reactive(structuredClone(assignmentTemplate));
 
   function showAssignmentModal() {
-    assignment.isOpen = true;
+    assignment.isModalOpen = true;
+  }
+
+  function showAssignmentDialog() {
+    assignment.isDialogOpen = true;
   }
 
   function setAssignmentData<K extends TypeAssignmentKeys>(data: IAssignment) {
@@ -27,6 +32,39 @@ export const useAssignmentStore = defineStore('assignment', () => {
 
       assignment[typedKey] = data[typedKey];
     })
+  }
+
+  function setAssignmentDataAPI(data: IGetAssignmentAPI) {
+    Object.keys(data).forEach((key) => {
+      switch (key) {
+        case 'assignmentId':
+          assignment.id = data.assignmentId;
+          break;
+        case 'dateOfCreation':
+          assignment.creationDate = data.dateOfCreation;
+          break;
+        case 'dateOfIncident':
+          assignment.incidentDate = new Date(data.dateOfIncident.split('T')[0]);
+          break;
+        case 'status':
+          assignment.status = data.status;
+          break;
+        case 'contactsInfo':
+          assignment.contacts = data.contactsInfo;
+          break;
+        case 'vehicleInfo':
+          assignment.vehicleInfo = data.vehicleInfo;
+          break;
+        case 'vehicleConditionInfo':
+          assignment.vehicleConditionInfo.directionOfImpact = data.vehicleConditionInfo.directionOfImpact;
+          assignment.vehicleConditionInfo.namesOfPhotosOfImpact = data.vehicleConditionInfo.namesOfPhotosOfImpact;
+          break;
+      }
+    });
+  }
+
+  function setPhotosOfImpactStrings(photos: string[]) {
+    assignment.vehicleConditionInfo.photosOfImpactStrings = photos;
   }
 
   function goToNextPage() {
@@ -78,7 +116,7 @@ export const useAssignmentStore = defineStore('assignment', () => {
     assignment.contacts[contactIndex].addresses = filteredAddressesData;
   }
 
-  function closeAndResetAssignmentModal<K extends TypeAssignmentKeys>() {
+  function closeAndResetAssignmentModalOrDialog<K extends TypeAssignmentKeys>() {
     Object.keys(assignmentTemplate).forEach((key) => {
       const typedKey = key as K;
 
@@ -86,7 +124,7 @@ export const useAssignmentStore = defineStore('assignment', () => {
     });
   }
 
-  function getAssignmentDataAPI(): IAssignmentAPI {
+  function getAssignmentDataAPI(): ICreateAssignmentAPI {
     const formattedContacts: IAssignmentInfoDataAPI[] = assignment.contacts.map(contact => {
       const formattedPhoneNumbers: IAssignmentInfoDataAPI[] = contact.phoneNumbers.map(phoneNumber => ({
         type: phoneNumber.type,
@@ -133,7 +171,10 @@ export const useAssignmentStore = defineStore('assignment', () => {
   return {
     assignment,
     showAssignmentModal,
+    showAssignmentDialog,
     setAssignmentData,
+    setAssignmentDataAPI,
+    setPhotosOfImpactStrings,
     goToNextPage,
     goToPrevPage,
     addContactData,
@@ -141,7 +182,7 @@ export const useAssignmentStore = defineStore('assignment', () => {
     removeContactData,
     removePhoneNumberData,
     removeAddressData,
-    closeAndResetAssignmentModal,
+    closeAndResetAssignmentModalOrDialog,
     getAssignmentDataAPI
   }
 })
