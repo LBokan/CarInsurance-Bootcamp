@@ -34,7 +34,7 @@ public class VehicleInfoEntity {
   private int yearOfManufacture;
 
   @Column( name = "odometer_value" )
-  private String odometerValue;
+  private int odometerValue;
 
   @Column( name = "license_plate_number" )
   private String licensePlateNumber;
@@ -52,10 +52,7 @@ public class VehicleInfoEntity {
   private Long assignmentId;
 
   @JsonIgnore
-  @OneToOne( fetch = FetchType.EAGER,
-      cascade = { CascadeType.PERSIST, CascadeType.MERGE,
-          CascadeType.DETACH, CascadeType.REFRESH },
-      optional = false )
+  @OneToOne( fetch = FetchType.LAZY )
   @JoinColumn( name = "assignment_id" )
   private AssignmentEntity assignment;
 
@@ -66,11 +63,12 @@ public class VehicleInfoEntity {
         ", vinNumber='" + vinNumber + '\'' +
         ", carMake='" + carMake + '\'' +
         ", carModel='" + carModel + '\'' +
-        ", yearOfManufacture='" + yearOfManufacture + '\'' +
-        ", odometerValue='" + odometerValue + '\'' +
+        ", yearOfManufacture=" + yearOfManufacture +
+        ", odometerValue=" + odometerValue +
         ", licensePlateNumber='" + licensePlateNumber + '\'' +
         ", licenseState='" + licenseState + '\'' +
-        ", licenseExpirationDate='" + licenseExpirationDate + '\'' +
+        ", licenseExpirationDate=" + licenseExpirationDate +
+        ", assignmentId=" + assignmentId +
         '}';
   }
 }

@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class PhoneNumberRequestEntity {
   private String type;
   private String number;
+  private Long contactInfoId;
 }

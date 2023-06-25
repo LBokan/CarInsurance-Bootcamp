@@ -11,7 +11,7 @@ public class PhoneNumberResponseMapper implements IResponseMapper<PhoneNumberEnt
     return PhoneNumberResponseEntity
         .builder()
         .id( entity.getId() )
-        .type( entity.getType() )
+        .type( entity.getType().getName() )
         .number( entity.getNumber() )
         .build();
   }

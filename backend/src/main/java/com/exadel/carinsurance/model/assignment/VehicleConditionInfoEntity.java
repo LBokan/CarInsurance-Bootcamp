@@ -27,12 +27,9 @@ public class VehicleConditionInfoEntity {
       nullable = false,
       insertable = false,
       updatable = false )
-  private String directionOfImpactId;
+  private int directionOfImpactId;
 
-  @ManyToOne( fetch = FetchType.EAGER,
-      cascade = { CascadeType.PERSIST, CascadeType.MERGE,
-          CascadeType.DETACH, CascadeType.REFRESH },
-      optional = false )
+  @ManyToOne( fetch = FetchType.LAZY )
   @JoinColumn( name = "direction_of_impact_id" )
   private DirectionOfImpactEntity directionOfImpact;
 
@@ -43,10 +40,7 @@ public class VehicleConditionInfoEntity {
   private Long assignmentId;
 
   @JsonIgnore
-  @OneToOne( fetch = FetchType.EAGER,
-      cascade = { CascadeType.PERSIST, CascadeType.MERGE,
-          CascadeType.DETACH, CascadeType.REFRESH },
-      optional = false )
+  @OneToOne( fetch = FetchType.LAZY )
   @JoinColumn( name = "assignment_id" )
   private AssignmentEntity assignment;
 
@@ -55,7 +49,8 @@ public class VehicleConditionInfoEntity {
     return "VehicleConditionInfoEntity{" +
         "id=" + id +
         ", namesOfPhotosOfImpact='" + namesOfPhotosOfImpact + '\'' +
-        ", directionOfImpact=" + directionOfImpact +
+        ", directionOfImpactId=" + directionOfImpactId +
+        ", assignmentId=" + assignmentId +
         '}';
   }
 }

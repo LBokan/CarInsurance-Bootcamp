@@ -5,11 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -24,12 +21,6 @@ public class ContactInfoEntity {
   @Column( name = "id" )
   private Long id;
 
-  @Column( name = "date_of_creation" )
-  private LocalDateTime dateOfCreation;
-
-  @Column( name = "type" )
-  private String type;
-
   @Column( name = "first_name" )
   private String firstName;
 
@@ -39,6 +30,16 @@ public class ContactInfoEntity {
   @Column( name = "email" )
   private String email;
 
+  @Column( name = "type_id",
+      nullable = false,
+      insertable = false,
+      updatable = false )
+  private int typeId;
+
+  @ManyToOne( fetch = FetchType.LAZY )
+  @JoinColumn( name = "type_id" )
+  private ContactInfoTypeEntity type;
+
   @Column( name = "assignment_id",
       nullable = false,
       insertable = false,
@@ -46,37 +47,31 @@ public class ContactInfoEntity {
   private Long assignmentId;
 
   @JsonIgnore
-  @ManyToOne( fetch = FetchType.EAGER,
-      cascade = { CascadeType.PERSIST, CascadeType.MERGE,
-          CascadeType.DETACH, CascadeType.REFRESH },
-      optional = false )
+  @ManyToOne( fetch = FetchType.LAZY )
   @JoinColumn( name = "assignment_id" )
   private AssignmentEntity assignment;
 
-  @OneToMany( fetch = FetchType.EAGER,
+  @OneToMany( fetch = FetchType.LAZY,
       mappedBy = "contactInfo",
-      cascade = { CascadeType.PERSIST, CascadeType.MERGE,
-          CascadeType.DETACH, CascadeType.REFRESH } )
-  @Fetch( value = FetchMode.SUBSELECT )
+      cascade = CascadeType.ALL,
+      orphanRemoval = true )
   private List<PhoneNumberEntity> phoneNumbers;
 
-  @OneToMany( fetch = FetchType.EAGER,
+  @OneToMany( fetch = FetchType.LAZY,
       mappedBy = "contactInfo",
-      cascade = { CascadeType.PERSIST, CascadeType.MERGE,
-          CascadeType.DETACH, CascadeType.REFRESH } )
-  @Fetch( value = FetchMode.SUBSELECT )
+      cascade = CascadeType.ALL,
+      orphanRemoval = true )
   private List<AddressEntity> addresses;
 
   @Override
   public String toString() {
     return "ContactInfoEntity{" +
         "id=" + id +
-        ", type='" + type + '\'' +
         ", firstName='" + firstName + '\'' +
         ", lastName='" + lastName + '\'' +
         ", email='" + email + '\'' +
-        ", phoneNumbers=" + phoneNumbers +
-        ", addresses=" + addresses +
+        ", typeId=" + typeId +
+        ", assignmentId=" + assignmentId +
         '}';
   }
 }

@@ -1,5 +1,6 @@
 package com.exadel.carinsurance.model.assignment;
 
+import com.exadel.carinsurance.model.CompanyEntity;
 import com.exadel.carinsurance.model.UserEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -23,8 +24,43 @@ import java.util.List;
 public class AssignmentEntity {
   @Id
   @GeneratedValue( strategy = GenerationType.IDENTITY )
-  @Column( name = "assignment_id" )
-  private Long assignmentId;
+  @Column( name = "id" )
+  private Long id;
+
+  @Column( name = "date_of_creation" )
+  private LocalDateTime dateOfCreation;
+
+  @Column( name = "date_of_incident" )
+  private Date dateOfIncident;
+
+  @Column( name = "status_id",
+      nullable = false,
+      insertable = false,
+      updatable = false )
+  private int statusId;
+
+  @ManyToOne( fetch = FetchType.LAZY )
+  @JoinColumn( name = "status_id" )
+  private AssignmentStatusEntity status;
+
+  @Column( name = "insurance_agency_id",
+      nullable = false,
+      insertable = false,
+      updatable = false )
+  private Long insuranceAgencyId;
+
+  @ManyToOne( fetch = FetchType.LAZY )
+  @JoinColumn( name = "insurance_agency_id" )
+  private CompanyEntity insuranceAgency;
+
+  @Column( name = "repair_facility_id",
+      insertable = false,
+      updatable = false )
+  private Long repairFacilityId;
+
+  @ManyToOne( fetch = FetchType.LAZY )
+  @JoinColumn( name = "repair_facility_id" )
+  private CompanyEntity repairFacility;
 
   @Column( name = "user_id",
       nullable = false,
@@ -33,50 +69,34 @@ public class AssignmentEntity {
   private Long userId;
 
   @JsonIgnore
-  @ManyToOne( fetch = FetchType.EAGER,
-      cascade = { CascadeType.PERSIST, CascadeType.MERGE,
-          CascadeType.DETACH, CascadeType.REFRESH },
-      optional = false )
+  @ManyToOne( fetch = FetchType.LAZY )
   @JoinColumn( name = "user_id" )
   private UserEntity user;
 
-  @Column( name = "status_id",
-      nullable = false,
-      insertable = false,
-      updatable = false )
-  private String statusId;
-
-  @ManyToOne( fetch = FetchType.EAGER,
-      cascade = { CascadeType.PERSIST, CascadeType.MERGE,
-          CascadeType.DETACH, CascadeType.REFRESH },
-      optional = false )
-  @JoinColumn( name = "status_id" )
-  private AssignmentStatusEntity status;
-
-  @Column( name = "date_of_creation" )
-  private LocalDateTime dateOfCreation;
-
-  @Column( name = "date_of_incident" )
-  private Date dateOfIncident;
-
-  @OneToMany( fetch = FetchType.EAGER,
+  @OneToMany( fetch = FetchType.LAZY,
       mappedBy = "assignment",
-      cascade = { CascadeType.PERSIST, CascadeType.MERGE,
-          CascadeType.DETACH, CascadeType.REFRESH } )
-  @Fetch( value = FetchMode.SUBSELECT )
+      cascade = CascadeType.ALL,
+      orphanRemoval = true )
   private List<ContactInfoEntity> contactsInfo;
 
-  @OneToOne( fetch = FetchType.EAGER,
+  @OneToOne( fetch = FetchType.LAZY,
       mappedBy = "assignment",
       cascade = { CascadeType.PERSIST, CascadeType.MERGE,
           CascadeType.DETACH, CascadeType.REFRESH } )
   private VehicleInfoEntity vehicleInfo;
 
-  @OneToOne( fetch = FetchType.EAGER,
+  @OneToOne( fetch = FetchType.LAZY,
       mappedBy = "assignment",
       cascade = { CascadeType.PERSIST, CascadeType.MERGE,
           CascadeType.DETACH, CascadeType.REFRESH } )
   private VehicleConditionInfoEntity vehicleConditionInfo;
+
+  @OneToMany( fetch = FetchType.LAZY,
+      mappedBy = "assignment",
+      cascade = { CascadeType.PERSIST, CascadeType.MERGE,
+          CascadeType.DETACH, CascadeType.REFRESH } )
+  @Fetch( value = FetchMode.SUBSELECT )
+  private List<CommentEntity> comments;
 
   public AssignmentEntity(
       Date dateOfIncident,
@@ -93,14 +113,13 @@ public class AssignmentEntity {
   @Override
   public String toString() {
     return "AssignmentEntity{" +
-        "assignmentId=" + assignmentId +
-        ", userId=" + userId +
-        ", statusId='" + statusId + '\'' +
+        "id=" + id +
         ", dateOfCreation=" + dateOfCreation +
         ", dateOfIncident=" + dateOfIncident +
-        ", contactsInfo=" + contactsInfo +
-        ", vehicleInfo=" + vehicleInfo +
-        ", vehicleConditionInfo=" + vehicleConditionInfo +
+        ", statusId=" + statusId +
+        ", insuranceAgencyId=" + insuranceAgencyId +
+        ", repairFacilityId=" + repairFacilityId +
+        ", userId=" + userId +
         '}';
   }
 }

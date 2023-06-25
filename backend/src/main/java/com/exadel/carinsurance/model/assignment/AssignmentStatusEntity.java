@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;
@@ -20,25 +18,24 @@ import java.util.List;
 public class AssignmentStatusEntity {
   @Id
   @GeneratedValue( strategy = GenerationType.IDENTITY )
-  @Column( name = "status_id" )
-  private int statusId;
+  @Column( name = "id" )
+  private int id;
 
   @Enumerated( EnumType.STRING )
   @Column( name = "name" )
   private EAssignmentStatusEntity name;
 
   @JsonIgnore
-  @OneToMany( fetch = FetchType.EAGER,
+  @OneToMany( fetch = FetchType.LAZY,
       mappedBy = "status",
       cascade = { CascadeType.PERSIST, CascadeType.MERGE,
           CascadeType.DETACH, CascadeType.REFRESH } )
-  @Fetch( value = FetchMode.SUBSELECT )
   private List<AssignmentEntity> assignments;
 
   @Override
   public String toString() {
     return "AssignmentStatusEntity{" +
-        "statusId=" + statusId +
+        "id=" + id +
         ", name=" + name +
         '}';
   }

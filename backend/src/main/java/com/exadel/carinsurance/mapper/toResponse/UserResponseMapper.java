@@ -8,12 +8,13 @@ import org.springframework.stereotype.Component;
 public class UserResponseMapper implements IResponseMapper<UserEntity, UserResponseEntity> {
   @Override
   public UserResponseEntity toResponse( UserEntity entity ) {
-    return UserResponseEntity.builder()
-        .userId( entity.getUserId() )
+    return UserResponseEntity
+        .builder()
+        .id( entity.getId() )
         .firstName( entity.getFirstName() )
         .lastName( entity.getLastName() )
         .email( entity.getEmail() )
-        .role( entity.getRole() )
+        .role( entity.getRole().getName().name() )
         .build();
   }
 }

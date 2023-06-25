@@ -10,7 +10,6 @@ public class ContactInfoEntityMapper implements IEntityMapper<ContactInfoEntity,
   public ContactInfoEntity toEntity( ContactInfoRequestEntity request ) {
     return ContactInfoEntity
         .builder()
-        .type( request.getType() )
         .firstName( request.getFirstName() )
         .lastName( request.getLastName() )
         .email( request.getEmail() )

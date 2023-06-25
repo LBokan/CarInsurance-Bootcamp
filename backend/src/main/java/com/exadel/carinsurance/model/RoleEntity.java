@@ -16,8 +16,8 @@ import java.util.Set;
 public class RoleEntity {
   @Id
   @GeneratedValue( strategy = GenerationType.IDENTITY )
-  @Column( name = "role_id" )
-  private int roleId;
+  @Column( name = "id" )
+  private int id;
 
   @Enumerated( EnumType.STRING )
   @Column( name = "name" )
@@ -35,12 +35,12 @@ public class RoleEntity {
     this.name = name;
   }
 
-  public int getRoleId() {
-    return roleId;
+  public int getId() {
+    return id;
   }
 
-  public void setRoleId( int roleId ) {
-    this.roleId = roleId;
+  public void setId( int id ) {
+    this.id = id;
   }
 
   public ERoleEntity getName() {
