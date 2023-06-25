@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import { getUserApi } from '@/api/User';
 import { useSnackbarStore } from '@/stores/snackbar';
 import { useUserStore } from '@/stores/user';
-import { type IUserState } from '@/utils/interfaces';
+import type { IUserState } from '@/helpers/interfaces';
 
 export function useUser() {
   const { setUserData } = useUserStore();

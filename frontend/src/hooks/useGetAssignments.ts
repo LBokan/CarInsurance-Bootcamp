@@ -2,7 +2,7 @@ import { reactive, ref } from 'vue';
 
 import { getAssignmentsApi } from '@/api/Assignment';
 import { useSnackbarStore } from '@/stores/snackbar';
-import { type IGetAssignmentAPI } from '@/utils/interfaces';
+import type { IGetAssignmentAPI } from '@/helpers/interfaces';
 
 export function useGetAssignments() {
   const { setSnackbarDataAndShow } = useSnackbarStore();
@@ -25,7 +25,6 @@ export function useGetAssignments() {
       response.forEach(assignment => {
         data.push(assignment);
       });
-
     } catch (error) {
       let errorMessage = 'Unknown Error';
 

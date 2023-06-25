@@ -77,16 +77,16 @@
   import { onMounted } from 'vue';
   import { storeToRefs } from 'pinia';
 
-  import { rules, rulesFiles } from '@/utils/rulesRegex';
+  import { rules, rulesFiles } from '@/helpers/rulesRegex';
+  import { impactDirectionsLabels } from '@/helpers/assignment';
   import { useAssignmentStore } from '@/stores/assignment';
 
   import VueDatePicker from '@vuepic/vue-datepicker';
   import CustomAutocomplete from '@/components/UI/CustomAutocomplete.vue';
-  import { impactDirectionsLabels } from '@/helpers/assignment';
-
-  const { assignment } = storeToRefs(useAssignmentStore());
 
   const emits = defineEmits(['validate-form']);
+  
+  const { assignment } = storeToRefs(useAssignmentStore());
   
   onMounted(() => {
     emits('validate-form');

@@ -1,17 +1,16 @@
 import { reactive } from 'vue';
 import { defineStore } from 'pinia';
-import { type IUserState } from '@/utils/interfaces';
+import type { IUserState } from '@/helpers/interfaces';
 
 type TypeUserStateKeys = keyof IUserState;
 
 export const useUserStore = defineStore('user', () => {
   const userState: IUserState = reactive({
-    email: '',
+    id: null,
     firstName: '',
     lastName: '',
-    role: {},
-    roleId: null,
-    userId: null
+    email: '',
+    role: ''
   });
 
   function setUserData<K extends TypeUserStateKeys>( data: IUserState ) {

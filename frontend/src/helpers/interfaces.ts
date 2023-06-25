@@ -12,18 +12,12 @@ export interface IFormFilesRules {
 };
 
 // User interface
-interface IRoleObj {
-  roleId: number,
-  name: string
-};
-
 export interface IUserState {
-  email: string,
+  id: number | null,
   firstName: string,
   lastName: string,
-  role: IRoleObj,
-  roleId: number | null,
-  userId: number | null,
+  email: string,
+  role: string
 };
 
 export interface ICredentials {
@@ -32,29 +26,47 @@ export interface ICredentials {
 };
 
 // Assignment interface
-export interface IPhoneNumbers {
-  id: string | number,
+export interface IPhoneNumber {
+  id: number | string,
   type: string,
   number: string
 }
 
-export interface IAddresses {
-  id: string | number,
+export interface IPhoneNumberState extends IPhoneNumber {
+  isCreateModalOpen?: boolean,
+  isEditModalOpen?: boolean,
+  formModel?: boolean | null
+}
+
+export interface IAddress {
+  id: number | string,
   type: string,
   city: string,
-  state: string | null,
+  state: string,
   zip: string,
   addressLine: string
 }
 
-export interface IContacts {
-  id: string | number,
+export interface IAddressState extends IAddress {
+  isCreateModalOpen?: boolean,
+  isEditModalOpen?: boolean,
+  formModel?: boolean | null
+}
+
+export interface IContact {
+  id: number | string,
   type: string,
   firstName: string,
   lastName: string,
   email: string,
-  phoneNumbers: IPhoneNumbers[],
-  addresses: IAddresses[]
+  phoneNumbers: IPhoneNumber[],
+  addresses: IAddress[]
+}
+
+export interface IContactState extends IContact {
+  isCreateModalOpen?: boolean,
+  isEditModalOpen?: boolean,
+  formModel?: boolean | null
 }
 
 interface IVehicleInfo {
@@ -62,7 +74,7 @@ interface IVehicleInfo {
   carMake: string,
   carModel: string,
   yearOfManufacture: number,
-  odometerValue: string,
+  odometerValue: number,
   licensePlateNumber: string,
   licenseState: string,
   licenseExpirationDate: Date | string
@@ -75,18 +87,29 @@ interface IVehicleConditionInfo {
   photosOfImpactStrings: string[]
 }
 
+export interface IComment {
+  id: number,
+  dateOfCreation: Date,
+  text: string,
+  isRead: number
+}
+
 export interface IAssignment {
   isModalOpen: boolean,
   isDialogOpen: boolean,
   formModel: boolean | null,
   page: number,
-  id: number,
+  id: number | string,
   creationDate: string,
   incidentDate: Date,
+  userId: number,
   status: string,
-  contacts: IContacts[],
+  contacts: IContact[],
   vehicleInfo: IVehicleInfo,
-  vehicleConditionInfo: IVehicleConditionInfo
+  vehicleConditionInfo: IVehicleConditionInfo,
+  insuranceAgency: string,
+  repairFacility?: string,
+  comments?: IComment[]
 }
 
 // Assignment API interface
@@ -107,11 +130,18 @@ interface IGetVehicleConditionInfo {
 }
 
 export interface IGetAssignmentAPI {
-  assignmentId: number,
+  id: number,
   dateOfCreation: string,
   dateOfIncident: string,
+  userId: number,
   status: string,
-  contactsInfo: IContacts[],
+  contactsInfo: IContact[],
   vehicleInfo: IVehicleInfo,
-  vehicleConditionInfo: IGetVehicleConditionInfo
+  vehicleConditionInfo: IGetVehicleConditionInfo,
+  insuranceAgency: string,
+  repairFacility?: string
+}
+
+export interface ICreateCommentAPI {
+  text: string
 }

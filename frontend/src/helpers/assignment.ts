@@ -1,38 +1,7 @@
 import { format } from 'date-fns';
-import { type IAssignment } from '@/utils/interfaces';
+import type { IAssignment } from '@/helpers/interfaces';
 
 type typeGetYearToday = () => number;
-
-export const contactTypesLabels = [
-  'Vehicle owner information',
-  'Police information',
-  'Vehicle driver information',
-  'Attorney information',
-  'Rental information'
-];
-
-export const phoneNumberTypesLabels = [
-  'Home', 
-  'Business', 
-  'Mobile', 
-  'Fax', 
-  'Other'
-];
-
-export const addressesTypesLabels = [
-  'Home', 
-  'Work', 
-  'Mailing', 
-  'Other'
-];
-
-export const statesCodesLabels = [
-  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID',
-  'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS',
-  'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK',
-  'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV',
-  'WI', 'WY'
-].sort();
 
 export const impactDirectionsLabels = [
   'Front', 'Front Right', 'Right Side', 'Right Quarter Panel', 'Right Rear', 
@@ -51,6 +20,10 @@ export const formatDate = (date: string | Date) => {
   }
 };
 
+export const formatDateWithTime = (date: string | Date) => {
+  return format(new Date(date), 'MM/dd/yyyy p');
+};
+
 export const assignmentTemplate: IAssignment = {
   isModalOpen: false,
   isDialogOpen: false,
@@ -59,21 +32,22 @@ export const assignmentTemplate: IAssignment = {
   id: 0,
   creationDate: '',
   incidentDate: new Date(),
+  userId: 0,
   status: '',
   contacts: [
     {
-      id: '0',
-      type: 'Vehicle owner information',
+      id: 0,
+      type: 'Vehicle owner',
       firstName: '',
       lastName: '',
       email: '',
       phoneNumbers: [{
-        id: '0',
+        id: 0,
         type: 'Mobile',
         number: ''
       }],
       addresses: [{
-        id: '0',
+        id: 0,
         type: 'Home',
         city: '',
         state: '',
@@ -87,7 +61,7 @@ export const assignmentTemplate: IAssignment = {
     carMake: '',
     carModel: '',
     yearOfManufacture: getYearToday(),
-    odometerValue: '',
+    odometerValue: 0,
     licensePlateNumber: '',
     licenseState: '',
     licenseExpirationDate: new Date()
@@ -97,5 +71,13 @@ export const assignmentTemplate: IAssignment = {
     namesOfPhotosOfImpact: '',
     photosOfImpactFiles: [],
     photosOfImpactStrings: []
-  }
+  },
+  insuranceAgency: '',
+  repairFacility: '',
+  comments: [{
+    id: 0,
+    dateOfCreation: new Date(),
+    text: '',
+    isRead: 0
+  }]
 };

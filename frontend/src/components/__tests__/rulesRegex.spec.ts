@@ -1,7 +1,7 @@
 import { reactive } from 'vue';
 import { describe, it, expect } from 'vitest';
 
-import { rules } from '../../utils/rulesRegex';
+import { rules } from '../../helpers/rulesRegex';
 
 describe('rulesRegex', () => {
   const reactiveRules = reactive(rules);

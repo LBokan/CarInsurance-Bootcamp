@@ -4,7 +4,7 @@
       v-for="contactData in assignment.contacts"
       :key="contactData.id"
     >
-      <v-row v-if="contactData.id == '0'">
+      <v-row v-if="!contactData.id">
         <v-col cols="12">
           <h2 class="text-subtitle-1">{{ contactData.type }}</h2>
         </v-col>
@@ -14,15 +14,12 @@
           <CustomSelect 
             v-model="contactData.type"
             :is-required="true"
+            :is-loading="isLoadingContactTypesLabels && !isSuccessContactTypesLabels"
             :items="getAvailableContactTypes"
             :label="'Contact type'"
           />
         </v-col>
-        <v-col
-          v-if="contactData.id !== '0'"
-          cols="12"
-          sm="1"
-        >
+        <v-col v-if="contactData.id" cols="12" sm="1">
           <v-btn
             class="close-btn"
             color="error"
@@ -67,17 +64,18 @@
       <v-row
         v-for="phoneData in contactData.phoneNumbers"
         :key="phoneData.id"
-        :class="phoneData.id !== '0' ? '' : 'pt-7'"
+        :class="phoneData.id ? '' : 'pt-7'"
       >
         <v-col cols="12" sm="4">
           <CustomSelect
             v-model="phoneData.type"
             :is-required="true"
+            :is-loading="isLoadingPhoneNumberTypesLabels && !isSuccessPhoneNumberTypesLabels"
             :items="phoneNumberTypesLabels"
             :label="'Phone number type'"
           />
         </v-col>
-        <v-col cols="12" :sm="phoneData.id !== '0' ? 7 : 8">
+        <v-col cols="12" :sm="phoneData.id ? 7 : 8">
           <CustomTextInput
             v-model="phoneData.number"
             :rules="[rules.required, rules.phoneNumber]"
@@ -86,11 +84,7 @@
             :placeholder="'+X XXX-XXX-XXX'"
           />
         </v-col>
-        <v-col
-          v-if="phoneData.id !== '0'"
-          cols="12"
-          sm="1"
-        >
+        <v-col v-if="phoneData.id" cols="12" sm="1">
           <v-btn
             class="close-btn"
             color="error"
@@ -118,17 +112,18 @@
       <v-row
         v-for="addressData in contactData.addresses"
         :key="addressData.id"
-        :class="addressData.id !== '0' ? '' : 'pt-7'"
+        :class="addressData.id ? '' : 'pt-7'"
       >
         <v-col cols="12" sm="3">
           <CustomSelect 
             v-model="addressData.type"
             :is-required="true"
-            :items="addressesTypesLabels"
+            :is-loading="isLoadingAddressTypesLabels && !isSuccessAddressTypesLabels"
+            :items="addressTypesLabels"
             :label="'Address type'"
           />
         </v-col>
-        <v-col cols="12" :sm="addressData.id !== '0' ? 5 : 6">
+        <v-col cols="12" :sm="addressData.id ? 5 : 6">
           <CustomTextInput
             v-model="addressData.city"
             :rules="[rules.required]"
@@ -147,11 +142,7 @@
             ['Value is required'] : []"
           />
         </v-col>
-        <v-col
-          v-if="addressData.id !== '0'"
-          cols="12"
-          sm="1"
-        >
+        <v-col v-if="addressData.id" cols="12" sm="1">
           <v-btn
             class="close-btn"
             color="error"
@@ -217,20 +208,19 @@
   import { computed, onMounted } from 'vue';
   import { storeToRefs } from 'pinia';
 
-  import { rules } from '@/utils/rulesRegex';
+  import { rules } from '@/helpers/rulesRegex';
+  import { statesCodesLabels } from '@/helpers/contact';
   import { useAssignmentStore } from '@/stores/assignment';
   import { useConfirmationStore } from '@/stores/confirmation';
-
+  import { useGetContactTypes } from '@/hooks/useGetContactTypes';
+  import { useGetPhoneNumberTypes } from '@/hooks/useGetPhoneNumberTypes';
+  import { useGetAddressTypes } from '@/hooks/useGetAddressTypes';
+  
   import CustomTextInput from '@/components/UI/CustomTextInput.vue';
   import CustomSelect from '@/components/UI/CustomSelect.vue';
   import CustomAutocomplete from '@/components/UI/CustomAutocomplete.vue';
-
-  import { 
-    contactTypesLabels,
-    phoneNumberTypesLabels, 
-    addressesTypesLabels, 
-    statesCodesLabels 
-  } from '@/helpers/assignment';
+  
+  const emits = defineEmits(['validate-form']);
 
   const { assignment } = storeToRefs(useAssignmentStore());
   const { 
@@ -242,9 +232,32 @@
   } = useAssignmentStore();
   const { setConfirmationDataAndShow } = useConfirmationStore();
 
-  const emits = defineEmits(['validate-form']);
+  const {
+    getContactTypes,
+    data: contactTypesLabels,
+    isLoading: isLoadingContactTypesLabels,
+    isSuccess: isSuccessContactTypesLabels
+  } = useGetContactTypes();
 
-  onMounted(() => {
+  const {
+    getPhoneNumberTypes,
+    data: phoneNumberTypesLabels,
+    isLoading: isLoadingPhoneNumberTypesLabels,
+    isSuccess: isSuccessPhoneNumberTypesLabels
+  } = useGetPhoneNumberTypes();
+
+  const {
+    getAddressTypes,
+    data: addressTypesLabels,
+    isLoading: isLoadingAddressTypesLabels,
+    isSuccess: isSuccessAddressTypesLabels
+  } = useGetAddressTypes();
+
+  onMounted(async () => {
+    await getContactTypes();
+    await getPhoneNumberTypes();
+    await getAddressTypes();
+
     emits('validate-form');
   })
 
@@ -298,15 +311,15 @@
       lastName: '',
       email: '',
       phoneNumbers: [{
-        id: '0',
+        id: 0,
         type: 'Mobile',
         number: ''
       }],
       addresses: [{
-        id: '0',
+        id: 0,
         type: 'Home',
         city: '',
-        state: null,
+        state: '',
         zip: '',
         addressLine: ''
       }]
@@ -342,7 +355,7 @@
               id: crypto.randomUUID(),
               type: 'Home',
               city: '',
-              state: null,
+              state: '',
               zip: '',
               addressLine: ''
             }

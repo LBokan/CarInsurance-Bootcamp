@@ -104,20 +104,18 @@
   import { ref, onMounted } from 'vue';
   import { storeToRefs } from 'pinia';
 
-  import { rules } from '@/utils/rulesRegex';
+  import { rules } from '@/helpers/rulesRegex';
+  import { getYearToday } from '@/helpers/assignment';
+  import { statesCodesLabels } from '@/helpers/contact';
   import { useAssignmentStore } from '@/stores/assignment';
 
   import VueDatePicker from '@vuepic/vue-datepicker';
   import CustomTextInput from '@/components/UI/CustomTextInput.vue';
   import CustomAutocomplete from '@/components/UI/CustomAutocomplete.vue';
-  import { 
-    statesCodesLabels,
-    getYearToday
-  } from '@/helpers/assignment';
-
-  const { assignment } = storeToRefs(useAssignmentStore());
 
   const emits = defineEmits(['validate-form']);
+  
+  const { assignment } = storeToRefs(useAssignmentStore());
 
   const yearOfManufactureRange = ref([1980, getYearToday()]);
   

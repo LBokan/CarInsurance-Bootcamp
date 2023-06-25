@@ -1,7 +1,5 @@
 import { getToken, isTokenValid, logout } from '@/helpers/authorization';
-import { 
-  BASE_API_URL
-} from '@/helpers/authConstants';
+import { BASE_API_URL } from '@/helpers/constants';
 
 interface IHeaders {
   [n: string]: string
