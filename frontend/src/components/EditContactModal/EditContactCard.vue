@@ -189,7 +189,7 @@
 
   import type { IAddress, IPhoneNumber } from '@/helpers/interfaces';
 
-  const bus = useEventBus<string>(eventBusNames.fetchAssignment);
+  const bus = useEventBus<boolean>(eventBusNames.fetchAssignment);
   const emits = defineEmits(['validate-form']);
 
   const { contact } = storeToRefs(useContactStore());
@@ -243,7 +243,7 @@
       closeAndResetPhoneNumberModal();
       setSnackbarDataAndShow("A phone number is successfully deleted", 'success');
 
-      bus.emit('true');
+      bus.emit(true);
     }
   }
 
@@ -254,7 +254,7 @@
       closeAndResetAddressModal();
       setSnackbarDataAndShow("An address is successfully deleted", 'success');
 
-      bus.emit('true');
+      bus.emit(true);
     }
   }
 

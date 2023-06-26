@@ -9,7 +9,7 @@
             </v-chip>
 
             <v-btn
-              v-if="userState.role == ROLES.insurance"
+              v-if="userRole === ROLES.insurance"
               class="ml-5"
               color="orange"
               density="comfortable"
@@ -25,7 +25,7 @@
             </v-btn>
 
             <v-btn
-              v-if="userState.role == ROLES.insurance && !isExcludedContactTypes(contact.type)"
+              v-if="userRole === ROLES.insurance && !isExcludedContactTypes(contact.type)"
               class="ml-2"
               color="error"
               density="comfortable"
@@ -41,7 +41,7 @@
             </v-btn>
 
             <v-btn
-              v-if="userState.role == ROLES.insurance"
+              v-if="userRole === ROLES.insurance"
               class="mx-5"
               color="success"
               density="comfortable"
@@ -120,10 +120,10 @@
   
   import type { IContact } from '@/helpers/interfaces';
   
-  const bus = useEventBus<string>(eventBusNames.fetchAssignment);
+  const bus = useEventBus<boolean>(eventBusNames.fetchAssignment);
   const contactPage = ref(0);
 
-  const { userState } = storeToRefs(useUserStore());
+  const { userRole } = storeToRefs(useUserStore());
   const { assignment } = storeToRefs(useAssignmentStore());
   const { 
     showCreateContactModal, 
@@ -158,7 +158,7 @@
 
       contactPage.value -= 1;
 
-      bus.emit('true');
+      bus.emit(true);
     }
   };
 

@@ -1,6 +1,6 @@
 <template>
   <v-col 
-    v-if="userState.role == ROLES.client" 
+    v-if="userRole === ROLES.client" 
     class="assignment-info-item"
     cols="12" 
     sm="6"
@@ -106,7 +106,7 @@
         <h1 v-else class="my-5 text-h6 text-center">No comments created</h1>
 
         <v-btn
-          v-if="userState.role == ROLES.insurance" 
+          v-if="userRole === ROLES.insurance" 
           class="mt-2"
           color="info"
           variant="elevated"
@@ -156,10 +156,10 @@
 
   import type { IComment } from '@/helpers/interfaces';
 
-  const { userState } = storeToRefs(useUserStore());
+  const { userRole } = storeToRefs(useUserStore());
   const { assignment } = storeToRefs(useAssignmentStore());
 
-  const bus = useEventBus<string>(eventBusNames.fetchComments);
+  const bus = useEventBus<boolean>(eventBusNames.fetchComments);
   const tab = ref(null);
   const isCreateCommentModalOpen = ref(false);
   const isSetRepairFacilityModalOpen = ref(false);
@@ -171,7 +171,7 @@
   const getCommentItemClasses = (isCommentRead: boolean) => {
     let classes = 'comment-item';
 
-    if (userState.value.role == ROLES.repair && !isCommentRead) {
+    if (userRole.value === ROLES.repair && !isCommentRead) {
       classes += ' comment-item-unread';
     }
 
@@ -203,8 +203,8 @@
     isSetRepairFacilityModalOpen.value = false;
   };
 
-  const handleBusComments = (busEvent: string) => {
-    if (busEvent == 'true') {
+  const handleBusComments = (busEvent: boolean) => {
+    if (busEvent) {
       getComments();
     }
   };
@@ -212,7 +212,7 @@
   onMounted(async () => {
     bus.on(handleBusComments);
 
-    if (userState.value.role != ROLES.client) {
+    if (userRole.value !== ROLES.client) {
       await getComments();
     }
   });

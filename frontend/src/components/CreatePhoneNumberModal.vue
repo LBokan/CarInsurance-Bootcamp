@@ -1,5 +1,7 @@
 <template>
   <v-dialog 
+    v-if="phoneNumber.isCreateModalOpen"
+    v-model="phoneNumber.isCreateModalOpen"
     persistent 
     width="800" 
     scrollable
@@ -80,7 +82,7 @@
   import CustomSelect from '@/components/UI/CustomSelect.vue';
   import CustomTextInput from '@/components/UI/CustomTextInput.vue';
 
-  const bus = useEventBus<string>(eventBusNames.fetchAssignment);
+  const bus = useEventBus<boolean>(eventBusNames.fetchAssignment);
   const formRef: VNodeRef = ref(null);
 
   const { phoneNumber } = storeToRefs(usePhoneNumberStore());
@@ -125,7 +127,7 @@
       resetAndCloseModal();
       setSnackbarDataAndShow("A phone number is successfully created", 'success');
 
-      bus.emit('true');
+      bus.emit(true);
     }
   };
 

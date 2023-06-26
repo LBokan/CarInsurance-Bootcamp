@@ -23,7 +23,7 @@
   import PreloaderCircle from '@/components/PreloaderCircle.vue';
   import AssignmentItem from '@/components/AssignmentItem.vue';
 
-  const bus = useEventBus<string>(eventBusNames.fetchAssignments);
+  const bus = useEventBus<boolean>(eventBusNames.fetchAssignments);
 
   const {
     getAssignments,
@@ -32,8 +32,8 @@
     isSuccess: isSuccessGetAssignments
   } = useGetAssignments();
 
-  const handleBusAssignments = (busEvent: string) => {
-    if (busEvent == 'true') {
+  const handleBusAssignments = (busEvent: boolean) => {
+    if (busEvent) {
       getAssignments();
     }
   }

@@ -1,7 +1,7 @@
 <template>
   <v-container class="pt-15">
     <v-row>
-      <v-btn v-if="userState.role == ROLES.client" color="success" @click="openModal">
+      <v-btn v-if="userRole === ROLES.client" color="success" @click="openModal">
         Create assignment
       </v-btn>
       <v-spacer />
@@ -34,7 +34,7 @@
   import CreateAssignmentModal from '@/components/CreateAssignmentModal/CreateAssignmentModal.vue';
   import AssignmentList from '@/components/AssignmentList.vue';
 
-  const { userState } = storeToRefs(useUserStore());
+  const { userState, userRole } = storeToRefs(useUserStore());
   const { assignment } = storeToRefs(useAssignmentStore());
   const { showAssignmentModal, setAssignmentData } = useAssignmentStore();
   const { setConfirmationDataAndShow } = useConfirmationStore();

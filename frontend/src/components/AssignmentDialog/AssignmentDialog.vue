@@ -82,35 +82,14 @@
     </v-card>
   </v-dialog>
       
-  <CreateContactModal
-    v-if="contact.isCreateModalOpen"
-    v-model="contact.isCreateModalOpen"
-  />
-  
-  <EditContactModal
-    v-if="contact.isEditModalOpen"
-    v-model="contact.isEditModalOpen"
-  />
+  <CreateContactModal />
+  <EditContactModal />
     
-  <CreatePhoneNumberModal 
-    v-if="phoneNumber.isCreateModalOpen"
-    v-model="phoneNumber.isCreateModalOpen"
-  />
+  <CreatePhoneNumberModal />
+  <EditPhoneNumberModal />
 
-  <EditPhoneNumberModal
-    v-if="phoneNumber.isEditModalOpen"
-    v-model="phoneNumber.isEditModalOpen"
-  />
-
-  <CreateAddressModal
-    v-if="address.isCreateModalOpen"
-    v-model="address.isCreateModalOpen"
-  />
-
-  <EditAddressModal
-    v-if="address.isEditModalOpen"
-    v-model="address.isEditModalOpen"
-  />
+  <CreateAddressModal />
+  <EditAddressModal />
 </template>
 
 <script setup lang="ts">
@@ -118,9 +97,6 @@
   import { storeToRefs } from 'pinia';
 
   import { useAssignmentStore } from '@/stores/assignment';
-  import { useContactStore } from '@/stores/contact';
-  import { usePhoneNumberStore } from '@/stores/phoneNumber';
-  import { useAddressStore } from '@/stores/address';
 
   import AssignmentInfoCard from '@/components/AssignmentDialog/AssignmentInfoCard.vue';
   import VehicleInfoCard from '@/components/AssignmentDialog/VehicleInfoCard.vue';
@@ -144,9 +120,6 @@
 
   const { assignment } = storeToRefs(useAssignmentStore());
   const { closeAndResetAssignmentModalOrDialog } = useAssignmentStore();
-  const { contact } = storeToRefs(useContactStore());
-  const { phoneNumber } = storeToRefs(usePhoneNumberStore());
-  const { address } = storeToRefs(useAddressStore());
 
   const openPhoto = (photo: string) => {
     emits('open-photo', photo);

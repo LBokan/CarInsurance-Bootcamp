@@ -69,7 +69,7 @@
 
   import CustomAutocomplete from '@/components/UI/CustomAutocomplete.vue';
 
-  const bus = useEventBus<string>(eventBusNames.fetchAssignment);
+  const bus = useEventBus<boolean>(eventBusNames.fetchAssignment);
   const emits = defineEmits(['close-modal']);
   
   const formRef: VNodeRef = ref(null);
@@ -122,7 +122,7 @@
       resetAndCloseModal();
       setSnackbarDataAndShow("A repair facility is successfully set", 'success');
 
-      bus.emit('true');
+      bus.emit(true);
     }
   };
 

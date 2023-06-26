@@ -1,5 +1,7 @@
 <template>
   <v-dialog 
+    v-if="address.isCreateModalOpen"
+    v-model="address.isCreateModalOpen"
     persistent 
     width="800" 
     scrollable
@@ -109,7 +111,7 @@
   import CustomTextInput from '@/components/UI/CustomTextInput.vue';
   import CustomAutocomplete from '@/components/UI/CustomAutocomplete.vue';
 
-  const bus = useEventBus<string>(eventBusNames.fetchAssignment);
+  const bus = useEventBus<boolean>(eventBusNames.fetchAssignment);
   const formRef: VNodeRef = ref(null);
   
   const { address } = storeToRefs(useAddressStore());
@@ -158,7 +160,7 @@
       resetAndCloseModal();
       setSnackbarDataAndShow("An address is successfully created", 'success');
 
-      bus.emit('true');
+      bus.emit(true);
     }
   };
 

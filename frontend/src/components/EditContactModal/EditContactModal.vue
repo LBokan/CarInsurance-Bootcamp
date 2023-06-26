@@ -1,5 +1,7 @@
 <template>
   <v-dialog 
+    v-if="contact.isEditModalOpen"
+    v-model="contact.isEditModalOpen"
     persistent 
     width="800" 
     scrollable
@@ -54,7 +56,7 @@
 
   import ContactInfoCard from '@/components/EditContactModal/EditContactCard.vue';
 
-  const bus = useEventBus<string>(eventBusNames.fetchAssignment);
+  const bus = useEventBus<boolean>(eventBusNames.fetchAssignment);
   const formRef: VNodeRef = ref(null);
 
   const { contact } = storeToRefs(useContactStore());
@@ -88,7 +90,7 @@
       resetAndCloseModal();
       setSnackbarDataAndShow("A contact is successfully edited", 'success');
 
-      bus.emit('true');
+      bus.emit(true);
     }
   };
 

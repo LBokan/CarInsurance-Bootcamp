@@ -63,8 +63,8 @@
   import { useSnackbarStore } from '@/stores/snackbar';
   import { useCreateComment } from '@/hooks/useCreateComment';
 
-  const busAssignment = useEventBus<string>(eventBusNames.fetchAssignment);
-  const busComments = useEventBus<string>(eventBusNames.fetchComments);
+  const busAssignment = useEventBus<boolean>(eventBusNames.fetchAssignment);
+  const busComments = useEventBus<boolean>(eventBusNames.fetchComments);
   const emits = defineEmits(['close-modal']);
   
   const formRef: VNodeRef = ref(null);
@@ -107,8 +107,8 @@
       resetAndCloseModal();
       setSnackbarDataAndShow("A comment is successfully created", 'success');
 
-      busAssignment.emit('true');
-      busComments.emit('true');
+      busAssignment.emit(true);
+      busComments.emit(true);
     }
   };
 

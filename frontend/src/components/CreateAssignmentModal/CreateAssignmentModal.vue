@@ -112,7 +112,7 @@
   import CreateVehicleInfoCard from '@/components/CreateAssignmentModal/CreateVehicleInfoCard.vue';
   import CreateVehicleConditionInfoCard from '@/components/CreateAssignmentModal/CreateVehicleConditionInfoCard.vue';
 
-  const bus = useEventBus<string>(eventBusNames.fetchAssignments);
+  const bus = useEventBus<boolean>(eventBusNames.fetchAssignments);
 
   const { assignment } = storeToRefs(useAssignmentStore());
   const { 
@@ -167,7 +167,7 @@
       resetAndCloseModal();
       setSnackbarDataAndShow("An assignments is successfully created", 'success');
 
-      bus.emit('true');
+      bus.emit(true);
     }
   };
 

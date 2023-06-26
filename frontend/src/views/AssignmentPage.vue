@@ -37,7 +37,9 @@
   import AssignmentDialog from '@/components/AssignmentDialog/AssignmentDialog.vue';
 
   const router = useRouter();
-  const bus = useEventBus<string>(eventBusNames.fetchAssignment);
+  const bus = useEventBus<boolean>(eventBusNames.fetchAssignment);
+  const isPhotoShown = ref<boolean>(false);
+  const photoData = ref<string>('');
 
   const { userState } = storeToRefs(useUserStore());
   const { assignment } = storeToRefs(useAssignmentStore());
@@ -55,9 +57,6 @@
     getPhotos,
     isLoading: isLoadingPhotos
   } = useGetPhotos();
-
-  const isPhotoShown = ref<boolean>(false);
-  const photoData = ref<string>('');
 
   const handleAssignmentFetch = async() => {
     const assignmentIdFromURL = parseInt(router.currentRoute.value.params.id.toString());
@@ -77,8 +76,8 @@
     showAssignmentDialog();
   };
 
-  const handleBusAssignment = async (busEvent: string) => {
-    if (busEvent == 'true') {
+  const handleBusAssignment = async (busEvent: boolean) => {
+    if (busEvent) {
       await handleAssignmentFetch();
 
       const updatedContactData = assignment.value.contacts.find(item => item.id == contact.value.id);

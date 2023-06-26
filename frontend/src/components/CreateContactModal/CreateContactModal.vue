@@ -1,5 +1,7 @@
 <template>
   <v-dialog 
+    v-if="contact.isCreateModalOpen"
+    v-model="contact.isCreateModalOpen"
     persistent 
     width="800" 
     scrollable
@@ -54,7 +56,7 @@
 
   import CreateContactCard from '@/components/CreateContactModal/CreateContactCard.vue';
 
-  const bus = useEventBus<string>(eventBusNames.fetchAssignment);
+  const bus = useEventBus<boolean>(eventBusNames.fetchAssignment);
   const formRef: VNodeRef = ref(null);
 
   const { contact } = storeToRefs(useContactStore());
@@ -88,7 +90,7 @@
       resetAndCloseModal();
       setSnackbarDataAndShow("A contact is successfully created", 'success');
 
-      bus.emit('true');
+      bus.emit(true);
     }
   };
 

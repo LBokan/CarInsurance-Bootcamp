@@ -44,7 +44,7 @@
   import { useUserStore } from '@/stores/user';
   import { useSetIsCommentRead } from '@/hooks/useSetIsCommentRead';
   
-  const bus = useEventBus<string>(eventBusNames.fetchComments);
+  const bus = useEventBus<boolean>(eventBusNames.fetchComments);
   const emits = defineEmits(['close-modal']);
   const props = defineProps({
     commentData: {
@@ -54,15 +54,15 @@
   });
   const commentValue = ref(props.commentData.text);
   
-  const { userState } = storeToRefs(useUserStore());
+  const { userRole } = storeToRefs(useUserStore());
   
   const { setIsCommentRead } = useSetIsCommentRead();
 
   onMounted(async () => {
-    if (userState.value.role == ROLES.repair) {
+    if (userRole.value === ROLES.repair) {
       await setIsCommentRead(props.commentData.id);
 
-      bus.emit('true');
+      bus.emit(true);
     }
   })
 
