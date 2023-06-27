@@ -1,15 +1,13 @@
 <template>
+  <ApplicationBar />
+
   <v-container class="pt-15">
-    <v-row>
-      <v-btn v-if="userRole === ROLES.client" color="success" @click="openModal">
+    <v-row v-if="userRole === ROLES.client" class="mb-10">
+      <v-btn color="success" @click="openModal">
         Create assignment
       </v-btn>
-      <v-spacer />
-      <v-btn color="error" @click="openLogoutModal">
-        Logout
-      </v-btn>
     </v-row>
-    <v-row class="mt-10">
+    <v-row>
       <AssignmentList />
     </v-row>
   </v-container>
@@ -25,27 +23,18 @@
   import { storeToRefs } from 'pinia';
 
   import { ROLES } from '@/helpers/constants';
-  import { logout } from '@/helpers/authorization';
   import { useUserStore } from '@/stores/user';
   import { useAssignmentStore } from '@/stores/assignment';
-  import { useConfirmationStore } from '@/stores/confirmation';
-  import { useUser } from '@/hooks/useGetUser';
 
+  import ApplicationBar from '@/components/ApplicationBar.vue';
   import CreateAssignmentModal from '@/components/CreateAssignmentModal/CreateAssignmentModal.vue';
   import AssignmentList from '@/components/AssignmentList.vue';
 
-  const { userState, userRole } = storeToRefs(useUserStore());
+  const { userRole } = storeToRefs(useUserStore());
   const { assignment } = storeToRefs(useAssignmentStore());
   const { showAssignmentModal, setAssignmentData } = useAssignmentStore();
-  const { setConfirmationDataAndShow } = useConfirmationStore();
-
-  const { getUser } = useUser();
 
   onMounted(async() => {
-    if (!userState.value.id) {
-      await getUser();
-    }
-
     if (localStorage.getItem('assignmentData')) {
       openModal();
     }
@@ -60,12 +49,4 @@
 
     showAssignmentModal();
   };
-
-  const openLogoutModal = () => {
-    setConfirmationDataAndShow({
-      title: "Logout",
-      content: "Do you really want to log out from the application?",
-      onConfirmAction: logout
-    });
-  }
 </script>

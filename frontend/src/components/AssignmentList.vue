@@ -9,7 +9,8 @@
       :assignmentData="assignment"
     />
     <v-container v-else-if="!isLoadingGetAssignments && isSuccessGetAssignments && !dataAssignments.length">
-      <h1 class="mt-10 text-h5 text-center">No assignments created</h1>
+      <h1 v-if="userRole === ROLES.client" class="mt-10 text-h5 text-center">No assignments created</h1>
+      <h1 v-else class="mt-10 text-h5 text-center">No assignments assigned</h1>
     </v-container>
   </v-container>
 </template>
@@ -17,14 +18,17 @@
 <script setup lang="ts">
   import { onMounted, onUnmounted } from 'vue';
   import { useEventBus } from '@vueuse/core';
+  import { storeToRefs } from 'pinia';
 
-  import { eventBusNames } from '@/helpers/constants';
+  import { ROLES, eventBusNames } from '@/helpers/constants';
+  import { useUserStore } from '@/stores/user';
   import { useGetAssignments } from '@/hooks/useGetAssignments';
   import PreloaderCircle from '@/components/PreloaderCircle.vue';
   import AssignmentItem from '@/components/AssignmentItem.vue';
 
   const bus = useEventBus<boolean>(eventBusNames.fetchAssignments);
 
+  const { userRole } = storeToRefs(useUserStore());
   const {
     getAssignments,
     data: dataAssignments,

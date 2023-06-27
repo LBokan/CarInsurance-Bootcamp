@@ -17,7 +17,9 @@ export interface IUserState {
   firstName: string,
   lastName: string,
   email: string,
-  role: string
+  role: string,
+  insuranceCompany?: string,
+  companyOfWork?: string
 };
 
 export interface ICredentials {

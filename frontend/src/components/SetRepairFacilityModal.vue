@@ -6,7 +6,7 @@
   >
     <v-card>
       <v-form v-model="formModel" ref="formRef">
-        <v-card-title class="position-relative">
+        <v-card-title>
           <h1 class="text-h5">Repair facility setting</h1>
         </v-card-title>
         
