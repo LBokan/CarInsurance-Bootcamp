@@ -5,6 +5,7 @@
     :class="classes" 
     :color="color"
     :multiple="isMultiple"
+    :loading="isLoading"
     :clearable="isClearable"
     :items="items"
     :chips="isChips"
@@ -24,6 +25,7 @@
     color: String,
     isRequired: Boolean,
     isMultiple: Boolean,
+    isLoading: Boolean,
     isClearable: Boolean,
     items: {
       type: Array,

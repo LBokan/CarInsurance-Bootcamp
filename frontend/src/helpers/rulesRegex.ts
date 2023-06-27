@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { type IFormRules, type IFormFilesRules } from '@/utils/interfaces';
+import type { IFormRules, IFormFilesRules } from '@/helpers/interfaces';
 
 export const rules: IFormRules = reactive({
   required: (value) => value ? true : 'Value is required',

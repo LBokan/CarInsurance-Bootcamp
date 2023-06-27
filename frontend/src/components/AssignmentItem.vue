@@ -11,9 +11,9 @@
     <v-card-text>
       <v-chip
         class="my-2"
-        color="info"
+        :color="getChipStatusColor(assignmentData.status)"
         text-color="white"
-        prepend-icon="mdi-progress-clock"
+        :prepend-icon="getChipStatusIcon(assignmentData.status)"
       >
         status: {{ assignmentData.status }}
       </v-chip>
@@ -49,21 +49,19 @@
   import { storeToRefs } from 'pinia';
 
   import { formatDate } from '@/helpers/assignment';
-  import { type IGetAssignmentAPI } from '@/utils/interfaces';
-  import { useUserStore } from '@/stores/user';
+  import { getChipStatusColor, getChipStatusIcon } from '@/helpers/styles';
   import { useAssignmentStore } from '@/stores/assignment';
   import { useSnackbarStore } from '@/stores/snackbar';
-  import { useUser } from '@/hooks/useGetUser';
   import { useGetPhotos } from '@/hooks/useGetPhotos';
+
+  import type { IGetAssignmentAPI } from '@/helpers/interfaces';
 
   const router = useRouter();
 
-  const { userState } = storeToRefs(useUserStore());
   const { assignment } = storeToRefs(useAssignmentStore());
   const { setAssignmentDataAPI, showAssignmentDialog } = useAssignmentStore();
   const { setSnackbarDataAndShow } = useSnackbarStore();
   
-  const { getUser } = useUser();
   const { getPhotos } = useGetPhotos();
 
   defineProps({
@@ -74,21 +72,17 @@
   });
 
   const showAssignmentInfo = async (data: IGetAssignmentAPI) => {
-    if (!userState.value.userId) {
-      await getUser();
-    }
-
     setAssignmentDataAPI(data);
 
-    if (!userState.value.userId || !data.assignmentId || !data.vehicleConditionInfo.namesOfPhotosOfImpact) {
+    if (!data.userId || !data.id || !data.vehicleConditionInfo.namesOfPhotosOfImpact) {
       setSnackbarDataAndShow('Bad request', 'error');
       
       return;
     }
 
     getPhotos({
-      userId: userState.value.userId,
-      assignmentId: data.assignmentId,
+      userId: data.userId,
+      assignmentId: data.id,
       namesOfPhotosOfImpact: data.vehicleConditionInfo.namesOfPhotosOfImpact
     });
 

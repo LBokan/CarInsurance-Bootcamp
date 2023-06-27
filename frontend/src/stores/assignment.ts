@@ -3,17 +3,19 @@ import { defineStore } from 'pinia';
 
 import { format } from 'date-fns';
 import { assignmentTemplate } from '@/helpers/assignment';
-import {
-  type IAssignment,
-  type IContacts,
-  type IPhoneNumbers,
-  type IAddresses,
-  type IAssignmentInfoDataAPI,
-  type ICreateAssignmentAPI,
-  type IGetAssignmentAPI
-} from '@/utils/interfaces';
+import type {
+  IAssignment,
+  IContact,
+  IPhoneNumber,
+  IAddress,
+  IComment,
+  IAssignmentInfoDataAPI,
+  ICreateAssignmentAPI,
+  IGetAssignmentAPI
+} from '@/helpers/interfaces';
 
 type TypeAssignmentKeys = keyof IAssignment;
+type TypeGetAssignmentKeys = keyof IGetAssignmentAPI;
 
 export const useAssignmentStore = defineStore('assignment', () => {
   const assignment: IAssignment = reactive(structuredClone(assignmentTemplate));
@@ -34,37 +36,36 @@ export const useAssignmentStore = defineStore('assignment', () => {
     })
   }
 
-  function setAssignmentDataAPI(data: IGetAssignmentAPI) {
+  function setAssignmentDataAPI<K extends TypeGetAssignmentKeys>(data: IGetAssignmentAPI) {
     Object.keys(data).forEach((key) => {
+      const typedKey = key as K;
+
       switch (key) {
-        case 'assignmentId':
-          assignment.id = data.assignmentId;
-          break;
         case 'dateOfCreation':
           assignment.creationDate = data.dateOfCreation;
           break;
         case 'dateOfIncident':
           assignment.incidentDate = new Date(data.dateOfIncident.split('T')[0]);
           break;
-        case 'status':
-          assignment.status = data.status;
-          break;
         case 'contactsInfo':
           assignment.contacts = data.contactsInfo;
-          break;
-        case 'vehicleInfo':
-          assignment.vehicleInfo = data.vehicleInfo;
           break;
         case 'vehicleConditionInfo':
           assignment.vehicleConditionInfo.directionOfImpact = data.vehicleConditionInfo.directionOfImpact;
           assignment.vehicleConditionInfo.namesOfPhotosOfImpact = data.vehicleConditionInfo.namesOfPhotosOfImpact;
           break;
+        default:
+          assignment[typedKey] = data[typedKey];
       }
     });
   }
 
   function setPhotosOfImpactStrings(photos: string[]) {
     assignment.vehicleConditionInfo.photosOfImpactStrings = photos;
+  }
+
+  function setCommentsData(data: IComment[]) {
+    assignment.comments = data;
   }
 
   function goToNextPage() {
@@ -79,13 +80,13 @@ export const useAssignmentStore = defineStore('assignment', () => {
     }
   }
 
-  function addContactData(contactData: IContacts) {
+  function addContactData(contactData: IContact) {
     assignment.contacts.push(contactData);
   }
 
-  function addContactInfoData<T extends IPhoneNumbers | IAddresses>(
+  function addContactInfoData<T extends IPhoneNumber | IAddress>(
     contactIndex: number,
-    assignmentDataPropName: keyof IContacts,
+    assignmentDataPropName: keyof IContact,
     infoData: T
   ) {
     const propValue = assignment
@@ -175,6 +176,7 @@ export const useAssignmentStore = defineStore('assignment', () => {
     setAssignmentData,
     setAssignmentDataAPI,
     setPhotosOfImpactStrings,
+    setCommentsData,
     goToNextPage,
     goToPrevPage,
     addContactData,

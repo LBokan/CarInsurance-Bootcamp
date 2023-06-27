@@ -34,15 +34,15 @@
 
         <CreateContactInfoCard 
           v-if="assignment.page == 1"
-          @validate-form="validateAssignment" 
+          @validate-form="validateForm" 
         />
         <CreateVehicleInfoCard 
           v-if="assignment.page == 2" 
-          @validate-form="validateAssignment" 
+          @validate-form="validateForm" 
         />
         <CreateVehicleConditionInfoCard 
           v-if="assignment.page == 3" 
-          @validate-form="validateAssignment" 
+          @validate-form="validateForm" 
         />
 
         <v-divider/>
@@ -87,7 +87,7 @@
             color="error"
             rounded="lg"
             variant="elevated"
-            @click="closeAssignment"
+            @click="closeModal"
           >
             Close
           </v-btn>
@@ -102,6 +102,7 @@
   import { useEventBus } from '@vueuse/core';
   import { storeToRefs } from 'pinia';
 
+  import { eventBusNames } from '@/helpers/constants';
   import { useAssignmentStore } from '@/stores/assignment';
   import { useConfirmationStore } from '@/stores/confirmation';
   import { useSnackbarStore } from '@/stores/snackbar';
@@ -111,7 +112,7 @@
   import CreateVehicleInfoCard from '@/components/CreateAssignmentModal/CreateVehicleInfoCard.vue';
   import CreateVehicleConditionInfoCard from '@/components/CreateAssignmentModal/CreateVehicleConditionInfoCard.vue';
 
-  const bus = useEventBus<string>('isAssignmentCreated');
+  const bus = useEventBus<boolean>(eventBusNames.fetchAssignments);
 
   const { assignment } = storeToRefs(useAssignmentStore());
   const { 
@@ -130,7 +131,7 @@
 
   const formRef: VNodeRef = ref(null);
 
-  const validateAssignment = () => {
+  const validateForm = () => {
     if (formRef.value) {
       formRef.value.validate();
     }
@@ -151,32 +152,31 @@
     goToNextPage();
   };
 
-  const submit = async () => {
-    await createAssignment();
-
-    if (!isLoading.value && isSuccess.value) {
-      resetAssignment();
-      setSnackbarDataAndShow("An assignments is successfully created", 'success');
-
-      bus.emit('true');
-    }
-  };
-
-  const resetAssignment = () => {
+  const resetAndCloseModal = () => {
     if (formRef.value) {
       formRef.value.reset();
     }
-
     localStorage.removeItem('assignmentData');
     closeAndResetAssignmentModalOrDialog();
   };
 
-  const closeAssignment = () => {
+  const submit = async () => {
+    await createAssignment();
+
+    if (!isLoading.value && isSuccess.value) {
+      resetAndCloseModal();
+      setSnackbarDataAndShow("An assignments is successfully created", 'success');
+
+      bus.emit(true);
+    }
+  };
+
+  const closeModal = () => {
     setConfirmationDataAndShow({
       title: "Assignment creation cancellation",
       content: "Do you really want to cancel the creation of the assignment? " +
         "All your entered data will be lost",
-      onConfirmAction: resetAssignment
+      onConfirmAction: resetAndCloseModal
     });
   };
 </script>

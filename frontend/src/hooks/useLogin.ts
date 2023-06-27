@@ -2,7 +2,7 @@ import { ref, reactive } from 'vue';
 import { authenticateUser } from '@/api/Authorization';
 import { useSnackbarStore } from '@/stores/snackbar';
 import { useUserStore } from '@/stores/user';
-import { type ICredentials, type IUserState } from '@/utils/interfaces';
+import type { ICredentials, IUserState } from '@/helpers/interfaces';
 import { clearAllCookies } from '@/helpers/authorization';
 
 export function useLogin() {

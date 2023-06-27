@@ -1,5 +1,5 @@
 import { createRequest } from '@/api/ApiProvider';
-import { HTTP_METHODS } from '@/helpers/authConstants';
+import { HTTP_METHODS } from '@/helpers/constants';
 
 interface IGetPhotoApiArgs {
   userId: number,
@@ -9,7 +9,7 @@ interface IGetPhotoApiArgs {
 
 export const getPhotoApi = async ({userId, assignmentId, photoName}: IGetPhotoApiArgs) => {
   return createRequest({
-    endpoint: `api/user/photo/photosofimpact/${userId}/${assignmentId}/${photoName}`,
+    endpoint: `api/v1/photo/photosofimpact/${userId}/${assignmentId}/${photoName}`,
     method: HTTP_METHODS.get,
     isGetPhoto: true
   });

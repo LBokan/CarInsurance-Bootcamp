@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { getAssignmentByIdApi } from '@/api/Assignment';
 import { useSnackbarStore } from '@/stores/snackbar';
 import { useAssignmentStore } from '@/stores/assignment';
-import { type IGetAssignmentAPI } from '@/utils/interfaces';
+import type { IGetAssignmentAPI } from '@/helpers/interfaces';
 
 export function useGetAssignment() {
   const { setAssignmentDataAPI } = useAssignmentStore();

@@ -28,9 +28,9 @@
           </v-col>
         </v-row>
         <v-row class="bg-white">
-          <ShowAssignmentInfoCard />
+          <AssignmentInfoCard />
           <v-divider vertical />
-          <ShowVehicleInfoCard />
+          <VehicleInfoCard />
         </v-row>
 
         <v-row>
@@ -43,13 +43,13 @@
           </v-col>
         </v-row>
         <v-row class="bg-white">
-          <ShowContactsInfoCard />
+          <ContactsInfoCard />
           <v-divider vertical />
           <v-col cols="12" sm="6">
             <PreloaderCircle v-if="isLoadingPhotos && !assignment.vehicleConditionInfo.photosOfImpactStrings.length" />
             <v-carousel 
               v-else-if="assignment.vehicleConditionInfo.photosOfImpactStrings.length" 
-              height="400" 
+              height="380" 
               show-arrows="hover"
             >
               <v-carousel-item
@@ -81,6 +81,15 @@
       </v-container>
     </v-card>
   </v-dialog>
+      
+  <CreateContactModal />
+  <EditContactModal />
+    
+  <CreatePhoneNumberModal />
+  <EditPhoneNumberModal />
+
+  <CreateAddressModal />
+  <EditAddressModal />
 </template>
 
 <script setup lang="ts">
@@ -89,12 +98,19 @@
 
   import { useAssignmentStore } from '@/stores/assignment';
 
-  import ShowAssignmentInfoCard from '@/components/ShowAssignmentDialog/ShowAssignmentInfoCard.vue';
-  import ShowVehicleInfoCard from '@/components/ShowAssignmentDialog/ShowVehicleInfoCard.vue';
-  import ShowContactsInfoCard from '@/components/ShowAssignmentDialog/ShowContactsInfoCard.vue';
+  import AssignmentInfoCard from '@/components/AssignmentDialog/AssignmentInfoCard.vue';
+  import VehicleInfoCard from '@/components/AssignmentDialog/VehicleInfoCard.vue';
+  import ContactsInfoCard from '@/components/AssignmentDialog/ContactsInfoCard.vue';
   import PreloaderCircle from '@/components/PreloaderCircle.vue';
+  import EditContactModal from '@/components/EditContactModal/EditContactModal.vue';
+  import CreateContactModal from '@/components/CreateContactModal/CreateContactModal.vue';
+  import CreatePhoneNumberModal from '@/components/CreatePhoneNumberModal.vue';
+  import EditPhoneNumberModal from '@/components/EditPhoneNumberModal.vue';
+  import CreateAddressModal from '@/components/CreateAddressModal.vue';
+  import EditAddressModal from '@/components/EditAddressModal.vue';
 
   const router = useRouter();
+  
   defineProps({
     isLoadingAssignment: Boolean,
     isSuccessAssignment: Boolean,

@@ -54,7 +54,7 @@
   import { ref, computed } from 'vue';
   import { useRouter } from 'vue-router';
 
-  import { rules } from '@/utils/rulesRegex';
+  import { rules } from '@/helpers/rulesRegex';
   import { useLogin } from '@/hooks/useLogin';
 
   const router = useRouter();
