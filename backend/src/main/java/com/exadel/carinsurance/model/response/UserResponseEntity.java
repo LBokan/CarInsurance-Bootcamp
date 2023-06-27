@@ -15,4 +15,6 @@ public class UserResponseEntity {
   private String lastName;
   private String email;
   private String role;
+  private String insuranceCompany;
+  private String companyOfWork;
 }
