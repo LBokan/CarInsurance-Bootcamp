@@ -8,7 +8,7 @@
   >
     <v-card>
       <v-form v-model="address.formModel" ref="formRef">
-        <v-card-title class="position-relative">
+        <v-card-title>
           <h1 class="text-h5">Address creation</h1>
         </v-card-title>
         

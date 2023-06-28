@@ -10,9 +10,10 @@ export const useUserStore = defineStore('user', () => {
     firstName: '',
     lastName: '',
     email: '',
-    role: ''
+    role: '',
+    insuranceCompany: '',
+    companyOfWork: ''
   });
-
 
   const userRole = computed(() => userState.role);
 

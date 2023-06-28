@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="ml-5 mt-5"
+    class="ml-5 mb-5"
     min-width="350"
     max-width="350"
     color="#fff"
