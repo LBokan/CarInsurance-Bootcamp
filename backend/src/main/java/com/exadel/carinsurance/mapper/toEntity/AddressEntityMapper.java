@@ -10,7 +10,6 @@ public class AddressEntityMapper implements IEntityMapper<AddressEntity, Address
   public AddressEntity toEntity( AddressRequestEntity request ) {
     return AddressEntity
         .builder()
-        .type( request.getType() )
         .city( request.getCity() )
         .state( request.getState() )
         .zip( request.getZip() )

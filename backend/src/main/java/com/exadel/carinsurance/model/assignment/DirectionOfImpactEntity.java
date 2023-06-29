@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;
@@ -21,17 +19,16 @@ public class DirectionOfImpactEntity {
   @Id
   @GeneratedValue( strategy = GenerationType.IDENTITY )
   @Column( name = "id" )
-  private Long id;
+  private int id;
 
   @Column( name = "name" )
   private String name;
 
   @JsonIgnore
-  @OneToMany( fetch = FetchType.EAGER,
+  @OneToMany( fetch = FetchType.LAZY,
       mappedBy = "directionOfImpact",
       cascade = { CascadeType.PERSIST, CascadeType.MERGE,
           CascadeType.DETACH, CascadeType.REFRESH } )
-  @Fetch( value = FetchMode.SUBSELECT )
   private List<VehicleConditionInfoEntity> vehicleConditionInfo;
 
   @Override

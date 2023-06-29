@@ -3,16 +3,16 @@ package com.exadel.carinsurance.service.implementation;
 import com.exadel.carinsurance.exceptions.NotFoundException;
 import com.exadel.carinsurance.mapper.toEntity.*;
 import com.exadel.carinsurance.mapper.toResponse.AssignmentResponseMapper;
+import com.exadel.carinsurance.model.CompanyEntity;
+import com.exadel.carinsurance.model.ERoleEntity;
 import com.exadel.carinsurance.model.UserEntity;
 import com.exadel.carinsurance.model.assignment.*;
-import com.exadel.carinsurance.model.request.AddressRequestEntity;
-import com.exadel.carinsurance.model.request.AssignmentRequestEntity;
-import com.exadel.carinsurance.model.request.ContactInfoRequestEntity;
-import com.exadel.carinsurance.model.request.PhoneNumberRequestEntity;
+import com.exadel.carinsurance.model.request.*;
 import com.exadel.carinsurance.model.response.AssignmentResponseEntity;
 import com.exadel.carinsurance.model.response.PhotosResponseEntity;
 import com.exadel.carinsurance.repository.*;
 import com.exadel.carinsurance.service.IAssignmentService;
+import com.exadel.carinsurance.service.IPhotosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,16 +32,19 @@ import java.util.List;
 @Transactional
 public class AssignmentService implements IAssignmentService {
   private final EntityManager entityManager;
-  private final IUserRepository userRepository;
+  private final IPhotosService photosService;
   private final IAssignmentStatusRepository assignmentStatusRepository;
   private final IAssignmentRepository assignmentRepository;
   private final IDirectionsOfImpactRepository directionsOfImpactRepository;
   private final IVehicleConditionInfoRepository vehicleConditionInfoRepository;
   private final IVehicleInfoRepository vehicleInfoRepository;
+  private final IContactInfoTypeRepository contactInfoTypeRepository;
   private final IContactInfoRepository contactInfoRepository;
+  private final IPhoneNumberTypeRepository phoneNumberTypeRepository;
   private final IPhoneNumberRepository phoneNumberRepository;
+  private final IAddressTypeRepository addressTypeRepository;
   private final IAddressRepository addressRepository;
-  private final PhotosService photosService;
+  private final ICompanyRepository companyRepository;
   private final AssignmentResponseMapper assignmentResponseMapper;
   private final AssignmentEntityMapper assignmentEntityMapper;
   private final VehicleInfoEntityMapper vehicleInfoEntityMapper;
@@ -52,15 +55,19 @@ public class AssignmentService implements IAssignmentService {
   @Autowired
   public AssignmentService(
       EntityManager entityManager,
-      IUserRepository userRepository, IAssignmentStatusRepository assignmentStatusRepository,
+      IPhotosService photosService,
+      IAssignmentStatusRepository assignmentStatusRepository,
       IAssignmentRepository assignmentRepository,
       IDirectionsOfImpactRepository directionsOfImpactRepository,
       IVehicleConditionInfoRepository vehicleConditionInfoRepository,
       IVehicleInfoRepository vehicleInfoRepository,
+      IContactInfoTypeRepository contactInfoTypeRepository,
       IContactInfoRepository contactInfoRepository,
+      IPhoneNumberTypeRepository phoneNumberTypeRepository,
       IPhoneNumberRepository phoneNumberRepository,
+      IAddressTypeRepository addressTypeRepository,
       IAddressRepository addressRepository,
-      PhotosService photosService,
+      ICompanyRepository companyRepository,
       AssignmentResponseMapper assignmentResponseMapper,
       AssignmentEntityMapper assignmentEntityMapper,
       VehicleInfoEntityMapper vehicleInfoEntityMapper,
@@ -69,16 +76,19 @@ public class AssignmentService implements IAssignmentService {
       AddressEntityMapper addressEntityMapper
   ) {
     this.entityManager = entityManager;
-    this.userRepository = userRepository;
+    this.photosService = photosService;
     this.assignmentStatusRepository = assignmentStatusRepository;
     this.assignmentRepository = assignmentRepository;
     this.directionsOfImpactRepository = directionsOfImpactRepository;
     this.vehicleConditionInfoRepository = vehicleConditionInfoRepository;
     this.vehicleInfoRepository = vehicleInfoRepository;
+    this.contactInfoTypeRepository = contactInfoTypeRepository;
     this.contactInfoRepository = contactInfoRepository;
+    this.phoneNumberTypeRepository = phoneNumberTypeRepository;
     this.phoneNumberRepository = phoneNumberRepository;
+    this.addressTypeRepository = addressTypeRepository;
     this.addressRepository = addressRepository;
-    this.photosService = photosService;
+    this.companyRepository = companyRepository;
     this.assignmentResponseMapper = assignmentResponseMapper;
     this.assignmentEntityMapper = assignmentEntityMapper;
     this.vehicleInfoEntityMapper = vehicleInfoEntityMapper;
@@ -88,115 +98,30 @@ public class AssignmentService implements IAssignmentService {
   }
 
   @Override
-  public ResponseEntity createAssignment( AssignmentRequestEntity request, List<MultipartFile> photosOfImpact ) {
-    //  Assignment creation
-    UserEntity user = ( UserEntity ) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    UserEntity mergedUser = entityManager.merge( user );
-
-    LocalDateTime currentDateTimeAssignment = LocalDateTime.now();
-
-    AssignmentStatusEntity assignmentStatusFromDB = assignmentStatusRepository
-        .findByName( EAssignmentStatusEntity.NEW )
-        .orElseThrow( () ->
-            new NotFoundException( "The assignment status is not found" )
-        );
-
-    AssignmentEntity assignmentEntity = assignmentEntityMapper.toEntity( request );
-    assignmentEntity.setUser( mergedUser );
-    assignmentEntity.setDateOfCreation( currentDateTimeAssignment );
-    assignmentEntity.setStatus( assignmentStatusFromDB );
-
-    assignmentRepository.save( assignmentEntity );
-
-    AssignmentEntity assignmentEntityFromDB =
-        assignmentRepository
-            .findByDateOfCreation( currentDateTimeAssignment )
-            .orElseThrow( () ->
-                new NotFoundException( "The assignment is not found" )
-            );
-
-    //  Vehicle condition info creation
-    PhotosResponseEntity photosResponseEntity = photosService.savePhotos(
-        user.getUserId(),
-        assignmentEntityFromDB.getAssignmentId(),
-        photosOfImpact
-    );
-
-    if ( photosResponseEntity.getIsError() ) {
-      return ResponseEntity
-          .status( HttpStatus.INTERNAL_SERVER_ERROR )
-          .body( photosResponseEntity.getErrorMessage() );
-    }
-
-    DirectionOfImpactEntity directionOfImpactFromDB = directionsOfImpactRepository
-        .findByName( request.getVehicleConditionInfo().getDirectionOfImpact() )
-        .orElseThrow( () ->
-            new NotFoundException( "The direction of impact is not found" )
-        );
-
-    VehicleConditionInfoEntity vehicleConditionInfoEntity =
-        VehicleConditionInfoEntity
-            .builder()
-            .directionOfImpact( directionOfImpactFromDB )
-            .namesOfPhotosOfImpact( photosResponseEntity.getNamesOfPhotosOfImpact() )
-            .assignment( assignmentEntityFromDB )
-            .build();
-
-    vehicleConditionInfoRepository.save( vehicleConditionInfoEntity );
-
-    //  Vehicle condition info creation
-    VehicleInfoEntity vehicleInfoEntity = vehicleInfoEntityMapper.toEntity( request );
-    vehicleInfoEntity.setAssignment( assignmentEntityFromDB );
-
-    vehicleInfoRepository.save( vehicleInfoEntity );
-
-    //  Contacts info creation
-    for ( ContactInfoRequestEntity contactInfoRequest : request.getContactsInfo() ) {
-      LocalDateTime currentDateTimeContactInfo = LocalDateTime.now();
-
-      ContactInfoEntity contactInfoEntity = contactInfoEntityMapper.toEntity( contactInfoRequest );
-      contactInfoEntity.setDateOfCreation( currentDateTimeContactInfo );
-      contactInfoEntity.setAssignment( assignmentEntityFromDB );
-
-      contactInfoRepository.save( contactInfoEntity );
-
-      ContactInfoEntity contactInfoEntityFromDB =
-          contactInfoRepository
-              .findByDateOfCreation( currentDateTimeContactInfo )
-              .orElseThrow( () ->
-                  new NotFoundException( "The contact information is not found" )
-              );
-
-      for ( PhoneNumberRequestEntity phoneNumberRequest : contactInfoRequest.getPhoneNumbers() ) {
-        PhoneNumberEntity phoneNumberEntity = phoneNumberEntityMapper.toEntity( phoneNumberRequest );
-        phoneNumberEntity.setContactInfo( contactInfoEntityFromDB );
-
-        phoneNumberRepository.save( phoneNumberEntity );
-      }
-
-      for ( AddressRequestEntity addressRequest : contactInfoRequest.getAddresses() ) {
-        AddressEntity addressEntity = addressEntityMapper.toEntity( addressRequest );
-        addressEntity.setContactInfo( contactInfoEntityFromDB );
-
-        addressRepository.save( addressEntity );
-      }
-    }
-
-    return ResponseEntity
-        .ok()
-        .body( assignmentEntityFromDB.getAssignmentId() );
-  }
-
-  @Override
   public ResponseEntity getAssignments() {
     UserEntity user = ( UserEntity ) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    List<AssignmentEntity> assignmentsFromDB = new ArrayList<>();
     List<AssignmentResponseEntity> assignmentsResponse = new ArrayList<>();
 
-    List<AssignmentEntity> assignmentsFromDB = assignmentRepository
-        .findAllByUserId( user.getUserId() )
-        .orElseThrow( () ->
-            new NotFoundException( "Assignments are not found" )
-        );
+    if ( user.getRole().getName().equals( ERoleEntity.ROLE_CLIENT ) ) {
+      assignmentsFromDB = assignmentRepository
+          .findAllByUserId( user.getId() )
+          .orElseThrow( () ->
+              new NotFoundException( "Assignments are not found" )
+          );
+    } else if ( user.getRole().getName().equals( ERoleEntity.ROLE_INSURANCE_MANAGER ) ) {
+      assignmentsFromDB = assignmentRepository
+          .findAllByInsuranceAgencyId( user.getCompanyId() )
+          .orElseThrow( () ->
+              new NotFoundException( "Assignments are not found" )
+          );
+    } else if ( user.getRole().getName().equals( ERoleEntity.ROLE_REPAIR_MANAGER ) ) {
+      assignmentsFromDB = assignmentRepository
+          .findAllByRepairFacilityId( user.getCompanyId() )
+          .orElseThrow( () ->
+              new NotFoundException( "Assignments are not found" )
+          );
+    }
 
     for ( AssignmentEntity assignment : assignmentsFromDB ) {
       assignmentsResponse.add( assignmentResponseMapper.toResponse( assignment ) );
@@ -223,5 +148,175 @@ public class AssignmentService implements IAssignmentService {
     return ResponseEntity
         .ok()
         .body( assignmentResponseMapper.toResponse( assignmentFromDB ) );
+  }
+
+  @Override
+  public ResponseEntity createAssignment( AssignmentRequestEntity request, List<MultipartFile> photosOfImpact ) {
+    //  Assignment creation
+    UserEntity user = ( UserEntity ) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    UserEntity mergedUser = entityManager.merge( user );
+
+    LocalDateTime currentDateTimeAssignment = LocalDateTime.now();
+
+    AssignmentStatusEntity assignmentStatusFromDB = assignmentStatusRepository
+        .findByName( EAssignmentStatusEntity.NEW )
+        .orElseThrow( () ->
+            new NotFoundException( "The assignment status is not found" )
+        );
+
+    CompanyEntity companyFromDB = companyRepository
+        .findById( user.getCompanyId() )
+        .orElseThrow( () ->
+            new NotFoundException( "The company is not found" )
+        );
+
+    AssignmentEntity assignment = assignmentEntityMapper.toEntity( request );
+    assignment.setUser( mergedUser );
+    assignment.setDateOfCreation( currentDateTimeAssignment );
+    assignment.setStatus( assignmentStatusFromDB );
+    assignment.setInsuranceAgency( companyFromDB );
+
+    AssignmentEntity assignmentFromDB = assignmentRepository.save( assignment );
+
+    //  Vehicle condition info creation
+    PhotosResponseEntity photosResponse = photosService.savePhotos(
+        user.getId(),
+        assignmentFromDB.getId(),
+        photosOfImpact
+    );
+
+    if ( photosResponse.getIsError() ) {
+      return ResponseEntity
+          .status( HttpStatus.INTERNAL_SERVER_ERROR )
+          .body( photosResponse.getErrorMessage() );
+    }
+
+    DirectionOfImpactEntity directionOfImpactFromDB = directionsOfImpactRepository
+        .findByName( request.getVehicleConditionInfo().getDirectionOfImpact() )
+        .orElseThrow( () ->
+            new NotFoundException( "The direction of impact is not found" )
+        );
+
+    VehicleConditionInfoEntity vehicleConditionInfo = VehicleConditionInfoEntity
+        .builder()
+        .directionOfImpact( directionOfImpactFromDB )
+        .namesOfPhotosOfImpact( photosResponse.getNamesOfPhotosOfImpact() )
+        .assignment( assignmentFromDB )
+        .build();
+
+    vehicleConditionInfoRepository.save( vehicleConditionInfo );
+
+    //  Vehicle condition info creation
+    VehicleInfoEntity vehicleInfo = vehicleInfoEntityMapper.toEntity( request );
+    vehicleInfo.setAssignment( assignmentFromDB );
+
+    vehicleInfoRepository.save( vehicleInfo );
+
+    //  Contacts info creation
+    for ( ContactInfoRequestEntity contactInfoRequest : request.getContactsInfo() ) {
+      ContactInfoTypeEntity contactInfoTypeFromDB = contactInfoTypeRepository
+          .findByName( contactInfoRequest.getType() )
+          .orElseThrow( () ->
+              new NotFoundException( "The contact information type is not found" )
+          );
+
+      ContactInfoEntity contactInfo = contactInfoEntityMapper.toEntity( contactInfoRequest );
+      contactInfo.setAssignment( assignmentFromDB );
+      contactInfo.setType( contactInfoTypeFromDB );
+
+      ContactInfoEntity contactInfoFromDB = contactInfoRepository.save( contactInfo );
+
+      for ( PhoneNumberRequestEntity phoneNumberRequest : contactInfoRequest.getPhoneNumbers() ) {
+        PhoneNumberTypeEntity phoneNumberTypeFromDB = phoneNumberTypeRepository
+            .findByName( phoneNumberRequest.getType() )
+            .orElseThrow( () ->
+                new NotFoundException( "The phone number type is not found" )
+            );
+
+        PhoneNumberEntity phoneNumber = phoneNumberEntityMapper.toEntity( phoneNumberRequest );
+        phoneNumber.setContactInfo( contactInfoFromDB );
+        phoneNumber.setType( phoneNumberTypeFromDB );
+
+        phoneNumberRepository.save( phoneNumber );
+      }
+
+      for ( AddressRequestEntity addressRequest : contactInfoRequest.getAddresses() ) {
+        AddressTypeEntity addressTypeFromDB = addressTypeRepository
+            .findByName( addressRequest.getType() )
+            .orElseThrow( () ->
+                new NotFoundException( "The address type is not found" )
+            );
+
+        AddressEntity address = addressEntityMapper.toEntity( addressRequest );
+        address.setContactInfo( contactInfoFromDB );
+        address.setType( addressTypeFromDB );
+
+        addressRepository.save( address );
+      }
+    }
+
+    return ResponseEntity
+        .ok()
+        .body( assignmentFromDB.getId() );
+  }
+
+  @Override
+  public ResponseEntity setAssignmentRepairFacility( Long assignmentId, CompanyRequestEntity request ) {
+    CompanyEntity companyFromDB = companyRepository
+        .findByName( request.getName() )
+        .orElseThrow( () ->
+            new NotFoundException( "The company is not found" )
+        );
+
+    AssignmentStatusEntity assignmentStatusFromDB = assignmentStatusRepository
+        .findByName( EAssignmentStatusEntity.ASSIGNED )
+        .orElseThrow( () ->
+            new NotFoundException( "The assignment status is not found" )
+        );
+
+    AssignmentEntity assignmentFromDB = assignmentRepository
+        .findById( assignmentId )
+        .orElseThrow( () ->
+            new NotFoundException( "The assignment is not found" )
+        );
+
+    assignmentFromDB.setStatus( assignmentStatusFromDB );
+    assignmentFromDB.setRepairFacility( companyFromDB );
+
+    AssignmentEntity assignmentEditedFromDB = assignmentRepository.save( assignmentFromDB );
+
+    return ResponseEntity
+        .ok()
+        .body( assignmentResponseMapper.toResponse( assignmentEditedFromDB ) );
+  }
+
+  @Override
+  public AssignmentEntity checkAndSetAssignmentStatus( Long assignmentId ) {
+    AssignmentStatusEntity assignmentStatusNewFromDB = assignmentStatusRepository
+        .findByName( EAssignmentStatusEntity.NEW )
+        .orElseThrow( () ->
+            new NotFoundException( "The assignment status is not found" )
+        );
+
+    AssignmentStatusEntity assignmentStatusInProgressFromDB = assignmentStatusRepository
+        .findByName( EAssignmentStatusEntity.IN_PROGRESS )
+        .orElseThrow( () ->
+            new NotFoundException( "The assignment status is not found" )
+        );
+
+    AssignmentEntity assignmentFromDB = assignmentRepository
+        .findById( assignmentId )
+        .orElseThrow( () ->
+            new NotFoundException( "The assignment is not found" )
+        );
+
+    if ( assignmentStatusNewFromDB.getId() == assignmentFromDB.getStatusId() ) {
+      assignmentFromDB.setStatus( assignmentStatusInProgressFromDB );
+    }
+
+    AssignmentEntity assignmentWithNewStatusFromDB = assignmentRepository
+        .save( assignmentFromDB );
+
+    return assignmentWithNewStatusFromDB;
   }
 }

@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Component
@@ -43,10 +45,18 @@ public class ContactInfoResponseMapper implements IResponseMapper<ContactInfoEnt
       addressesResponse.add( addressResponse );
     }
 
+    Comparator<PhoneNumberResponseEntity> comparatorPhoneNumber = Comparator
+        .comparing( PhoneNumberResponseEntity::getId );
+    Collections.sort( phoneNumbersResponse, comparatorPhoneNumber );
+
+    Comparator<AddressResponseEntity> comparatorAddress = Comparator
+        .comparing( AddressResponseEntity::getId );
+    Collections.sort( addressesResponse, comparatorAddress );
+
     return ContactInfoResponseEntity
         .builder()
         .id( entity.getId() )
-        .type( entity.getType() )
+        .type( entity.getType().getName() )
         .firstName( entity.getFirstName() )
         .lastName( entity.getLastName() )
         .email( entity.getEmail() )

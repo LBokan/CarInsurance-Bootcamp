@@ -10,7 +10,6 @@ public class PhoneNumberEntityMapper implements IEntityMapper<PhoneNumberEntity,
   public PhoneNumberEntity toEntity( PhoneNumberRequestEntity request ) {
     return PhoneNumberEntity
         .builder()
-        .type( request.getType() )
         .number( request.getNumber() )
         .build();
   }

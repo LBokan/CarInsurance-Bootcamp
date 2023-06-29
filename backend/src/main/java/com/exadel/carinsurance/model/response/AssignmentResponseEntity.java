@@ -14,10 +14,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AssignmentResponseEntity {
-  private Long assignmentId;
+  private Long id;
+  private Long userId;
   private String status;
   private LocalDateTime dateOfCreation;
   private Date dateOfIncident;
+  private String insuranceAgency;
+  private String repairFacility;
   private List<ContactInfoResponseEntity> contactsInfo;
   private VehicleInfoResponseEntity vehicleInfo;
   private VehicleConditionInfoResponseEntity vehicleConditionInfo;

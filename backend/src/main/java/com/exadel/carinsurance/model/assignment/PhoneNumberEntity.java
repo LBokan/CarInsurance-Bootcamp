@@ -20,32 +20,37 @@ public class PhoneNumberEntity {
   @Column( name = "id" )
   private Long id;
 
-  @Column( name = "type" )
-  private String type;
-
   @Column( name = "number" )
   private String number;
 
-  @Column( name = "contacts_info_id",
+  @Column( name = "type_id",
+      nullable = false,
+      insertable = false,
+      updatable = false )
+  private int typeId;
+
+  @ManyToOne( fetch = FetchType.LAZY )
+  @JoinColumn( name = "type_id" )
+  private PhoneNumberTypeEntity type;
+
+  @Column( name = "contact_info_id",
       nullable = false,
       insertable = false,
       updatable = false )
   private Long contactInfoId;
 
   @JsonIgnore
-  @ManyToOne( fetch = FetchType.EAGER,
-      cascade = { CascadeType.PERSIST, CascadeType.MERGE,
-          CascadeType.DETACH, CascadeType.REFRESH },
-      optional = false )
-  @JoinColumn( name = "contacts_info_id" )
+  @ManyToOne( fetch = FetchType.LAZY )
+  @JoinColumn( name = "contact_info_id" )
   private ContactInfoEntity contactInfo;
 
   @Override
   public String toString() {
     return "PhoneNumberEntity{" +
         "id=" + id +
-        ", type='" + type + '\'' +
         ", number='" + number + '\'' +
+        ", typeId=" + typeId +
+        ", contactInfoId=" + contactInfoId +
         '}';
   }
 }

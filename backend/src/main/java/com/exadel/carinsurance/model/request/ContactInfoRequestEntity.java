@@ -18,4 +18,5 @@ public class ContactInfoRequestEntity {
   private String email;
   private List<PhoneNumberRequestEntity> phoneNumbers;
   private List<AddressRequestEntity> addresses;
+  private Long assignmentId;
 }

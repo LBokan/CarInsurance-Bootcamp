@@ -1,4 +1,4 @@
-package com.exadel.carinsurance.model.response;
+package com.exadel.carinsurance.model.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthResponseEntity {
-  private UserResponseEntity user;
+public class CommentRequestEntity {
+  private String text;
 }

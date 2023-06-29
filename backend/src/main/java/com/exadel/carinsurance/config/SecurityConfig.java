@@ -39,8 +39,10 @@ public class SecurityConfig {
         .and()
         .authorizeRequests( request ->
             request
-                .antMatchers( "/api/auth/**" ).permitAll()
-                .antMatchers( "/api/user/**" ).hasRole( "CLIENT" )
+                .antMatchers( "/api/v1/auth/**" ).permitAll()
+                .antMatchers( "/api/v1/client/**" ).hasRole( "CLIENT" )
+                .antMatchers( "/api/v1/insurance/**" ).hasRole( "INSURANCE_MANAGER" )
+                .antMatchers( "/api/v1/repair/**" ).hasRole( "REPAIR_MANAGER" )
                 .anyRequest().authenticated()
         )
         .sessionManagement()

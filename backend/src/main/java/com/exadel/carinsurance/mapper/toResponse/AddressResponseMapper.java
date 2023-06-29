@@ -11,7 +11,7 @@ public class AddressResponseMapper implements IResponseMapper<AddressEntity, Add
     return AddressResponseEntity
         .builder()
         .id( entity.getId() )
-        .type( entity.getType() )
+        .type( entity.getType().getName() )
         .city( entity.getCity() )
         .state( entity.getState() )
         .zip( entity.getZip() )

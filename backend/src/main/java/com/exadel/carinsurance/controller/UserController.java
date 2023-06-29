@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping( "/api" )
+@RequestMapping( "/api/v1" )
 public class UserController {
   @Autowired
   private IUserService userService;
 
   @GetMapping( "/user" )
-  public UserResponseEntity hetUser() {
+  public UserResponseEntity getUser() {
     return userService.getUser();
   }
 

@@ -5,11 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DirectionOfImpactResponseEntity {
+public class CommentResponseEntity {
   private Long id;
-  private String name;
+  private LocalDateTime dateOfCreation;
+  private String text;
+  private int isRead;
 }

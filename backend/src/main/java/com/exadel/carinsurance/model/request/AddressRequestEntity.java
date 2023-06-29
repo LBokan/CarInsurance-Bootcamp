@@ -15,4 +15,5 @@ public class AddressRequestEntity {
   private String state;
   private String zip;
   private String addressLine;
+  private Long contactInfoId;
 }

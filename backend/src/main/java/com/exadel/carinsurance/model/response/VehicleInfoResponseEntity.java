@@ -16,7 +16,7 @@ public class VehicleInfoResponseEntity {
   private String carMake;
   private String carModel;
   private int yearOfManufacture;
-  private String odometerValue;
+  private int odometerValue;
   private String licensePlateNumber;
   private String licenseState;
   private Date licenseExpirationDate;

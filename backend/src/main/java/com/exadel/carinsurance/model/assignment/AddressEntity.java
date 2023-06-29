@@ -20,9 +20,6 @@ public class AddressEntity {
   @Column( name = "id" )
   private Long id;
 
-  @Column( name = "type" )
-  private String type;
-
   @Column( name = "city" )
   private String city;
 
@@ -35,29 +32,37 @@ public class AddressEntity {
   @Column( name = "address_line" )
   private String addressLine;
 
-  @Column( name = "contacts_info_id",
+  @Column( name = "type_id",
+      nullable = false,
+      insertable = false,
+      updatable = false )
+  private int typeId;
+
+  @ManyToOne( fetch = FetchType.LAZY )
+  @JoinColumn( name = "type_id" )
+  private AddressTypeEntity type;
+
+  @Column( name = "contact_info_id",
       nullable = false,
       insertable = false,
       updatable = false )
   private Long contactInfoId;
 
   @JsonIgnore
-  @ManyToOne( fetch = FetchType.EAGER,
-      cascade = { CascadeType.PERSIST, CascadeType.MERGE,
-          CascadeType.DETACH, CascadeType.REFRESH },
-      optional = false )
-  @JoinColumn( name = "contacts_info_id" )
+  @ManyToOne( fetch = FetchType.LAZY )
+  @JoinColumn( name = "contact_info_id" )
   private ContactInfoEntity contactInfo;
 
   @Override
   public String toString() {
     return "AddressEntity{" +
         "id=" + id +
-        ", type='" + type + '\'' +
         ", city='" + city + '\'' +
         ", state='" + state + '\'' +
         ", zip='" + zip + '\'' +
         ", addressLine='" + addressLine + '\'' +
+        ", typeId=" + typeId +
+        ", contactInfoId=" + contactInfoId +
         '}';
   }
 }
